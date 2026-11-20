@@ -68,4 +68,4 @@ reachable by the API without a password anywhere.
 - Adding a user = invite + assign role; removing = unassign (their rows stay, owned by their `oid`).
 - `AppUser` (ADR 0004) is upserted at sign-in so lists can show names.
 - Users cost nothing; searches do (politeness delay × lookups, DB awake time). A
-  `MaxActiveSearchesPerUser` setting is enforced in the BLL from day one.
+  `run.max_active_searches_per_user` setting (ADR 0011) is enforced in the BLL from day one.

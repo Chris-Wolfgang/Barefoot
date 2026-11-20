@@ -76,9 +76,10 @@ schema and connects directly with a DDL identity (ADR 0002, ADR 0007).
 `Obe` drives the booking UI in Chromium through Playwright and reads the rendered room and flight
 cards. The site knowledge — page flow, selectors, the price-text formats and their traps — is the
 one thing taken from the earlier tool's notes (`docs/API-NOTES.md` on the archive branch; it is
-redacted before it is copied here, per sandals-search#261). Politeness: sequential, a configurable
-delay (~2.5 s) plus jitter, one lookup at a time. Earliest searchable check-in ≈ today +
-`Run:MinLeadDays`. Prices are what the public site shows for the given occupancy, taxes included.
+redacted before it is copied here, per sandals-search#261). Politeness: sequential, a delay
+(~2.5 s) plus jitter that the run hands to the worker (`run.politeness_delay_ms`,
+`run.politeness_jitter_ms`; ADR 0011), one lookup at a time. Earliest searchable check-in ≈ today +
+`run.min_lead_days`. Prices are what the public site shows for the given occupancy, taxes included.
 
 Price text is parsed with anchored, `NonBacktracking`, time-limited regular expressions and the
 parsers are fixture-tested against captured markup — the earlier tool's price-text bugs
@@ -126,9 +127,9 @@ about *the site* are the scraper's.
 | advance stages; aggregate; store digests; derive run status; resume semantics | — |
 
 ```
-POST /runs                      {trigger}              → run; 409 if one is in progress
-POST /runs/resume                                      → the incomplete run, or 404
-POST /runs/{id}/requests/claim  {worker, leaseSeconds} → next Pending request (run-order), or "none left"
+POST /runs                      {trigger}              → run + worker {politenessDelayMs, politenessJitterMs}; 409 if one is in progress
+POST /runs/resume                                      → the incomplete run + worker {…}, or 404
+POST /runs/{id}/requests/claim  {worker}               → next Pending request (run-order) + leaseExpiresUtc, or "none left"
 POST /runs/{id}/requests/{r}/result {attempt, rooms[] | error}   → idempotent on attempt (ADR 0012)
 POST /runs/{id}/flight-sets/claim                      → next Pending flight set, or "none left"
 POST /runs/{id}/flight-sets/{f}/result {attempt, options[] | error}
@@ -140,7 +141,9 @@ POST /runs/{id}/digests/send                           → mails every stored, u
 
 Scraper loop: `POST /runs` (or `/resume`) → claim → scrape → result … until none left → flight
 sets the same way → `complete` each search whose work is done → `finish`. A tripped breaker calls
-`abort` and exits 3. A crashed worker's leases (~5 min) expire and its requests return to Pending;
+`abort` and exits 3. The API sets every lease (`run.lease_seconds`, 5 min by default; the worker
+does not choose it) and hands the worker its politeness values with the run, so the scraper reads
+no settings of its own (ADR 0011). A crashed worker's leases expire and its requests return to Pending;
 a late duplicate `result` is ignored by its `attempt` token. A run knows its complete work list at
 creation, so progress is countable and the UI can show a run in flight.
 
