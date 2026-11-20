@@ -38,7 +38,8 @@ result. Prices change between runs, so sharing is only ever within a run.
    upserted at sign-in: names for lists without Graph calls, FK integrity for owners, a home for
    per-user settings. Seeded with `Guid.Empty` "Unassigned"; `bf-maint assign-owner` replaces it.
 9. **Keys are `Guid`s.** The user key is given (Entra `oid`); the rest follow so one convention
-   covers the model and clients can mint ids for idempotent creates. Hot tables (`SearchRequest`,
+   covers the model. Ids are minted by the API; idempotent creates use the `Idempotency-Key` header
+   (ADR 0012), not a client-supplied id. Hot tables (`SearchRequest`,
    `RoomResult`, flight rows) use sequential Guids for clustered-index locality.
 10. **Concurrency:** a portable `Version` column (`long`, concurrency token, incremented by the
     context) on `SearchMatrix`, `SearchRequest`, `FlightSet`, `Setting`, `Resort`, `Airport`. SQL
