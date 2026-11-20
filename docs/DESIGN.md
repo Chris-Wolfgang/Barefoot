@@ -158,7 +158,10 @@ bf   send-digests
 
 Catalog refresh posts a **snapshot** of what the site shows; the API diffs it against the catalog,
 applies the add/update/deactivate rules and a safety rule so a bad scrape cannot take every resort
-offline at once, and audits the changes as the scraper's identity.
+offline at once, and audits the changes as the scraper's identity. **A code repeated within one
+snapshot never fails the refresh**: identical entries collapse to one; entries that disagree leave
+that one resort (or airport) untouched and are named in the response's `warnings`, which the
+scraper logs and reports with exit code 2 (partial). Every other entry is applied.
 
 ## 6. Flights
 
@@ -352,6 +355,13 @@ the system. Everything an Editor sees is reachable from a search they own.
   Admin creates searches *for* them. Kept for v1 even if unused.
 - Runs are invisible to Editors as objects; they see per-search outcomes only ("Tue 06:12 ·
   Complete"), never run ids, breaker reasons or other searches.
+- **A failed load never takes the application down.** Every screen has four explicit states —
+  Loading, Loaded, Empty, Failed — and Failed renders in place: the problem detail's message, its
+  `traceId`, and a Retry. An `ErrorBoundary` in the gated layout wraps the page body, so an
+  exception a screen did not expect still leaves the shell and navigation working. Errors are
+  never modal dialogs. A `412` on save says the row changed elsewhere and offers Reload; a
+  readiness `503` switches to the full-page readiness state. A test per screen drives a failing
+  `ApiClient` and asserts the Failed state.
 - Readiness states render full-page, before the shell, for every role, from the API's readiness
   endpoint. A run in flight is shown by polling the API every ~30 s while a run is `InProgress`.
 - No user-facing Settings page (Admin **System** holds the registry); no run history for
@@ -463,6 +473,20 @@ conversion methods live where the conventions say. **API contract tests** (the i
 over `WebApplicationFactory` + SQLite, through `ApiClient`) are the end-to-end gate; every client
 talks to the API only through `ApiClient`, so the contract is tested once. The committed OpenAPI
 document must equal the served one.
+
+**Accessibility** is an acceptance item for every screen in phase 7, not a property assumed from
+the component library. The target is WCAG 2.2 AA. A screen is accepted when an automated axe scan
+of the rendered page reports no violations in both light and dark themes, every icon-only button
+has an accessible name, every input has a visible label, and the screen's main task can be
+completed with the keyboard alone. The scan runs in CI over every routable page.
+
+**Logging.** Every host logs through `Microsoft.Extensions.Logging` with structured properties;
+no host writes a log line with `Console.Write`. The API and Web containers log to the console,
+which Container Apps collects. The three command-line hosts log to **stderr and a rolling file**
+under the user's local application data; **stdout carries only the verb's own output**, culture-
+invariant, so it stays parseable. An unhandled exception is one line on stderr, the stack trace in
+the file only, and an exit code from the shared table (ADR 0007). EF Core command logging is at
+Warning. Every log entry for an API call carries the `traceId` the problem detail reports.
 
 ## 15. Adopted from `wms`
 

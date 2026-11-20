@@ -1,6 +1,6 @@
 # ADR 0008 — Web UI: Blazor Web App on Fluent UI Blazor; components own their state; role-scoped IA
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: vocabulary, disclaimer, Open issues, locked screens)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: vocabulary, disclaimer, Open issues, locked screens; 2026-11-20: screen error states, accessibility acceptance)
 - **Scope:** `Wolfgang.Barefoot.Web`, `Presentation`, the digest template
 
 ## Context
@@ -56,6 +56,12 @@ findings are designed out here.
 12. **Locked screens** (mockup `docs/mockups/v2/`, 2026-11-06): disclaimer + attention pop-up,
     Editor Dashboard, Admin System dashboard, Searches list, Search editor, Results. Their
     specifics are in DESIGN §12 and the mockup README; the remaining screens are drawn next.
+13. **Screen errors render in place.** Each screen has Loading, Loaded, Empty and Failed states; an
+    `ErrorBoundary` in the gated layout keeps the shell alive for anything unexpected; errors are
+    never modal (DESIGN §12).
+14. **Accessibility is accepted per screen**, WCAG 2.2 AA, by an automated axe scan in both themes
+    plus a keyboard pass — "accessible by default" in item 2 is the starting point, not the
+    evidence (DESIGN §14).
 
 ## Not chosen
 
