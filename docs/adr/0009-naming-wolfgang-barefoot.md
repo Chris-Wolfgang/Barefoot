@@ -28,7 +28,7 @@ The code name must not depend on it.
    (`send-digests`, `digests status`), later the user verbs too (`bf search list`). The other two
    read as the specialised workers they are — `bf-scraper` needs a browser and a home IP, `bf-maint`
    needs DDL rights. `bf-admin` was rejected as describing who we expected to run it rather than
-   what it is; `bf-cli` as saying nothing. One shared exit-code table across the three.
+   what it is; `bf-cli` as saying nothing. One shared `ExitCode` enum across the three (ADR 0007).
 4. **Product display name is a string** — UI header, sign-in page, browser title, digest sender
    display name, Entra app registration name — changeable at any time without touching code names.
    Wherever it appears it is followed by the nominative tagline *"for Sandals & Beaches resorts"*,

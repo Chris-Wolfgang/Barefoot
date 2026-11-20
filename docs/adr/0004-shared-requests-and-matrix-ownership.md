@@ -1,6 +1,8 @@
 # ADR 0004 — Shared search requests, owner on the search, visibility by join
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: keys, conventions, name uniqueness)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: keys, conventions, name uniqueness;
+  2026-11-20: why the "Unassigned" user exists, the per-user columns on `AppUser`, creates are
+  repeat-safe by a uniqueness rule)
 - **Scope:** data model (DESIGN §8), `Business` authorization predicate
 
 ## Context
@@ -34,15 +36,25 @@ result. Prices change between runs, so sharing is only ever within a run.
    flight set per departure airport via `SearchItemFlightSet`.
 7. **Dedupe is per run only.** Prices change between runs; that is the point of running twice a
    week.
-8. **`AppUser`** (`Oid` PK, display name, e-mail, last seen, disclaimer version accepted),
-   upserted at sign-in: names for lists without Graph calls, FK integrity for owners, a home for
-   per-user settings. Seeded with `Guid.Empty` "Unassigned"; `bf-maint assign-owner` replaces it.
+8. **`AppUser`** (`Oid` PK, display name, e-mail, last seen, disclaimer version accepted, time
+   zone, default occupancy, *sessions valid after*), upserted at sign-in: names for lists without
+   Graph calls, FK integrity for owners, a home for per-user settings. The time zone and default
+   occupancy are edited on the Profile page; *sessions valid after* is set by the Admin (ADR 0005).
+   - **A user can own a search only after signing in once.** The row is created at first sign-in,
+     so the owner picker an Admin uses lists `AppUser` rows and nothing else; there is no
+     pre-created or pending user.
+   - **Seeded with `Guid.Empty` "Unassigned".** It is the owner of everything created before the
+     application is connected to Entra: until then there is one developer and no real object id,
+     so local runs act as this user. Once sign-in works, `bf-maint assign-owner <oid>` moves every
+     row it owns to that user (who has signed in once), and is run once. The row stays seeded and
+     owns nothing afterwards; no real object id equals it, so no query treats it specially.
 9. **Keys are `Guid`s.** The user key is given (Entra `oid`); the rest follow so one convention
-   covers the model. Ids are minted by the API; idempotent creates use the `Idempotency-Key` header
-   (ADR 0012), not a client-supplied id. Hot tables (`SearchRequest`,
+   covers the model. Ids are minted by the API; a create is made safe to repeat by a uniqueness
+   rule (ADR 0012 §4), not by a client-supplied id. Hot tables (`SearchRequest`,
    `RoomResult`, flight rows) use sequential Guids for clustered-index locality.
 10. **Concurrency:** a portable `Version` column (`long`, concurrency token, incremented by the
-    context) on `SearchMatrix`, `SearchRequest`, `FlightSet`, `Setting`, `Resort`, `Airport`. SQL
+    context) on `SearchMatrix`, `SearchRequest`, `FlightSet`, `Setting`, `Resort`, `Airport`,
+    `AppUser`, `Recipient`. SQL
     Server `rowversion` is not available on the SQLite test provider, so the portable form keeps
     one code path. `Version` doubles as the row's ETag (ADR 0012). The run lock is a *uniqueness*
     rule and uses the filtered unique index, not a token.
@@ -65,8 +77,8 @@ result. Prices change between runs, so sharing is only ever within a run.
 - *A global monotonic row version* (one sequence for the whole database, used as ETag, delta
   watermark and cache stamp). Needed when clients sync deltas; barefoot has no offline client, and a
   per-row `Version` avoids the trigger that SQL Server then requires.
-- *`bigint` identity keys.* Fewer bytes per index, but the user key is already a Guid and clients
-  could not mint ids for idempotent creates.
+- *`bigint` identity keys.* Fewer bytes per index, but the user key is already a Guid, and a second
+  key convention beside it saves nothing that matters at this size.
 
 ## Consequences
 

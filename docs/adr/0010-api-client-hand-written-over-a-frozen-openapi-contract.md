@@ -1,8 +1,9 @@
 # ADR 0010 — API client: hand-written over a committed, frozen OpenAPI contract
 
 - **Status:** Accepted, 2026-11-20 (proposed 2026-11-06; amended on acceptance: the retry rule for
-  calls that are not idempotent, one way to bind a method to an operation, version skew during
-  `v0` recorded as an accepted risk)
+  calls that are not idempotent, one way to bind a method to an operation; later the same day: the
+  version check of ADR 0002 is kept and specified, replacing an "accepted risk" note that
+  contradicted it, and the retry rule no longer mentions an idempotency header)
 - **Scope:** `Wolfgang.Barefoot.ApiClient`, `Contracts`, `Api` (OpenAPI document), CI
 
 ## Context
@@ -45,14 +46,29 @@ top of it either way.
    the retry posture of ADR 0001 §2 (readiness `503`s are retried within the same budget) and the
    ETag / idempotency conventions of ADR 0012 automatically.
 7. **What is retried.** A call is retried automatically only when a repeat is safe:
-   - `GET`, and any call carrying `If-Match`, an `Idempotency-Key` or an `attempt` token: on a
-     connection failure, a timeout or a readiness `503`.
-   - A `POST` with none of those (`claim`, `POST /runs`, `abort`, `finish`): only when the request
+   - `GET`, any call carrying `If-Match` or an `attempt` token, and the two `POST`s that are
+     repeat-safe by state (`complete`, `digests/send`; ADR 0012 §4): on a connection failure, a
+     timeout or a readiness `503`.
+   - Any other `POST` (`claim`, `POST /runs`, `abort`, `finish`, a create): only when the request
      provably never reached the API — the connection could not be opened, or the answer was a
      readiness `503`. After a timeout or a dropped response it is **not** repeated; the caller gets
      the failure. A blind retry of `claim` would lease a second request and strand the first until
      its lease expired. The scraper recovers through the run itself: `POST /runs/resume`, then
-     `claim` again.
+     `claim` again. A create that did land answers the user's own retry with `409`.
+8. **Version check, both directions.** The contract carries a **revision**: an integer constant in
+   `Contracts`, raised by one with every breaking change to `v0`, and written into the committed
+   OpenAPI document; the `openapi-diff` job fails a PR whose `v0` diff is breaking and leaves the
+   revision unchanged.
+   - `GET /version` is anonymous and never touches the database. It returns the API's build
+     version, the contract version (`v0`) and the revision.
+   - `ApiClient` compares that revision with the one it was compiled against, before the first real
+     call. **During `v0` the two must be equal.** An API with a lower revision is *too old* ("The
+     API is older than this tool. Deploy the API."); a higher one is *too new* ("This tool is older
+     than the API. Update it.").
+   - `bf-scraper` and `bf` print that sentence and exit `VersionMismatch` (5, ADR 0007); the
+     scheduled job stops on it. The web host shows it as a full-page state (ADR 0008 §11).
+   - **After `v1` freezes** the contract changes only additively, so an older client keeps working
+     against a newer API: only *too old* (an API whose revision is below the client's) fails.
 
 ## Not chosen
 
@@ -72,8 +88,8 @@ top of it either way.
 - The `Contracts` assembly is the client's only shared dependency besides `Core`.
 - The OpenAPI document becomes the artefact reviewers read for API changes; PRs that touch it carry
   the document diff.
-- **Version skew during `v0` is an accepted risk.** The scraper and `bf` run on the home machine
-  and can be older than a deployed API whose `v0` contract has since broken. Nothing detects that
-  up front (a client-version check is deliberately not taken, DESIGN §15); the symptom is a `400`
-  or `404` from the first changed call. The operating rule is that a `breaking` change to `v0`
-  ships with an updated scraper in the same release. The risk ends when `v1` freezes.
+- **Version skew is detected, not discovered.** The scraper and `bf` run on the home machine and
+  can be older — or, mid-release, newer — than the deployed API. Item 8 turns that into one clear
+  message and exit code at start, instead of a `400` or `404` from whichever call changed. A
+  `breaking` change to `v0` still ships with an updated scraper in the same release; the check is
+  what catches the time it does not.

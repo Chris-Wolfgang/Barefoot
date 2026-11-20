@@ -1,10 +1,11 @@
-# ADR 0012 — API conventions: typed error codes in problem details, ETag concurrency, idempotency keys, keyset paging
+# ADR 0012 — API conventions: typed error codes in problem details, ETag concurrency, idempotency by state, keyset paging
 
-- **Status:** Accepted, 2026-11-20 (proposed 2026-11-06; amended on acceptance: where idempotency
-  records live and how keys are scoped, the attempt token, one way to make a create idempotent,
-  paging position and count, the 401/403/404/422 rules, a generated error catalogue)
-- **Scope:** `Api` (every endpoint), `ApiClient`, `Contracts`, `Core` (`ErrorCode`), `Data`
-  (`IdempotencyRecord`)
+- **Status:** Accepted, 2026-11-20 (proposed 2026-11-06; amended on acceptance: the attempt token,
+  paging position and count, the 401/403/404/422 rules, a generated error catalogue; later the same
+  day: the `Idempotency-Key` header and its `IdempotencyRecord` table are dropped — every write is
+  repeat-safe by its own state — `digests/send` answers `200`, and a newer schema is a readiness
+  code)
+- **Scope:** `Api` (every endpoint), `ApiClient`, `Contracts`, `Core` (`ErrorCode`)
 
 ## Context
 
@@ -28,7 +29,8 @@ phase 0 (DESIGN §13); this ADR records the decisions it will contain.
 - Unhandled exceptions become `500 internal.error` problem details; the detail is the trace id,
   never the exception.
 - Readiness (ADR 0001) answers `503` with `database.waking`, `database.quota_exhausted`,
-  `database.missing_migration` or `database.unavailable`; `Retry-After` is set when known.
+  `database.missing_migration`, `database.newer_schema` or `database.unavailable`; `Retry-After`
+  is set when known.
 - The API never returns a `3xx`; authentication failures are `401 auth.not_signed_in` and
   `403 auth.forbidden` (ADR 0005).
 - `docs/api/errors.md` is **generated** from the `ErrorCode` registry (code, status, message
@@ -39,17 +41,16 @@ phase 0 (DESIGN §13); this ADR records the decisions it will contain.
 
 | Status | When |
 |---|---|
-| 200 | read, or an update that returns the row |
+| 200 | read, an update that returns the row, or an action that reports its outcome (`digests/send`, ADR 0006) |
 | 201 + `Location` | create |
-| 202 | accepted for later (`digests/send`) |
 | 204 | delete, or an update with no body |
 | 400 | malformed request, invalid cursor, unknown sort |
 | 401 | no valid token (`auth.not_signed_in`) |
 | 403 | the caller lacks the **permission the endpoint declares** (`auth.forbidden`) — an Editor calling an Admin endpoint. Decided before any row is looked up, so it reveals nothing about data |
 | 404 | not found **or not visible to the caller** (never 403 for another user's row — nothing reveals another user) |
-| 409 | uniqueness or state conflict: duplicate search name, a run already in progress, a `result` for a superseded attempt |
+| 409 | uniqueness or state conflict: duplicate search name or recipient address, a run already in progress, a `result` for a superseded attempt |
 | 412 | `If-Match` did not match the row's `Version` (stale edit), or the row changed between check and save |
-| 422 | the request is well-formed but the rules reject it: validation, a limit such as `run.max_active_searches_per_user` (`search.active_limit_reached`), an `Idempotency-Key` reused with a different body |
+| 422 | the request is well-formed but the rules reject it: validation, a limit such as `run.max_active_searches_per_user` (`search.active_limit_reached`), a `result` repeated for the same attempt with a different body |
 | 428 | a change or delete without `If-Match`, or with `*` |
 | 503 | readiness (above) |
 
@@ -66,29 +67,31 @@ limits that matter are business rules answered with `422`.
   `Version` 0 and `ETag: "0"`, and its first write is `If-Match: "0"`.
 - `Cache-Control: private, no-cache` on data; never `no-store`, never `max-age`.
 
-### 4. Idempotency
+### 4. Idempotency: every write is repeat-safe by its own state
 
-One rule — the first call is applied and its outcome recorded; a repeat with the same body gets the
-recorded outcome; a repeat with a different body is `422`; the check and the write share one
-transaction — with two places the record is kept:
+There is no `Idempotency-Key` header and no table of recorded calls. Each write that a client may
+have to repeat is safe because of state the model already holds:
 
-- **`Idempotency-Key` header** (16–128 visible ASCII, minted by `ApiClient`) on `POST`s that create
-  or record and have no natural key: search creation, `complete`, `digests/send`. The API stores an
-  **`IdempotencyRecord`** (`CallerId`, `Route`, `Key`, `BodySha256`, `Status`, `ResponseBody`,
-  `CreatedUtc`; unique on `(CallerId, Route, Key)`; `[NotAudited]`) for 24 h. `CallerId` is the
-  user's `oid` or the service principal's id and `Route` is the method and route template, so a
-  key replays only for the caller and endpoint that first used it.
-- **The scraper's `result` uses its `attempt` token and no header.** `claim` mints an opaque
-  `Guid` attempt and stores it on the request (or flight-set) row; `result` carries it in the body
-  (DESIGN §5). The row is the record: its `Attempt`, `Status` and a `ResultSha256` column answer a
-  repeat, so a large `rooms[]` body is never stored twice. A `result` whose attempt is expired or
-  superseded is `409 run.attempt_superseded` and changes nothing (ADR 0003).
-- **Creates are idempotent through the header only.** Ids are minted by the API; a client never
-  supplies the id of a row it is creating.
-- **Purge without a timer.** Each insert into `IdempotencyRecord` first deletes rows older than
-  24 h. Nothing runs in the background, so the purge cannot wake the serverless database (ADR 0001).
-- `claim` and `POST /runs` are deliberately **not** idempotent; ADR 0010 §6 says how `ApiClient`
-  retries them.
+| Call | What makes a repeat safe |
+|---|---|
+| `result` (request or flight set) | the `attempt` token, below |
+| `complete` | the search's stage for the run: a search already *Aggregated* returns the same outcome and stores no second digest |
+| `digests/send` | it only ever sends *Pending* deliveries (ADR 0006); a repeat finds none |
+| any `PUT` / `PATCH` / `DELETE` | `If-Match` (§3): a repeat of an applied change is `412` |
+| create a search | the name is unique per owner (ADR 0004): a repeat is `409 search.name_taken` |
+| create a recipient | the address is unique per owner (ADR 0006): a repeat is `409` |
+
+- **The scraper's `result` uses its `attempt` token.** `claim` mints an opaque `Guid` attempt and
+  stores it on the request (or flight-set) row; `result` carries it in the body (DESIGN §5). The
+  row is the record: its `Attempt`, `Status` and a `ResultSha256` column answer a repeat — the same
+  body gets the first outcome again, a different body is `422` — so a large `rooms[]` body is never
+  stored twice. A `result` whose attempt is expired or superseded is `409 run.attempt_superseded`
+  and changes nothing (ADR 0003).
+- **The check and the write are one `SaveChanges`** under the retrying execution strategy
+  (ADR 0001 §1); no transaction is wrapped by hand.
+- **Ids are minted by the API**; a client never supplies the id of a row it is creating.
+- `claim`, `POST /runs`, `abort` and `finish` are deliberately **not** repeat-safe; ADR 0010 §7
+  says how `ApiClient` retries them, and which calls it may repeat blindly.
 
 ### 5. Paging: keyset, opaque cursors
 
@@ -116,17 +119,21 @@ transaction — with two places the record is kept:
   name is taken" (409, choose another); the client's recovery differs.
 - *Offset paging with page numbers.* Simple, but unstable under inserts and expensive at depth;
   keyset gives stable Previous/Next and the mockups never show "page N of M".
-- *Retries without idempotency keys.* The scraper's home connection drops mid-request often enough
-  that a duplicated `result` is a matter of when.
+- *Retries with nothing guarding them.* The scraper's home connection drops mid-request often
+  enough that a duplicated `result` is a matter of when; the attempt token is the guard.
+- *An `Idempotency-Key` header with an `IdempotencyRecord` table* (the wms shape, and this ADR's
+  first draft). A table, a purge and a stored response body per call, to protect three calls that
+  the model's own state already protects — and a write on every such call against a database
+  billed per second awake.
 
 ## Consequences
 
 - DESIGN §8 changes: stale edits are `412`/`428`, not `409`; `409` is reserved for uniqueness and
-  state conflicts. The model gains `IdempotencyRecord` and a `ResultSha256` column on
-  `SearchRequest` and `FlightSet`; `Attempt` on both is an opaque `Guid`.
+  state conflicts. The model gains a `ResultSha256` column on `SearchRequest` and `FlightSet`;
+  `Attempt` on both is an opaque `Guid`. There is no idempotency table.
 - ADR 0004 item 9 no longer offers client-minted ids as a route to idempotent creates.
 - `ErrorCode`, `Permission` and `SettingKey<T>` share one typed-key base in `Core`.
-- `ApiClient` is the only place that knows about ETags, idempotency keys and cursors; screens see
+- `ApiClient` is the only place that knows about ETags, attempt tokens and cursors; screens see
   typed results and `ConflictException` / `PreconditionFailedException`.
 - The conventions document, the error-code catalogue (`docs/api/errors.md`) and the OpenAPI
   document are reviewed together in phase 4.

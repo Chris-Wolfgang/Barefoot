@@ -1,6 +1,6 @@
 # ADR 0002 — Every client reaches the database through one Web API; DAL and BLL are separate layers
 
-- **Status:** Accepted, 2026-11-06
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-20: the version check names what is compared)
 - **Scope:** solution structure; every host
 
 ## Context
@@ -57,4 +57,5 @@ the rules drift, and neither knows who the user is.
   end-to-end harness: the contract every client uses is what gets tested.
 - Versioning: the API and its clients ship together but can be deployed apart; the API is
   path-versioned and its OpenAPI document is committed and frozen per version (ADR 0010); every
-  client checks `GET /version` at start and fails fast on a mismatch.
+  client checks `GET /version` at start and fails fast on a mismatch — an API too old *or* too new
+  for the client, compared by contract revision (ADR 0010 §8).
