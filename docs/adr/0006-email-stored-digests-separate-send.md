@@ -46,7 +46,8 @@ tool did all three; each is designed out here.
 ## Consequences
 
 - `DigestDelivery` (~30 KB a row) grows ~150 MB a year at a dozen users × twice a week × a few
-  searches; a retention setting (ADR 0011) can come later.
+  searches; a `digest.retention_days` setting comes later, together with the purge that reads it
+  (ADR 0011).
 - `MatrixRunStage.Aggregated → Emailed` happens in a different step from `complete`; resume logic
   treats "aggregated, not sent" as a pending delivery, not a pending search.
 - `bf send-digests` must be idempotent (it only ever sends *Pending* rows).

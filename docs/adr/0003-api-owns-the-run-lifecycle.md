@@ -24,8 +24,9 @@ Split by *what the decision is about*:
   dedupe (ADR 0004); leasing requests and flight sets to a worker with an expiry; persisting
   results; vocabulary discovery; stage advancement; aggregation and digest storage; status
   derivation; resume semantics; recording an abort.
-- **Site decisions → Scraper:** Playwright, politeness delay and jitter, per-item retries, the
-  circuit-breaker decision, time-zone arithmetic on scraped times.
+- **Site decisions → Scraper:** Playwright, politeness delay and jitter (the values come with the
+  run, ADR 0011), per-item retries, the circuit-breaker decision, time-zone arithmetic on scraped
+  times.
 
 The scraper is a pull loop over `claim` / `result` for requests, then for flight sets, then
 `complete` per search and `finish` (resource list in DESIGN §5). Leases are ~5 minutes; a crashed
