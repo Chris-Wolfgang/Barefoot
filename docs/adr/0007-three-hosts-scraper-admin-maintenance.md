@@ -1,6 +1,6 @@
 # ADR 0007 — Three small hosts: scraper, admin, maintenance
 
-- **Status:** Accepted, 2026-11-06
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-20: logging and stdout rule for the three hosts)
 - **Scope:** `Wolfgang.Barefoot.Scraper`, `.Admin`, `.Maintenance`
 
 ## Context
@@ -45,5 +45,7 @@ gravity (the earlier tool's single CLI did exactly that).
 
 - Binaries are `bf-*` (ADR 0009); the README and the scheduled task use those names.
 - Exit codes live in one shared table used by all three binaries.
+- All three log to stderr and a rolling file; stdout carries only the verb's output. An unhandled
+  exception is one stderr line plus an exit code, with the stack trace in the file (DESIGN §14).
 - Failures of the scheduled job are visible: the task's history reads the exit code, and a
   `report-failure`-style step opens one issue per failure signature.
