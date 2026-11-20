@@ -34,11 +34,12 @@ worker's items return to Pending on expiry. Claims hand out one request at a tim
 cheap abort). Completion (aggregate + store digest) is an explicit call from the scraper, never a
 side effect of a `result`.
 
-**Attempt token = idempotency key.** A `claim` returns an `attempt` token; the matching `result`
-carries it. The API applies the general idempotency rule (ADR 0012): the first `result` for an
-attempt is stored and its response recorded; a repeat with the same body returns the recorded
-response; a repeat with a different body is `422`; a `result` for an expired or superseded attempt
-is `409` and ignored. The check runs inside the handler's transaction, so a retry racing the
+**Attempt token = idempotency key.** A `claim` returns an `attempt` token (an opaque `Guid` stored
+on the row); the matching `result` carries it in its body, with no `Idempotency-Key` header. The
+API applies the general idempotency rule (ADR 0012) with the row itself as the record: the first
+`result` for an attempt is stored with a hash of its body; a repeat with the same body returns the
+same response; a repeat with a different body is `422`; a `result` for an expired or superseded
+attempt is `409 run.attempt_superseded` and ignored. The check runs inside the handler's transaction, so a retry racing the
 original cannot double-write.
 
 ## Not chosen

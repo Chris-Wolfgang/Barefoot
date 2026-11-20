@@ -129,7 +129,7 @@ about *the site* are the scraper's.
 ```
 POST /runs                      {trigger}              → run + worker {politenessDelayMs, politenessJitterMs}; 409 if one is in progress
 POST /runs/resume                                      → the incomplete run + worker {…}, or 404
-POST /runs/{id}/requests/claim  {worker}               → next Pending request (run-order) + leaseExpiresUtc, or "none left"
+POST /runs/{id}/requests/claim  {worker}               → next Pending request (run-order) + attempt + leaseExpiresUtc, or "none left"
 POST /runs/{id}/requests/{r}/result {attempt, rooms[] | error}   → idempotent on attempt (ADR 0012)
 POST /runs/{id}/flight-sets/claim                      → next Pending flight set, or "none left"
 POST /runs/{id}/flight-sets/{f}/result {attempt, options[] | error}
@@ -169,7 +169,8 @@ offline at once, and audits the changes as the scraper's identity.
   at explode time as work items and deduped across every search in the run.
 - Full fidelity: FlightOption → FlightDirection ×2 → FlightLeg.
 - A search item links to **one flight set per departure airport** through `SearchItemFlightSet`.
-- Flight options are served **paged, ten at a time, price ascending**, from a per-flight-set
+- Flight options are served **paged, ten at a time** (`results.flight_options_page_size`,
+  ADR 0011), **price ascending**, from a per-flight-set
   endpoint (§12 Results); the digest carries only the cheapest per departure airport.
 
 ## 7. Reference data
@@ -193,16 +194,19 @@ SearchMatrix (+ OwnerId → AppUser, Name, NormalizedName, Brand, RunOrder, Vers
 Run (filtered UNIQUE on Status WHERE Status = InProgress)        the run lock
 MatrixRun (per search per run; Stage Exploded → Downloaded → Aggregated → Emailed)
 SearchRequest (Run, Resort, CheckIn, CheckOut, Adults, Children, Infants,    ← the deduped unit of work
-               RunOrder, Status, Tries, LastError, CapturedUtc, LeasedBy, LeaseExpiresUtc, Attempt, Version)
+               RunOrder, Status, Tries, LastError, CapturedUtc, LeasedBy, LeaseExpiresUtc,
+               Attempt (Guid, minted by claim), ResultSha256, Version)
                UNIQUE (Run, Resort, CheckIn, CheckOut, Adults, Children, Infants)
 SearchItem (MatrixRun, SearchRequest, Cabin)   UNIQUE (MatrixRun, SearchRequest)   ← one per search wanting it
 RoomResult (SearchRequest, …)                                     scraped once
 SearchItemFlightSet (SearchItem, FlightSet)                       one per departure airport
-FlightSet (+ Status, LeasedBy, LeaseExpiresUtc, Attempt, LastError, Version; CapturedUtc nullable)
+FlightSet (+ Status, LeasedBy, LeaseExpiresUtc, Attempt, ResultSha256, LastError, Version; CapturedUtc nullable)
 DigestDelivery (MatrixRun, RecipientUserId → AppUser, RecipientAddress, Subject, HtmlBody, TextBody,
                 Status, Attempts, LastError, CreatedUtc, SentUtc)
 OpenIssue (UserId → AppUser, Kind, Subject, ResolvesWhen, AcknowledgedUtc, ResolvedUtc)
 Setting (Key PK, Value text, UpdatedUtc, Version)                 ADR 0011; audited
+IdempotencyRecord (CallerId, Route, Key, BodySha256, Status, ResponseBody, CreatedUtc)
+                UNIQUE (CallerId, Route, Key)                     ADR 0012; kept 24 h, purged on insert
 Resort, ResortSpan, Airport, RoomCategory, vocabularies (+ Version)   audited
 ```
 
