@@ -28,7 +28,8 @@ below is that design with the multi-site cascade removed.
 2. **One `SettingRegistry`** collects every key at startup and rejects duplicates; `GET /settings`
    and `GET /settings/{key}` return the registry (key, type, default, description, current value,
    `Version`, updated-by/at) for the Admin **System** page. Both need `Permission.SettingsRead` and
-   writes need `Permission.SettingsWrite`; only the Admin role holds either.
+   writes need `Permission.SettingsWrite`; only the Admin role and the `Admin` host's service principal (`bf`,
+   ADR 0005) hold either.
 3. **Values are stored as invariant text** in one `Setting` table (`Key` PK, `Value`, `UpdatedUtc`,
    `Version`) through a `SettingCodec<T>` per type (bool, int, long, double, string, `TimeSpan`,
    `DateTimeOffset`, string lists). Missing row = default. The table is audited by
@@ -64,14 +65,15 @@ below is that design with the multi-site cascade removed.
    picks up a changed value. `run.min_lead_days` never reaches the worker: the API applies it when
    it resolves check-in windows (DESIGN §4). The lease length is the API's alone: `claim` takes no
    `leaseSeconds`, the API applies `run.lease_seconds` and returns `leaseExpiresUtc`. `bf` reads and
-   writes settings as the signed-in Admin through the same endpoints (`bf settings list`, `get`,
-   `set`, `reset`).
+   writes settings through the same endpoints as its service principal (`bf settings list`, `get`,
+   `set`, `reset`); the audit trail names that principal (ADR 0005).
 10. **Validators carry floors where a bad value locks people out or hammers the site**:
     `auth.session_idle_minutes` ≥ 5, `auth.session_absolute_hours` ≥ 1 and not shorter than the idle
     time, `run.lease_seconds` ≥ 60, `run.politeness_delay_ms` ≥ 1000, `run.min_lead_days` ≥ 0,
     `run.max_active_searches_per_user` ≥ 1, `results.flight_options_page_size` 1–50. Each
-    `auth.cors_origins` entry is an absolute `https` origin with no path. `bf settings set` signs in
-    to Entra directly, so it still works when a web session setting is wrong.
+    `auth.cors_origins` entry is an absolute `https` origin with no path. `bf settings set`
+    authenticates with client credentials, not a web session, so it still works when a session
+    setting is wrong.
 11. **Initial registry** (defaults in parentheses): `run.lease_seconds` (300), `run.min_lead_days`
     (4), `run.politeness_delay_ms` (2500) and `run.politeness_jitter_ms` (750),
     `run.max_active_searches_per_user` (5), `digest.sender_display_name` (the product name),
