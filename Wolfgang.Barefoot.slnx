@@ -2,5 +2,6 @@
   <Folder Name="/tests/">
     <Project Path="tests/Wolfgang.Barefoot.TestKit.Tests.Unit/Wolfgang.Barefoot.TestKit.Tests.Unit.csproj" />
     <Project Path="tests/Wolfgang.Barefoot.TestKit/Wolfgang.Barefoot.TestKit.csproj" />
+    <Project Path="tests/Wolfgang.Barefoot.Tests.Architecture/Wolfgang.Barefoot.Tests.Architecture.csproj" />
   </Folder>
 </Solution>
