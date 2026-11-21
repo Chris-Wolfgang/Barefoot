@@ -1,0 +1,47 @@
+name: Third-Party Notices
+
+# Fails a pull request whose committed THIRD-PARTY-NOTICES.md is not what
+# scripts/Generate-ThirdPartyNotices.ps1 would write for the pull request's own
+# package references. The file is the attribution for every NuGet package the
+# src/ projects distribute, so a dependency change that leaves it stale is a
+# licence gap in the next release.
+#
+# No `paths:` filter, on purpose: a filtered workflow that does not start never
+# reports, and a required check that never reports blocks the pull request
+# forever (docs/DELIVERY-PROCESS.md). The script is fast when nothing changed and
+# does no restore at all while src/ holds no project.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: third-party-notices-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Third-Party Notices Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73  # v6.1.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Check that THIRD-PARTY-NOTICES.md is current
+        shell: pwsh
+        run: |
+          pwsh ./scripts/Generate-ThirdPartyNotices.ps1 -Check
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
