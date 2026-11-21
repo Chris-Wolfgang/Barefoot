@@ -101,6 +101,38 @@ public sealed record SearchDefinition
 
 
 
+    /// <summary>
+    /// Digest filter: the room levels to show, as ids of room-vocabulary values. A room is shown when its
+    /// level is one of them. Empty shows every level.
+    /// </summary>
+    public IReadOnlyList<Guid> RoomLevelIds { get; init; } = [];
+
+
+
+    /// <summary>
+    /// Digest filter: the room views to show. A room is shown when its view is one of them. Empty shows
+    /// every view.
+    /// </summary>
+    public IReadOnlyList<Guid> RoomViewIds { get; init; } = [];
+
+
+
+    /// <summary>
+    /// Digest filter: the room types to show. A room is shown when its type is one of them. Empty shows
+    /// every type.
+    /// </summary>
+    public IReadOnlyList<Guid> RoomTypeIds { get; init; } = [];
+
+
+
+    /// <summary>
+    /// Digest filter: the features a room must have. A room is shown only when it has every one of them.
+    /// Empty asks for none.
+    /// </summary>
+    public IReadOnlyList<Guid> MustHaveFeatureIds { get; init; } = [];
+
+
+
     /// <summary>Digest filter: the highest total price to show. Greater than zero when set.</summary>
     public decimal? MaxTotalPrice { get; init; }
 
