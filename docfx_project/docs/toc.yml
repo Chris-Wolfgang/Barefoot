@@ -1,8 +1,8 @@
-- name: Index
+- name: Overview
   href: index.md
-- name: Introduction
+- name: What Barefoot is
   href: introduction.md
-- name: Getting Started
+- name: Running Barefoot
   href: getting-started.md
-- name: Project website
+- name: Source and design
   href: 'https://github.com/Chris-Wolfgang/barefoot'

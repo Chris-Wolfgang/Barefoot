@@ -1,17 +1,12 @@
-# API Reference
+# API reference
 
-Welcome to the Wolfgang.Barefoot API documentation.
+This section is generated from the XML documentation comments in the source. It covers the
+assemblies under `src/`, most usefully `Wolfgang.Barefoot.Core` and `Wolfgang.Barefoot.Contracts`:
+the types a client of the Barefoot API is written against.
 
-This section contains the complete API reference, automatically generated from XML documentation comments in the source code.
+Browse the navigation menu for namespaces and types.
 
-Browse the navigation menu to explore available namespaces and types.
+This is the reference for the .NET assemblies. The HTTP contract — routes, status codes, error
+codes — is the OpenAPI document, which is committed to the repository once the API exists.
 
-## Conventions
-
-- **Public APIs** are stable and follow semantic versioning
-- **Internal APIs** may change between minor versions
-- **Obsolete APIs** are marked with deprecation warnings
-
-## Getting Started
-
-For usage examples and guides, see the [Documentation](../docs/getting-started.md) section.
+For what Barefoot is and how it is run, see the [documentation](../docs/introduction.md).
