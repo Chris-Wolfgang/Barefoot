@@ -60,7 +60,7 @@ findings are designed out here.
 12. **Locked screens** (mockup `docs/mockups/v2/`, 2026-11-06): disclaimer + attention pop-up,
     Editor Dashboard, Admin System dashboard, Searches list, Search editor, Results. Locked
     2026-11-20: My digests and the e-mail, Profile, Price history, Runs, Deliveries, Reference
-    data, Users, System, and the startup states. Their specifics are in DESIGN §12 and the mockup
+    data, Users, Settings, and the startup states. Their specifics are in DESIGN §12 and the mockup
     README. Two rules came out of drawing them: a table never leaves its card (text wraps, a note
     sits under its row, the less important columns go first on a narrow window, and Results drops
     none), and long lists are found, filtered and paged.

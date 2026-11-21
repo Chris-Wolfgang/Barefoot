@@ -6,7 +6,7 @@
   and the CORS allow-list are bootstrap configuration, `bf settings` signs the Admin in, one key
   added for the recipient cap)
 - **Scope:** `Core` (`SettingKey<T>`), `Business` (`ISettings`, registry), `Data` (`Setting` table),
-  `Api` (`/settings`, the run resource), `Web` (Admin → System), `Admin` (`bf settings`),
+  `Api` (`/settings`, the run resource), `Web` (Admin → Settings), `Admin` (`bf settings`),
   `appsettings.*`
 
 ## Context
@@ -29,7 +29,7 @@ below is that design with the multi-site cascade removed.
    string overloads anywhere.
 2. **One `SettingRegistry`** collects every key at startup and rejects duplicates; `GET /settings`
    and `GET /settings/{key}` return the registry (key, type, default, description, current value,
-   `Version`, updated-by/at) for the Admin **System** page. Both need `Permission.SettingsRead` and
+   `Version`, updated-by/at) for the Admin **Settings** page. Both need `Permission.SettingsRead` and
    writes need `Permission.SettingsWrite`; only the Admin role holds either. No service principal
    does (ADR 0005).
 3. **Values are stored as invariant text** in one `Setting` table (`Key` PK, `Value`, `UpdatedUtc`,
@@ -49,7 +49,7 @@ below is that design with the multi-site cascade removed.
      the loser gets `412`.
    - `DELETE /settings/{key}` with `If-Match` removes the row, which is "reset to default". The
      row count changes, so the probe sees it.
-   - `RequiresRestart` stays on `SettingKey<T>` and shows a banner on the System page until the API
+   - `RequiresRestart` stays on `SettingKey<T>` and shows a banner on the Settings page until the API
      restarts. No key in the initial registry sets it: all of them are read per use.
 6. **`appsettings` holds bootstrap keys only**: the connection string and every database option of
    ADR 0001 §1, Entra tenant/client ids, the hosting flags (`BehindProxy`), logging, the API's CORS
@@ -103,7 +103,7 @@ below is that design with the multi-site cascade removed.
 
 ## Consequences
 
-- The Admin **System** page (DESIGN §12) is read/write rather than read-only, with a reset action
+- The Admin **Settings** page (DESIGN §12) is read/write rather than read-only, with a reset action
   per setting.
 - DESIGN §5: `claim` loses `leaseSeconds` and returns `leaseExpiresUtc`; the run resource gains the
   `worker` block. The scraper has no configuration of its own beyond the API address and sign-in.

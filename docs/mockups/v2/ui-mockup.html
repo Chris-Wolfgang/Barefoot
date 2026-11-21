@@ -426,7 +426,7 @@
       <a class="admin-only" href="#" data-go="deliveries"><i>✈</i><span>Deliveries</span></a>
       <a class="admin-only" href="#" data-go="reference"><i>⌂</i><span>Reference data</span></a>
       <a class="admin-only" href="#" data-go="users"><i>☷</i><span>Users</span></a>
-      <a class="admin-only" href="#" data-go="system"><i>⚙</i><span>System</span></a>
+      <a class="admin-only" href="#" data-go="system"><i>⚙</i><span>Settings</span></a>
     </div>
     <div class="grow"></div>
     <div class="me"><div class="avatar">AS</div><div class="who">Alice Smith<br><small>Editor · Sign out</small></div></div>
@@ -1274,7 +1274,7 @@
     <!-- ===== ADMIN: SYSTEM (settings registry) ===== -->
     <section data-screen="system">
       <div class="page-h">
-        <div><h1>System</h1><div class="sub">Settings an Admin can change without a deploy, and what is running.</div></div>
+        <div><h1>Settings</h1><div class="sub">What an Admin can change without a deploy, and what is running.</div></div>
       </div>
       <div class="banner">A saved change takes effect here at once and everywhere else within 30 seconds. Every change is recorded with your name.</div>
       <div class="card" style="margin-bottom:14px">
@@ -1393,7 +1393,7 @@
   function setFlights(on){document.getElementById('flightFields').style.display=on?'':'none'; document.querySelectorAll('.flight-only').forEach(e=>e.style.display=on?'':'none'); document.querySelectorAll('.fanout .flights').forEach(e=>e.style.display=on?'':'none');}
   function setWindowMode(m){document.querySelectorAll('#winSeg button').forEach((b,i)=>b.setAttribute('aria-pressed', (i===0)===(m==='recurring'))); document.querySelectorAll('.win-recurring').forEach(e=>e.style.display=m==='recurring'?'':'none'); document.querySelectorAll('.win-onetime').forEach(e=>e.style.display=m==='onetime'?'':'none');}
   function setBrand(b){document.querySelectorAll('#brandSeg button').forEach((x,i)=>x.setAttribute('aria-pressed',(i===0)===(b==='sandals'))); document.querySelectorAll('.kids').forEach(e=>e.style.display=b==='beaches'?'':'none'); document.getElementById('brandHint').textContent=b==='beaches'?'Beaches resorts welcome families: children (2–15) and infants are priced differently, so they are part of the search.':'Beaches resorts are not searchable yet — the option is here so the shape is right when they are.';}
-  const notes={dashboard:"Dashboard · Searches → Edit opens the editor",matrices:"Searches · click a row or Edit",editor:"Search editor · desktop-first; Phone shows the stacked fallback",results:"Results · click an airport for its flights (full width); 'N more' loads ten at a time",digests:"My digests · find, filter and page the list; the right pane is the e-mail as sent, with Resend per recipient; Phone shows the list, tap one to read it",profile:"Profile · the address book is read-only until self-service",history:"Price history · hover the chart; Admin adds the all-users scope",runs:"Runs · Admin only; the live card shows only while a run is in progress",deliveries:"Deliveries · Admin only; every recipient of every digest",reference:"Reference data · Admin only; three tabs; the site's facts are read-only",users:"Users · Admin only; pick a user for their address book and Sign out everywhere",system:"System · Admin only; the settings registry and what is running"};
+  const notes={dashboard:"Dashboard · Searches → Edit opens the editor",matrices:"Searches · click a row or Edit",editor:"Search editor · desktop-first; Phone shows the stacked fallback",results:"Results · click an airport for its flights (full width); 'N more' loads ten at a time",digests:"My digests · find, filter and page the list; the right pane is the e-mail as sent, with Resend per recipient; Phone shows the list, tap one to read it",profile:"Profile · the address book is read-only until self-service",history:"Price history · hover the chart; Admin adds the all-users scope",runs:"Runs · Admin only; the live card shows only while a run is in progress",deliveries:"Deliveries · Admin only; every recipient of every digest",reference:"Reference data · Admin only; three tabs; the site's facts are read-only",users:"Users · Admin only; pick a user for their address book and Sign out everywhere",system:"Settings · Admin only; the settings registry and what is running"};
   function show(name){
     document.querySelectorAll('[data-screen]').forEach(s=>s.classList.toggle('on',s.dataset.screen===name));
     const navName=name==='editor'?'matrices':name;
