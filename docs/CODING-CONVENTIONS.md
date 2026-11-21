@@ -168,7 +168,7 @@ The deny list and its reasons are in `DependencyPolicyTests`, the one place they
 | A test asserts something. One that only proves "does not throw" says so: `Assert.Null(Record.Exception(...))` | `S2699` (*error*, `tests/.editorconfig`) |
 | A test asserts the behaviour its name promises | review |
 | No test reads the real clock or date. A test takes time from the test kit's fake `TimeProvider` | `BannedSymbols.txt` (`RS0030` is on under `tests/`) |
-| A test that changes process-wide state — an environment variable, the current directory, the current culture, the console streams — is in a collection that does not run in parallel | `TestIsolationTests` |
+| A test that changes process-wide state — an environment variable, the current directory, the default culture, the exit code, the console streams — is in a collection that does not run in parallel | `TestIsolationTests` |
 | Test doubles live in `Wolfgang.Barefoot.TestKit`; no test project defines its own fake clock or fake site client | `TestKitOwnershipTests` |
 | Boundary cases the production code handles are exercised | review; Stryker's break threshold |
 | Tests use xUnit's built-in assertions; no assertion or mocking library | `DependencyPolicyTests` |
