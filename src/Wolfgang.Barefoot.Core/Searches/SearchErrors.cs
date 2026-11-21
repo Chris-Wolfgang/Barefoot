@@ -84,6 +84,10 @@ public static class SearchErrors
     public static readonly ErrorCode MaxStopsNegative =
         new("search.max_stops_negative", Refused, "The most stops cannot be below 0; {0} was given.", ErrorSeverity.Warning);
 
+    /// <summary>A recipient is chosen more than once.</summary>
+    public static readonly ErrorCode RecipientRepeated =
+        new("search.recipient_repeated", Refused, "A recipient can be chosen once per search; {0} is chosen more than once.", ErrorSeverity.Warning);
+
     /// <summary>The run order is outside its range.</summary>
     public static readonly ErrorCode RunOrderOutOfRange =
         new("search.run_order_out_of_range", Refused, "The run order is between {1} and {2}; {0} was given.", ErrorSeverity.Warning);
