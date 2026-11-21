@@ -59,3 +59,7 @@ dotnet_diagnostic.RS0030.severity = error
 # This is why CA2007 stays off under tests/ (root .editorconfig): the two rules ask for
 # opposite things, and inside a test xUnit's is the correct one.
 dotnet_diagnostic.xUnit1030.severity = error
+
+# IDE0161: file-scoped namespaces, as under src/.
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error
