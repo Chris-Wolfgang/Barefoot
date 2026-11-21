@@ -13,3 +13,8 @@ dotnet_diagnostic.CA2007.severity = error
 # static clocks) is an error in every configuration. Stated here so the rule does not depend
 # on the root file keeping it.
 dotnet_diagnostic.RS0030.severity = error
+
+# MA0009: a regular expression either runs on the non-backtracking engine or carries a
+# timeout, so no input can make a match run for minutes (docs/CODING-CONVENTIONS.md
+# "Regular expressions"). Text from the booking site is input we do not control.
+dotnet_diagnostic.MA0009.severity = error

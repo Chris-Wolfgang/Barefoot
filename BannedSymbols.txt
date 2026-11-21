@@ -81,6 +81,11 @@ M:System.Threading.Tasks.Parallel.For(System.Int32,System.Int32,System.Threading
 M:System.Threading.Tasks.Parallel.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0}); Synchronous - prefer async concurrency patterns (e.g., 'Task.WhenAll()', dataflow). On .NET 6+ targets, 'Parallel.ForEachAsync()' is also available.
 M:System.Threading.Tasks.Parallel.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Threading.Tasks.ParallelOptions,System.Action{``0}); Synchronous - prefer async concurrency patterns (e.g., 'Task.WhenAll()', dataflow). On .NET 6+ targets, 'Parallel.ForEachAsync()' is also available.
 M:System.Threading.Tasks.Parallel.Invoke(System.Action[]); Synchronous - use 'Task.WhenAll()' with async delegates instead
+# The console - a host logs through ILogger and writes a verb's own output to the TextWriter
+# it was handed (docs/CODING-CONVENTIONS.md "Logging"), so output can be captured by a test
+# and stdout stays parseable. Only a host's Program.cs names Console, to pass Console.Out and
+# Console.Error in, inside a justified '#pragma warning disable RS0030'.
+T:System.Console; Log through ILogger, or write to the TextWriter the host passes in
 # Console Blocking operations - Avoid in async code
 M:System.Console.ReadLine(); Blocking - avoid in async code paths
 M:System.Console.Read(); Blocking - avoid in async code paths
