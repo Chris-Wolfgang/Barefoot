@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>One night</title>
+</head>
+<body style="margin:0;padding:0;background:#f3f5f7;color:#1f2933;font-family:Segoe UI,Helvetica,Arial,sans-serif;font-size:16px;line-height:1.45">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="padding:12px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;background:#ffffff;border:1px solid #d9dee3">
+<tr><td style="padding:16px 20px;border-bottom:1px solid #d9dee3"><div style="font-size:18px;font-weight:700">Barefoot Vacation</div><div style="font-size:13px;color:#5f6b76">for Sandals &amp; Beaches resorts</div></td></tr>
+<tr><td style="padding:20px">
+<h1 style="margin:0;font-size:22px">One night</h1>
+<div style="color:#5f6b76;font-size:14px;margin:4px 0 16px">Searched Friday, December 25 &#183; 1 room option matches your filters</div>
+<h2 style="margin:20px 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#5f6b76">Summary</h2>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+<tr><td style="padding:6px 0;border-bottom:1px solid #d9dee3">Dearer Resort</td><td align="right" style="padding:6px 0;border-bottom:1px solid #d9dee3;white-space:nowrap"><b>$1,706.66</b> &nbsp;<span style="color:#b42318;font-size:14px">▲ $120</span></td></tr>
+<tr><td style="padding:6px 0;border-bottom:1px solid #d9dee3">New Resort</td><td align="right" style="padding:6px 0;border-bottom:1px solid #d9dee3;white-space:nowrap"><b>$2,000</b></td></tr>
+<tr><td style="padding:6px 0;border-bottom:1px solid #d9dee3">Unpriced Resort</td><td align="right" style="padding:6px 0;border-bottom:1px solid #d9dee3;white-space:nowrap"><span style="color:#5f6b76">no matches</span></td></tr>
+<tr><td style="padding:6px 0;border-bottom:1px solid #d9dee3">Empty Resort</td><td align="right" style="padding:6px 0;border-bottom:1px solid #d9dee3;white-space:nowrap"><span style="color:#5f6b76">no matches</span></td></tr>
+</table>
+<div style="margin:14px 0"><a href="https://barefoot.example/results?search=1&amp;run=2" style="display:inline-block;padding:12px 18px;background:#0b6e99;color:#ffffff;font-weight:600;text-decoration:none;border-radius:6px">Open in Barefoot Vacation</a></div>
+<h2 style="margin:20px 0 8px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#5f6b76">What was searched</h2>
+<div style="font-size:14px;color:#5f6b76">Check-in Jan 1, 2027 &#183; 1 night &#183; 2 adults &#183; no flights.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px"><tr><td style="font-size:17px;font-weight:700;border-bottom:2px solid #1f2933;padding-bottom:4px">Dearer Resort</td><td align="right" style="font-size:15px;border-bottom:2px solid #1f2933;padding-bottom:4px;white-space:nowrap">from $1,706.66</td></tr></table>
+<div style="border:1px solid #d9dee3;border-radius:8px;padding:12px 14px;margin:0 0 10px">
+<div style="font-size:24px;font-weight:700">$1,706.66</div>
+<div style="font-weight:600;margin-top:4px">Garden Room</div>
+<div style="display:inline-block;margin:8px 0;padding:3px 10px;border:1px solid #d9dee3;border-radius:12px;font-size:13px">Check-in Fri Jan 1 &#183; 1 night</div>
+<div style="font-size:14px">Room <b>$1,706.66</b></div>
+</div>
+<div style="margin:14px 0"><a href="https://barefoot.example/results?search=1&amp;run=2" style="display:inline-block;padding:10px 14px;border:1px solid #0b6e99;color:#0b6e99;font-weight:600;text-decoration:none;border-radius:6px">1 more at Dearer Resort</a></div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0 8px"><tr><td style="font-size:17px;font-weight:700;border-bottom:2px solid #1f2933;padding-bottom:4px">Unpriced Resort</td><td align="right" style="font-size:15px;border-bottom:2px solid #1f2933;padding-bottom:4px;white-space:nowrap">from $1,706.66</td></tr></table>
+<div style="border:1px solid #d9dee3;border-radius:8px;padding:12px 14px;margin:0 0 10px">
+<div style="font-size:24px;font-weight:700">$1,706.66</div>
+<div style="font-weight:600;margin-top:4px">Garden Room</div>
+<div style="display:inline-block;margin:8px 0;padding:3px 10px;border:1px solid #d9dee3;border-radius:12px;font-size:13px">Check-in Fri Jan 1 &#183; 1 night</div>
+<div style="font-size:14px">Room <b>$1,706.66</b></div>
+</div>
+</td></tr>
+<tr><td style="padding:16px 20px;border-top:1px solid #d9dee3;font-size:12px;color:#5f6b76">You are getting this because you have an active search in Barefoot Vacation. Prices come from the public booking site at the time of the search and can change at any time; they are not quotes.<br>Barefoot Vacation is an independent tool and is not affiliated with or endorsed by Sandals Resorts International.</td></tr>
+</table>
+</td></tr></table>
+</body>
+</html>

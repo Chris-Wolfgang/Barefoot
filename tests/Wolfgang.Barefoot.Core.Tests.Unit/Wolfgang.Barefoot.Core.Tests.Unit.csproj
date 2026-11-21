@@ -23,6 +23,11 @@
     <Using Include="Xunit" />
   </ItemGroup>
 
+  <!-- The pinned digest markup (ADR 0006 §6). A fixture changes only together with the renderer. -->
+  <ItemGroup>
+    <EmbeddedResource Include="Digests\Fixtures\*" />
+  </ItemGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Core\Wolfgang.Barefoot.Core.csproj" />
     <ProjectReference Include="..\Wolfgang.Barefoot.TestKit\Wolfgang.Barefoot.TestKit.csproj" />
