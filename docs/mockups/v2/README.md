@@ -15,11 +15,21 @@ Editor/Admin, Laptop/Phone, App/Sign-in page, Re-show notices.
 Screens so far: **First sign-in disclaimer** (one-time, per user per disclaimer version; must tick to continue; Decline signs out; precedes the notices modal), **Dashboard** (Editor: status strip, notices, Open issues, Recent results, biggest movers, latest digest;
 Admin: System dashboard with budget & health tiles), **Searches list**, **Search editor** (two panes +
 fan-out footer), the **notices modal** (per-item acknowledge), the **sign-in page**.
-Not yet drawn: My digests, Price history, Profile, Runs, Deliveries, Reference data, Users, System
-detail, the startup states, the e-mail.
+**Drawn 2026-11-20, not locked yet (awaiting Chris):**
+
+- **My digests** (phone contract) — a list of every digest sent to me (date, search, matches, cheapest, delta, delivery status) beside the stored message; on a phone the list alone, tap one to read it, "‹ All digests" to go back. Above the message: each recipient with its own delivery status, and *Open these results*.
+- **The e-mail** — drawn as the stored message inside My digests: 600 px single column, 16 px body; header with the name and tagline; search name and run date; a needs-attention block; **Summary** (one line per resort: cheapest and delta, offline resorts named); the primary *Open in <Name>* button; **What was searched** (resolved window, occupancy, airports, the filters applied, lookups completed); then a section per resort whose header carries its cheapest price, with **one card per room** — total large on the first line, room name, level · view · amenities, a check-in chip, then room price (regular struck) and the cheapest fare per departure airport — and an "N more at <resort>" link; footer with the not-a-quote and not-affiliated statements.
+- **Profile** (phone contract) — *You* (name, e-mail, sign-in provider, role, active searches of the limit; read-only), *Preferences* (time zone, default adults), *Who else gets my digests* (the owner's address book, read-only until self-service), the accepted disclaimer with *Read again*.
+- **Price history** — pickers for Search, Resort, Room, Check-in and Flights from (the identity is resort + room + check-in date); range 30 days / 90 days / All; Admin adds *My captures / All users' captures*; a summary line (now, lowest seen, highest seen, room alone); one line chart with two series on one dollar axis (total with flights, room alone), direct labels at the line ends, hover crosshair and tooltip; and *Every capture* as the table view of the same numbers.
+- **Search editor, Recipients** (changed after the 2026-11-20 ADR review) — the owner's address always, then a pick-list from the owner's address book; an Admin ticks who gets this search, an Editor sees it read-only.
+
+Not yet drawn: Runs, Deliveries, Reference data, Users (with the address book and Sign out
+everywhere), System detail, the startup states (readiness, version mismatch).
 
 Open questions: whether Admin system notices share the modal; whether the fan-out footer shows
-"already looked up by other searches" savings. Product name is a placeholder. (Settled while locking
+"already looked up by other searches" savings; **who may resend a digest** — the Open-issue text on
+the Dashboard offers the owner "Resend now", but ADR 0006 makes `resend` an Admin action (My digests
+is drawn without a resend button). Product name is a placeholder. (Settled while locking
 the editor: resorts stay grouped by island; filters stay a pane, not a tab; "Later" is not offered —
 acknowledging only stops the pop-up, the issue stays on the Dashboard.)
 
