@@ -1,5 +1,5 @@
 using System.Runtime.InteropServices;
-using Wolfgang.Barefoot.Core.Searches;
+using Wolfgang.Barefoot.Contracts.Searches;
 
 namespace Wolfgang.Barefoot.Core.Runs;
 

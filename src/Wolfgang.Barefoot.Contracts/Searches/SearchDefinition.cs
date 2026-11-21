@@ -1,17 +1,21 @@
-namespace Wolfgang.Barefoot.Core.Searches;
+namespace Wolfgang.Barefoot.Contracts.Searches;
 
 /// <summary>
 /// What a person entered for a search, before it is known to be valid: the two halves of DESIGN §4,
 /// "what to search" and the digest filters, plus the run order.
 /// </summary>
 /// <remarks>
-/// The values are held as they were given, so <see cref="SearchValidator"/> can report every rule that
-/// is broken instead of the first one a constructor would throw on. The check-in window is therefore
-/// its raw fields here; <see cref="SearchValidator.BuildWindow"/> turns a valid definition into a
-/// <see cref="CheckInWindow"/>.
+/// This is the record a client sends to create or change a search. The values are held as they were
+/// given, so the validator in <c>Core</c> can report every rule that is broken instead of the first one
+/// a constructor would throw on. The check-in window is therefore its raw fields here.
 /// </remarks>
 public sealed record SearchDefinition
 {
+    /// <summary>The run order of a search nobody has moved up or down.</summary>
+    public const int NormalRunOrder = 50;
+
+
+
     /// <summary>The search's name, unique per owner.</summary>
     public required string Name { get; init; }
 
@@ -120,5 +124,5 @@ public sealed record SearchDefinition
     /// <summary>
     /// When the search runs relative to the owner's others: 1 (last) to 99 (first). 50 is normal.
     /// </summary>
-    public int RunOrder { get; init; } = SearchValidator.NormalRunOrder;
+    public int RunOrder { get; init; } = NormalRunOrder;
 }

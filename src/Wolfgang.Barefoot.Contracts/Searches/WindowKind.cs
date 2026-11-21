@@ -1,4 +1,4 @@
-namespace Wolfgang.Barefoot.Core.Searches;
+namespace Wolfgang.Barefoot.Contracts.Searches;
 
 /// <summary>
 /// Which of the two kinds of check-in window a search definition describes.
