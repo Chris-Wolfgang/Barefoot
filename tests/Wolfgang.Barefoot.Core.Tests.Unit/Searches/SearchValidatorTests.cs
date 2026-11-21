@@ -1,3 +1,4 @@
+using Wolfgang.Barefoot.Contracts.Searches;
 using Wolfgang.Barefoot.Core.Keys;
 using Wolfgang.Barefoot.Core.Searches;
 using Wolfgang.Barefoot.Core.Validation;

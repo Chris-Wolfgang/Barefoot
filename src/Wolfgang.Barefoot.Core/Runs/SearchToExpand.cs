@@ -1,3 +1,4 @@
+using Wolfgang.Barefoot.Contracts.Searches;
 using Wolfgang.Barefoot.Core.Searches;
 
 namespace Wolfgang.Barefoot.Core.Runs;

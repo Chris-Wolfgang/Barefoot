@@ -1,4 +1,4 @@
-namespace Wolfgang.Barefoot.Core.Searches;
+namespace Wolfgang.Barefoot.Contracts.Searches;
 
 /// <summary>
 /// The cabin flights are looked up in. It affects flights only, never the room lookup.
