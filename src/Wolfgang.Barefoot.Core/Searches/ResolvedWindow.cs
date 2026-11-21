@@ -1,9 +1,12 @@
+using System.Runtime.InteropServices;
+
 namespace Wolfgang.Barefoot.Core.Searches;
 
 /// <summary>
 /// The actual check-in dates a window stands for on a given day: a first and a last date, both
 /// included.
 /// </summary>
+[StructLayout(LayoutKind.Auto)]
 public readonly record struct ResolvedWindow
 {
     /// <summary>
