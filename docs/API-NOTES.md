@@ -186,7 +186,7 @@ What an itinerary gives:
 | Per direction: stops | legs − 1 | `itinerary-stops` says the same |
 | Per direction: overnight | `itinerary-overnight` | |
 | Per leg | the three elements above | marketing carrier, flight number, date, cabin name, fare code, departure time and airport, arrival time and airport, operating carrier |
-| Per direction: travel time | first departure to last arrival | derived. The times are local to each airport, so the arithmetic needs the airports' time zones and is done by the API, not the scraper (DESIGN §5) |
+| Per direction: travel time | first departure to last arrival | derived. The times are local to each airport, so the arithmetic needs the airports' time zones (DESIGN §7) |
 
 ## Text formats and their traps
 
