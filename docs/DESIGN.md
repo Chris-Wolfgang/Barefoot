@@ -281,7 +281,9 @@ Resort, ResortSpan, Airport, RoomCategory, vocabularies (+ Version)   audited
   transactional provider on an owned domain with SPF/DKIM. One `ISmtpClient` implementation either
   way; a file-sink implementation for local runs.
 - **Views:** Admin — every delivery and its status (`GET /digests`); user — "my digests", rendered
-  from the stored HTML (`GET /digests/mine`). `resend` is an Admin action.
+  from the stored HTML (`GET /digests/mine`, paged, filtered by search, date range, text and
+  undelivered). A user may **resend** any of their own digests to any of its recipients; an Admin
+  may resend anyone's. A resend mails the stored body again, unchanged.
 - **Failure notices** go to the Admin only; a user's digest says "3 of 14 lookups did not
   complete", never why.
 - Content: §1 summary per resort, §2 resolved criteria incl. offline-resort notices, §3 detail
@@ -380,7 +382,7 @@ the system. Everything an Editor sees is reachable from a search they own.
 | Work | **Searches** (locked list, below) → **Search editor** (below) | Owner column + owner filter; "mine" by default, "all owners" toggle; can open any search |
 | Read | **Results** (below) — search + run pickers (runs are Admin objects), digest-filters/everything toggle, paged grid, flights per departure airport | any owner |
 | Read | **Price history** — over *my* captures only (v1) | cross-user view over all captures |
-| Read | **My digests** — every digest sent to me, rendered from the stored body, linking to its results | **Deliveries** — every delivery, status, attempts, error, resend |
+| Read | **My digests** — every digest sent to me, found, filtered and paged, rendered from the stored body, linking to its results; Resend per recipient | **Deliveries** — every delivery, status, attempts, error, resend |
 | Me | **Profile** — name/e-mail (from sign-in, read-only), time zone, default occupancy; my extra recipients (read-only until self-service) | — |
 | Admin | — | **Runs** (history + live progress: requests and flight sets done/total, per-search stage, abort reasons), **Reference data** (resorts + spans, airports + time zones, vocab with the future prune action), **Users** (role, search count, last sign-in, the user's extra recipients, Sign out everywhere; inviting stays in Entra), **System** (settings registry, read/write — ADR 0011) |
 
