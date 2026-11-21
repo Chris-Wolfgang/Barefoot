@@ -8,6 +8,11 @@
     <Description>Barefoot's domain: entities, typed keys, service interfaces and the pure services, with no framework under them.</Description>
   </PropertyGroup>
 
+  <!-- The service interfaces take and return the Contracts records (ADR 0002 §4). Core references nothing else. -->
+  <ItemGroup>
+    <ProjectReference Include="..\Wolfgang.Barefoot.Contracts\Wolfgang.Barefoot.Contracts.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <InternalsVisibleTo Include="Wolfgang.Barefoot.Core.Tests.Unit" />
   </ItemGroup>
