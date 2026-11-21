@@ -1,0 +1,77 @@
+name: Report Scheduled Outcome
+
+# Turns a failed scheduled run into exactly one issue, and closes that issue when
+# the schedule next succeeds (docs/DELIVERY-PROCESS.md, "Scheduled workflows and
+# failure reporting"). A red scheduled run that nobody opens is not a report.
+#
+# This workflow starts when one of the workflows below completes, and acts only
+# when that run was started by its schedule. The five workflows are not edited, so
+# they stay identical to the repository template.
+#
+# Why workflow_run is safe here: this workflow never checks out, downloads or
+# executes anything the triggering run produced. It checks out one script from the
+# default branch and passes it the triggering run's conclusion and file name, both
+# through environment variables. `issues: write` exists only in this job.
+
+on:
+  # zizmor: ignore[dangerous-triggers]
+  workflow_run:  # no artifact or code from the triggering run is used - see the note above
+    workflows:
+      - "CodeQL Security Analysis"
+      - "License Audit"
+      - "OSSF Scorecard"
+      - "Security Alert Triage"
+      - "Stryker (mutation testing)"
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+concurrency:
+  group: report-scheduled-${{ github.event.workflow_run.workflow_id }}
+  cancel-in-progress: false
+
+jobs:
+  report:
+    name: Report scheduled outcome
+    if: github.event.workflow_run.event == 'schedule'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - name: Checkout the reporting script from the default branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: false
+          sparse-checkout: scripts/report-failure.ps1
+          sparse-checkout-cone-mode: false
+
+      - name: Open, update or close the failure issue
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
+          CONCLUSION: ${{ github.event.workflow_run.conclusion }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          # The key is the workflow's file name without its extension: codeql, stryker, ...
+          $key = [System.IO.Path]::GetFileNameWithoutExtension($env:WORKFLOW_PATH)
+
+          # A run that timed out or never started did not do its job: that is a failure.
+          # Anything else that is neither a success nor a failure proves nothing either way.
+          $result = switch ($env:CONCLUSION) {
+            'success'         { 'success' }
+            'failure'         { 'failure' }
+            'timed_out'       { 'failure' }
+            'startup_failure' { 'failure' }
+            'cancelled'       { 'cancelled' }
+            default           { 'skipped' }
+          }
+
+          Write-Host "Workflow '$key' concluded '$env:CONCLUSION'; reporting '$result'."
+          pwsh ./scripts/report-failure.ps1 -Workflow $key -Result $result -RunUrl $env:RUN_URL
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
