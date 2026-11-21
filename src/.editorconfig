@@ -1,0 +1,40 @@
+# Rules that apply to every project under src/, on top of the repository's root .editorconfig.
+
+[*.cs]
+
+# CA2007: every await states its continuation context, in every src/ project and in every
+# configuration - no host is exempt. `ConfigureAwait(false)` everywhere except a Blazor
+# component, which says `ConfigureAwait(true)` because it must resume on the renderer's
+# context. The root file sets `warning`, which fails only a Release build; `error` fails a
+# Debug build too, so the rule is met before the code reaches CI.
+dotnet_diagnostic.CA2007.severity = error
+
+# RS0030: a banned symbol (BannedSymbols.txt - blocking waits, synchronous file I/O, the
+# static clocks) is an error in every configuration. Stated here so the rule does not depend
+# on the root file keeping it.
+dotnet_diagnostic.RS0030.severity = error
+
+# MA0009: a regular expression either runs on the non-backtracking engine or carries a
+# timeout, so no input can make a match run for minutes (docs/CODING-CONVENTIONS.md
+# "Regular expressions"). Text from the booking site is input we do not control.
+dotnet_diagnostic.MA0009.severity = error
+
+# The rules below are named in docs/CODING-CONVENTIONS.md as build-enforced. The root file
+# leaves them at suggestion (its blanket `dotnet_analyzer_diagnostic.severity`), which
+# reports nothing in a build.
+
+# VSTHRD200: an async method ends in `Async`.
+dotnet_diagnostic.VSTHRD200.severity = error
+
+# VSTHRD002: no synchronous wait on a task (the member forms are also banned symbols).
+dotnet_diagnostic.VSTHRD002.severity = error
+
+# CA1305 / CA1307 / CA1310: parsing, formatting and string comparison name their culture or
+# comparison, so behaviour does not change with the machine's regional settings.
+dotnet_diagnostic.CA1305.severity = error
+dotnet_diagnostic.CA1307.severity = error
+dotnet_diagnostic.CA1310.severity = error
+
+# IDE0161: file-scoped namespaces.
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error
