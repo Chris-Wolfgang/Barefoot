@@ -4,7 +4,7 @@ using Wolfgang.Barefoot.Tests.Architecture.Scanning;
 namespace Wolfgang.Barefoot.Tests.Architecture;
 
 /// <summary>
-/// ADR 0002 §3: <c>ToDto</c> and <c>FromDto</c> are defined only in <c>Api</c>, <c>ToEntity</c> and
+/// ADR 0002 §3: <c>ToDto</c> and <c>FromDto</c> are defined only in <c>Business</c>, <c>ToEntity</c> and
 /// <c>FromEntity</c> only in <c>Data</c>.
 /// </summary>
 public sealed class ConversionMethodPlacementTests
@@ -49,9 +49,9 @@ public sealed class ConversionMethodPlacementTests
         Assert.Equal
         (
             [
-                "Wolfgang.Barefoot.Core: Fixture.SearchConversions.FromDto belongs in Wolfgang.Barefoot.Api",
+                "Wolfgang.Barefoot.Core: Fixture.SearchConversions.FromDto belongs in Wolfgang.Barefoot.Business",
                 "Wolfgang.Barefoot.Core: Fixture.SearchConversions.FromEntity belongs in Wolfgang.Barefoot.Data",
-                "Wolfgang.Barefoot.Core: Fixture.SearchConversions.ToDto belongs in Wolfgang.Barefoot.Api",
+                "Wolfgang.Barefoot.Core: Fixture.SearchConversions.ToDto belongs in Wolfgang.Barefoot.Business",
                 "Wolfgang.Barefoot.Core: Fixture.SearchConversions.ToEntity belongs in Wolfgang.Barefoot.Data",
             ],
             CompiledCodeRules.MisplacedConversionsIn([fixture])
@@ -61,15 +61,15 @@ public sealed class ConversionMethodPlacementTests
 
 
     [Fact]
-    public void MisplacedConversionsIn_when_Api_defines_conversions_reports_only_the_entity_ones()
+    public void MisplacedConversionsIn_when_Business_defines_conversions_reports_only_the_entity_ones()
     {
-        var fixture = FixtureCompiler.Compile("Wolfgang.Barefoot.Api", Conversions);
+        var fixture = FixtureCompiler.Compile("Wolfgang.Barefoot.Business", Conversions);
 
         Assert.Equal
         (
             [
-                "Wolfgang.Barefoot.Api: Fixture.SearchConversions.FromEntity belongs in Wolfgang.Barefoot.Data",
-                "Wolfgang.Barefoot.Api: Fixture.SearchConversions.ToEntity belongs in Wolfgang.Barefoot.Data",
+                "Wolfgang.Barefoot.Business: Fixture.SearchConversions.FromEntity belongs in Wolfgang.Barefoot.Data",
+                "Wolfgang.Barefoot.Business: Fixture.SearchConversions.ToEntity belongs in Wolfgang.Barefoot.Data",
             ],
             CompiledCodeRules.MisplacedConversionsIn([fixture])
         );
@@ -85,8 +85,8 @@ public sealed class ConversionMethodPlacementTests
         Assert.Equal
         (
             [
-                "Wolfgang.Barefoot.Data: Fixture.SearchConversions.FromDto belongs in Wolfgang.Barefoot.Api",
-                "Wolfgang.Barefoot.Data: Fixture.SearchConversions.ToDto belongs in Wolfgang.Barefoot.Api",
+                "Wolfgang.Barefoot.Data: Fixture.SearchConversions.FromDto belongs in Wolfgang.Barefoot.Business",
+                "Wolfgang.Barefoot.Data: Fixture.SearchConversions.ToDto belongs in Wolfgang.Barefoot.Business",
             ],
             CompiledCodeRules.MisplacedConversionsIn([fixture])
         );

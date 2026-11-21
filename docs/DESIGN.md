@@ -49,7 +49,7 @@ schema and connects directly with a DDL identity (ADR 0002, ADR 0007).
 | Project | Layer | Contents |
 |---|---|---|
 | `Wolfgang.Barefoot.Core` | Domain + contracts | entities, the service interfaces every client consumes, pure services (window resolver, expander, validators, digest renderer), typed keys (`ErrorCode`, `Permission`, `SettingKey<T>`) |
-| `Wolfgang.Barefoot.Contracts` | DTOs | request/response records shared by the API and `ApiClient` |
+| `Wolfgang.Barefoot.Contracts` | DTOs | request/response records the Core interfaces take and return, so the API and `ApiClient` share one set; the contract revision |
 | `Wolfgang.Barefoot.Data` | **DAL** | `DbContext`, configurations, the single `InitialCreate` migration, persistence queries/commands behind Core interfaces |
 | `Wolfgang.Barefoot.Business` | **BLL** | run lifecycle, search editing + authorization rules, catalog snapshot diffing, digest building + delivery, vocabulary rules, settings |
 | `Wolfgang.Barefoot.Api` | host | ASP.NET Core minimal API over Business + Data; Entra JWT validation; `HttpContextAuditUserProvider`; readiness (ADR 0001); problem details, ETags, repeat-safe writes, paging (ADR 0012) |
@@ -64,7 +64,9 @@ schema and connects directly with a DDL identity (ADR 0002, ADR 0007).
 **Dependency rules**, enforced by project references *and* by architecture tests (§14):
 `Scraper`, `Admin` and `Web` never reference `Data` or any EF package; `Admin` never references
 `Obe`; `Maintenance` never references `ApiClient` or `Obe`; `Api` never references `Obe`;
-`Core` and `Presentation` reference no framework. The Core interfaces are the API surface:
+`Core`, `Contracts` and `Presentation` reference no framework; `Contracts` references no project
+and `Core` references only `Contracts`. The Core interfaces are the API surface and take and
+return the `Contracts` records (ADR 0002 §4):
 `Data`/`Business` implement them server-side, `ApiClient` implements them over HTTP, and
 `Presentation` does not know which it has.
 
@@ -528,7 +530,7 @@ on an explicit go):
 warnings-as-errors; CodeQL + DevSkim + Semgrep + InspectCode; Copilot + user review on every PR;
 Stryker per test project; changelog fragments on every PR. **Architecture tests** (each with a
 positive-control fixture that proves the scanner can fail): UI and worker projects reference no
-data packages; `Core`/`Presentation` reference no framework; no `DateTime` on a public surface; a
+data packages; `Core`/`Contracts`/`Presentation` reference no framework; no `DateTime` on a public surface; a
 dependency deny-list with reasons; every endpoint declares a permission; every page is gated;
 conversion methods live where the conventions say. **API contract tests** (the integration suite
 over `WebApplicationFactory` + SQLite, through `ApiClient`) are the end-to-end gate; every client

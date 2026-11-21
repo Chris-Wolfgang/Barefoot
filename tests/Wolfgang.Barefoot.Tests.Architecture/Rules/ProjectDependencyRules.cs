@@ -4,7 +4,7 @@ namespace Wolfgang.Barefoot.Tests.Architecture.Rules;
 
 /// <summary>
 /// The dependency rules of DESIGN §2: every client reaches the database through the API, and
-/// <c>Core</c> and <c>Presentation</c> reference no framework. A rule applies to what a project
+/// <c>Core</c>, <c>Contracts</c> and <c>Presentation</c> reference no framework. A rule applies to what a project
 /// references directly and to everything it reaches through other projects.
 /// </summary>
 internal static class ProjectDependencyRules
@@ -24,6 +24,20 @@ internal static class ProjectDependencyRules
             [Prefix + "Web"] = [Prefix + "Data"],
             [Prefix + "Maintenance"] = [Prefix + "ApiClient", Prefix + "Obe"],
             [Prefix + "Api"] = [Prefix + "Obe"],
+        };
+
+
+
+    /// <summary>
+    /// Projects whose references are listed in full: such a project may reference the projects named
+    /// here and no other (ADR 0002 §4). <c>Contracts</c> is the bottom of the solution, and <c>Core</c>
+    /// sits on it alone.
+    /// </summary>
+    public static readonly IReadOnlyDictionary<string, IReadOnlyList<string>> OnlyAllowedProjects =
+        new Dictionary<string, IReadOnlyList<string>>(StringComparer.Ordinal)
+        {
+            [Prefix + "Contracts"] = [],
+            [Prefix + "Core"] = [Prefix + "Contracts"],
         };
 
 
@@ -61,6 +75,7 @@ internal static class ProjectDependencyRules
     /// </summary>
     public static readonly IReadOnlyList<string> FrameworkFreeProjects =
     [
+        Prefix + "Contracts",
         Prefix + "Core",
         Prefix + "Presentation",
     ];
@@ -108,6 +123,17 @@ internal static class ProjectDependencyRules
                     reached
                         .Select(other => other.Name)
                         .Where(name => forbidden.Contains(name, StringComparer.Ordinal))
+                        .Select(name => $"{project.Name}: project {name}")
+                );
+            }
+
+            if (OnlyAllowedProjects.TryGetValue(project.Name, out var allowed))
+            {
+                violations.AddRange
+                (
+                    project
+                        .ProjectReferences
+                        .Where(name => !allowed.Contains(name, StringComparer.Ordinal))
                         .Select(name => $"{project.Name}: project {name}")
                 );
             }

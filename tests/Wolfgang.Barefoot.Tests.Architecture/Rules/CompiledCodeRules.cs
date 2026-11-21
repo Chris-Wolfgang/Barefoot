@@ -22,8 +22,8 @@ internal static class CompiledCodeRules
     public static readonly IReadOnlyDictionary<string, string> ConversionHomes =
         new Dictionary<string, string>(StringComparer.Ordinal)
         {
-            ["ToDto"] = "Wolfgang.Barefoot.Api",
-            ["FromDto"] = "Wolfgang.Barefoot.Api",
+            ["ToDto"] = "Wolfgang.Barefoot.Business",
+            ["FromDto"] = "Wolfgang.Barefoot.Business",
             ["ToEntity"] = "Wolfgang.Barefoot.Data",
             ["FromEntity"] = "Wolfgang.Barefoot.Data",
         };
