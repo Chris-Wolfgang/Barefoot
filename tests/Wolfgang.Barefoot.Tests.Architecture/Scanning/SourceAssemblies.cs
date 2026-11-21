@@ -14,6 +14,7 @@ internal static class SourceAssemblies
     /// </summary>
     public static IReadOnlyList<Assembly> All { get; } =
     [
+        typeof(Contracts.ContractVersion).Assembly,
         typeof(Core.Keys.ErrorCode).Assembly,
     ];
 

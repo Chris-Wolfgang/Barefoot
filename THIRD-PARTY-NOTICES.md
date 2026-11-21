@@ -8,8 +8,8 @@ Barefoot is distributed with the NuGet packages below: the full transitive closu
 every project under `src/`. Each package is distributed under its own license.
 Build-time-only packages (analyzers, SourceLink) are not distributed and are not listed.
 
-Projects covered: `Wolfgang.Barefoot.Core`.
+Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`.
 
 | Package | Version(s) | License | Copyright | Project URL | Used by |
 |---|---|---|---|---|---|
-| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Core |
+| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core |
