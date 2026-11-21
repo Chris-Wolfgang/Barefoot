@@ -287,7 +287,7 @@
   .danger{color:var(--bad)}
 
   /* admin dashboard */
-  .admin-dash{display:none} :root[data-role="admin"] .admin-dash{display:block}
+  .admin-dash{display:none} :root[data-role="admin"] .admin-dash.on{display:block}
   :root[data-role="admin"] .editor-dash{display:none}
   .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px}
   :root[data-device="phone"] .kpis{grid-template-columns:1fr 1fr}
@@ -348,6 +348,30 @@
   .chart text{font:11.5px "Segoe UI",system-ui,sans-serif;fill:var(--ink-3)} .chart text.lbl{fill:var(--ink);font-weight:600}
   .chart .tip{position:absolute;pointer-events:none;display:none;background:var(--surface);border:1px solid var(--line-2);border-radius:8px;box-shadow:var(--shadow);padding:8px 10px;font-size:12.5px;white-space:nowrap;z-index:3}
   .chart .tip b{font-variant-numeric:tabular-nums} .chart .tip i{display:inline-block;width:10px;height:3px;border-radius:2px;vertical-align:middle;margin-right:6px} .chart .tip .d{color:var(--ink-3);margin-bottom:3px}
+
+  /* admin pages */
+  .live{border-color:var(--accent)} .live .lv-h{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:center;padding:12px 14px;border-bottom:1px solid var(--line)} .live .lv-h .sp{flex:1}
+  .live .bars{display:grid;grid-template-columns:1fr 1fr;gap:14px;padding:12px 14px} :root[data-device="phone"] .live .bars{grid-template-columns:1fr}
+  .live .bars .bar{height:8px;border-radius:4px} .live .bars .k{font-size:12px;color:var(--ink-3)} .live .bars b{font-variant-numeric:tabular-nums}
+  .two{display:grid;grid-template-columns:1fr 380px;gap:14px;align-items:start} @media (max-width: 1180px){ .two{grid-template-columns:1fr} } :root[data-device="phone"] .two{grid-template-columns:1fr}
+  .ref-tab{display:none} .ref-tab.on{display:block}
+  .err{color:var(--bad);font-size:12px;max-width:260px;white-space:normal}
+  td .inl{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:6px;padding:5px 8px;font:inherit;font-size:13px;width:110px}
+  td .inl.w{width:190px} td code,.kv code,.rd code{font:12.5px ui-monospace,Consolas,monospace;background:var(--surface-2);border-radius:4px;padding:1px 5px}
+  tr.sel td{background:var(--accent-soft)} .dim{color:var(--ink-3)}
+  .addr{display:flex;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:13px} .addr .who{flex:1;line-height:1.3}
+  .addf{display:grid;grid-template-columns:1fr 1.4fr auto;gap:8px;padding:10px 0 4px} .addf input{border:1px solid var(--line-2);background:var(--surface);color:var(--ink);border-radius:6px;padding:6px 8px;font:inherit;font-size:13px;min-width:0}
+  .banner{display:flex;gap:10px;align-items:center;background:var(--accent-soft);color:var(--ink);border-radius:var(--r);padding:8px 12px;margin-bottom:12px;font-size:13px}
+
+  /* startup states: full page, before the shell */
+  .ready{display:none;position:absolute;inset:0;background:var(--bg);align-items:center;justify-content:center;padding:20px;z-index:40}
+  .ready.on{display:flex}
+  .ready-card{width:min(520px,100%);background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:26px 28px 20px}
+  .ready-card h2{font-size:20px;margin:6px 0 8px} .ready-card p{color:var(--ink-2);margin:6px 0} .ready-card .rd{margin:12px 0;padding:10px 12px;border-radius:8px;background:var(--surface-2);font-size:13px;color:var(--ink-2)}
+  .ready-card .acts{display:flex;gap:8px;align-items:center;margin-top:16px} .ready-card .acts .sp{flex:1}
+  .spin{width:18px;height:18px;border-radius:50%;border:2.5px solid var(--line-2);border-top-color:var(--accent);display:inline-block;vertical-align:-3px;margin-right:8px;animation:spin 1s linear infinite} @keyframes spin{to{transform:rotate(360deg)}}
+  @media (prefers-reduced-motion: reduce){ .spin{animation:none} }
+  .mock-bar select{background:#123a4e;color:#cfe9f3;border:1px solid #1e5d7a;border-radius:6px;padding:3px 6px;font:inherit}
 </style>
 </head>
 <body>
@@ -367,6 +391,7 @@
   <span style="width:10px"></span>
   <button onclick="firstLogin()">Replay first sign-in</button>
   <button onclick="resetNotices()">Re-show notices</button>
+  <select id="stateSel" onchange="setState(this.value)" aria-label="Startup state"><option value="">Startup state: none</option><option value="waking">Warming up</option><option value="quota">Quota used up</option><option value="migration">Missing migration</option><option value="newer">Newer schema</option><option value="unavailable">Unavailable</option><option value="version">Version mismatch</option></select>
   <span class="sp"></span>
   <span class="note" id="note">Dashboard · click the rail's ⟨ to collapse · Searches → Edit opens the editor</span>
 </div>
@@ -385,11 +410,11 @@
     </div>
     <div class="sect admin-only">Admin</div>
     <div class="nav">
-      <a class="admin-only" href="#"><i>⟳</i><span>Runs</span></a>
-      <a class="admin-only" href="#"><i>✈</i><span>Deliveries</span></a>
-      <a class="admin-only" href="#"><i>⌂</i><span>Reference data</span></a>
-      <a class="admin-only" href="#"><i>☷</i><span>Users</span></a>
-      <a class="admin-only" href="#"><i>⚙</i><span>System</span></a>
+      <a class="admin-only" href="#" data-go="runs"><i>⟳</i><span>Runs</span></a>
+      <a class="admin-only" href="#" data-go="deliveries"><i>✈</i><span>Deliveries</span></a>
+      <a class="admin-only" href="#" data-go="reference"><i>⌂</i><span>Reference data</span></a>
+      <a class="admin-only" href="#" data-go="users"><i>☷</i><span>Users</span></a>
+      <a class="admin-only" href="#" data-go="system"><i>⚙</i><span>System</span></a>
     </div>
     <div class="grow"></div>
     <div class="me"><div class="avatar">AS</div><div class="who">Alice Smith<br><small>Editor · Sign out</small></div></div>
@@ -1060,6 +1085,210 @@
       <p class="hint" style="margin-top:10px">A capture is one run's price for this room and date. Runs that failed for this lookup leave a gap, never a guess.</p>
     </section>
 
+
+    <!-- ===== ADMIN: RUNS ===== -->
+    <section data-screen="runs">
+      <div class="page-h">
+        <div><h1>Runs</h1><div class="sub">Every run and the one in flight. Runs are started by the scraper on the home machine, about twice a week.</div></div>
+      </div>
+      <div class="card live" style="margin-bottom:14px">
+        <div class="lv-h"><span class="st rs run">In progress</span><span><b>Fri Nov 7, 06:00</b> <span class="meta">scheduled &middot; 26 min so far</span></span><span class="meta">scraper <b>NUC</b> &middot; last claim 8 s ago</span><span class="sp"></span><span class="meta">refreshes every 30 s while a run is in progress</span></div>
+        <div class="bars">
+          <div><div class="k">Room lookups</div><div><b>132</b> of 212 &middot; <span class="meta">2 failed, will retry</span></div><div class="bar"><i style="width:62%"></i></div></div>
+          <div><div class="k">Flight sets</div><div><b>0</b> of 38 &middot; <span class="meta">start when room lookups finish</span></div><div class="bar"><i style="width:0%"></i></div></div>
+        </div>
+        <table class="rr">
+          <thead><tr><th>Search</th><th>Owner</th><th>Stage</th><th class="num">Lookups</th><th class="num">Run order</th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="name">Feb&ndash;Mar St. Lucia scouting</span></td><td>Alice Smith</td><td><span class="st rs ok">Downloaded</span></td><td class="num">58 of 58</td><td class="num">High</td></tr>
+            <tr><td class="first"><span class="name">Jamaica, late April</span></td><td>Alice Smith</td><td><span class="st rs run">Exploded</span></td><td class="num">31 of 34</td><td class="num">Normal</td></tr>
+            <tr><td class="first"><span class="name">Antigua in May</span></td><td>Bob Jones</td><td><span class="st rs run">Exploded</span></td><td class="num">43 of 60</td><td class="num">Normal</td></tr>
+            <tr><td class="first"><span class="name">Grenada, no flights</span></td><td>Alice Smith</td><td><span class="st queued">Exploded</span></td><td class="num">0 of 30</td><td class="num">Low</td></tr>
+          </tbody>
+        </table>
+        <div class="hint" style="padding:8px 14px 12px">A lookup wanted by several searches is made once and counted under each. Stages: Exploded → Downloaded → Aggregated → Emailed.</div>
+      </div>
+      <div class="card">
+        <h2>History <span class="meta" style="font-weight:400">Showing 1&ndash;5 of 23</span></h2>
+        <table class="rr">
+          <thead><tr><th>Started</th><th>Outcome</th><th class="num">Duration</th><th class="num">Room lookups</th><th class="num">Flight sets</th><th class="num">Digests</th><th>Notes</th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="name">Tue Nov 4, 06:00</span><div class="meta">scheduled</div></td><td><span class="st rs ok">Complete</span></td><td class="num">41 min</td><td class="num">212 &middot; <span class="meta">2 failed</span></td><td class="num">38</td><td class="num">9 sent &middot; <span class="err" style="display:inline">2 failed</span></td><td class="dim">11.6 s per lookup</td></tr>
+            <tr><td class="first"><span class="name">Sat Nov 1, 06:00</span><div class="meta">scheduled</div></td><td><span class="st rs ok">Complete</span></td><td class="num">39 min</td><td class="num">208</td><td class="num">38</td><td class="num">11 sent</td><td class="dim">11.2 s per lookup</td></tr>
+            <tr><td class="first"><span class="name">Wed Oct 29, 06:00</span><div class="meta">scheduled &middot; resumed 09:14</div></td><td><span class="st rs warn">Incomplete</span></td><td class="num">18 min + 22 min</td><td class="num">208 &middot; <span class="meta">14 failed</span></td><td class="num">36 of 38</td><td class="num">11 sent</td><td><div class="err">Breaker tripped at 06:18: 5 timeouts in a row on the room page.</div></td></tr>
+            <tr><td class="first"><span class="name">Sat Oct 25, 06:00</span><div class="meta">scheduled</div></td><td><span class="st rs bad">Failed</span></td><td class="num">2 min</td><td class="num">0 of 204</td><td class="num">0 of 38</td><td class="num">none</td><td><div class="err">Breaker tripped at 06:02: the booking site returned its maintenance page.</div></td></tr>
+            <tr><td class="first"><span class="name">Wed Oct 22, 06:00</span><div class="meta">scheduled</div></td><td><span class="st rs ok">Complete</span></td><td class="num">40 min</td><td class="num">204</td><td class="num">38</td><td class="num">10 sent</td><td class="dim">11.8 s per lookup</td></tr>
+          </tbody>
+        </table>
+        <div class="pager"><button class="btn" disabled>Previous</button><span class="sp"></span><span class="meta">1&ndash;5 of 23</span><span class="sp"></span><button class="btn">Next</button></div>
+      </div>
+      <p class="hint" style="margin-top:10px">There is no Start button: lookups run from the home machine. An incomplete run is finished with <code>bf-scraper run --resume</code>.</p>
+    </section>
+
+    <!-- ===== ADMIN: DELIVERIES ===== -->
+    <section data-screen="deliveries">
+      <div class="page-h">
+        <div><h1>Deliveries</h1><div class="sub">Every digest e-mail, to every recipient, and whether it arrived.</div></div>
+        <button class="btn primary">Retry the 2 that failed</button>
+      </div>
+      <div class="toolbar">
+        <button class="chip" aria-pressed="true">All <span class="meta">46</span></button>
+        <button class="chip">Sent <span class="meta">44</span></button>
+        <button class="chip">Failed <span class="meta">2</span></button>
+        <button class="chip">Pending <span class="meta">0</span></button>
+        <input class="search" placeholder="Find by address, search, owner&hellip;" aria-label="Find a delivery">
+        <span class="sp"></span>
+        <select class="select" aria-label="Run"><option>Run: Tue Nov 4</option><option>Sat Nov 1</option><option>All runs this month</option></select>
+      </div>
+      <div class="card">
+        <table class="rr">
+          <thead><tr><th>Recipient</th><th>Search</th><th>Owner</th><th>Status</th><th class="num">Attempts</th><th>Last error</th><th><span class="sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="name">alice.smith@gmail.com</span></td><td>Feb&ndash;Mar St. Lucia scouting</td><td>Alice Smith</td><td><span class="st rs bad">Failed</span></td><td class="num">2</td><td><div class="err">552 5.2.2 mailbox full</div></td><td class="actions"><button class="btn ghost" onclick="const s=this.closest('tr').querySelector('.st'); s.className='st rs ok'; s.textContent='Sent just now'; this.closest('tr').querySelector('.err').textContent=''">Resend</button></td></tr>
+            <tr><td class="first"><span class="name">bob.jones@outlook.com</span></td><td>Antigua in May</td><td>Bob Jones</td><td><span class="st rs bad">Failed</span></td><td class="num">1</td><td><div class="err">421 4.7.0 rate limited, try again later</div></td><td class="actions"><button class="btn ghost">Resend</button></td></tr>
+            <tr><td class="first"><span class="name">tom.smith@gmail.com</span><div class="meta">extra recipient &middot; Tom Smith</div></td><td>Feb&ndash;Mar St. Lucia scouting</td><td>Alice Smith</td><td><span class="st rs ok">Sent</span></td><td class="num">1</td><td class="dim">&mdash;</td><td class="actions"><button class="btn ghost">Resend</button></td></tr>
+            <tr><td class="first"><span class="name">alice.smith@gmail.com</span></td><td>Jamaica, late April</td><td>Alice Smith</td><td><span class="st rs ok">Sent</span></td><td class="num">1</td><td class="dim">&mdash;</td><td class="actions"><button class="btn ghost">Resend</button></td></tr>
+            <tr><td class="first"><span class="name">alice.smith@gmail.com</span></td><td>Grenada, no flights</td><td>Alice Smith</td><td><span class="st rs ok">Sent</span></td><td class="num">1</td><td class="dim">&mdash;</td><td class="actions"><button class="btn ghost">Resend</button></td></tr>
+            <tr><td class="first"><span class="name">carol.diaz@gmail.com</span></td><td>Barbados, two weeks</td><td>Carol Diaz</td><td><span class="st rs ok">Sent</span></td><td class="num">1</td><td class="dim">&mdash;</td><td class="actions"><button class="btn ghost">Resend</button></td></tr>
+          </tbody>
+        </table>
+        <div class="pager"><button class="btn" disabled>Previous</button><span class="sp"></span><span class="meta">1&ndash;6 of 11</span><span class="sp"></span><button class="btn">Next</button></div>
+      </div>
+      <p class="hint" style="margin-top:10px">A resend mails the stored message again, unchanged, to the same address. Message bodies are not shown here; open the owner's digest to read one.</p>
+    </section>
+
+    <!-- ===== ADMIN: REFERENCE DATA ===== -->
+    <section data-screen="reference">
+      <div class="page-h">
+        <div><h1>Reference data</h1><div class="sub">What the booking site offers, as the scraper last saw it. Refreshed at the start of every run.</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="seg" id="refSeg"><button aria-pressed="true" onclick="setRef('resorts',this)">Resorts <span class="meta">17</span></button><button aria-pressed="false" onclick="setRef('airports',this)">Airports <span class="meta">152</span></button><button aria-pressed="false" onclick="setRef('vocab',this)">Room vocabulary <span class="meta">41</span></button></div>
+        <input class="search" placeholder="Find&hellip;" aria-label="Find in reference data">
+        <span class="sp"></span>
+        <span class="meta">last refreshed Fri Nov 7, 06:00</span>
+      </div>
+      <div class="card ref-tab on" data-ref="resorts">
+        <table class="rr">
+          <thead><tr><th>Resort</th><th>Short name</th><th>Island &middot; gateway</th><th class="num">Drive from gateway</th><th>On the site</th><th class="num">Searches</th><th><span class="sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="name">Sandals Grande St. Lucian</span><div class="meta"><code>SGL</code> &middot; Sandals</div></td><td>Grande St. Lucian</td><td>St. Lucia &middot; UVF</td><td class="num">90 min</td><td><span class="st rs ok">Listed</span></td><td class="num">4</td><td class="actions"><button class="ibtn" title="Edit short name and drive time" aria-label="Edit short name and drive time"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+            <tr><td class="first"><span class="name">Sandals Regency La Toc</span><div class="meta"><code>SLU</code> &middot; Sandals</div></td><td>Regency La Toc</td><td>St. Lucia &middot; UVF</td><td class="num">75 min</td><td><span class="st rs ok">Listed</span></td><td class="num">3</td><td class="actions"><button class="ibtn" title="Edit short name and drive time" aria-label="Edit short name and drive time"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+            <tr><td class="first"><span class="name">Sandals Halcyon Beach</span><div class="meta"><code>SHC</code> &middot; Sandals</div></td><td>Halcyon Beach</td><td>St. Lucia &middot; UVF</td><td class="num">80 min</td><td><span class="st rs warn">Offline since Nov 1</span></td><td class="num">3</td><td class="actions"><button class="ibtn" title="Edit short name and drive time" aria-label="Edit short name and drive time"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+            <tr><td class="first"><span class="name">Sandals Saint Vincent and the Grenadines</span><div class="meta"><code>SSV</code> &middot; Sandals &middot; first seen Fri Nov 7</div></td><td><input class="inl w" value="Saint Vincent" aria-label="Short name"></td><td>St. Vincent &middot; SVD</td><td class="num"><input class="inl" style="width:64px" placeholder="min" aria-label="Drive from gateway in minutes"></td><td><span class="st rs ok">Listed</span></td><td class="num">0</td><td class="actions"><button class="btn primary">Save</button></td></tr>
+            <tr><td class="first"><span class="name">Beaches Turks &amp; Caicos</span><div class="meta"><code>BTC</code> &middot; Beaches</div></td><td>Turks &amp; Caicos</td><td>Providenciales &middot; PLS</td><td class="num">20 min</td><td><span class="st rs ok">Listed</span></td><td class="num">0</td><td class="actions"><button class="ibtn" title="Edit short name and drive time" aria-label="Edit short name and drive time"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+          </tbody>
+        </table>
+        <div class="hint" style="padding:8px 14px 12px">Names, brand, island and whether a resort is listed come from the site and are not edited here. The short name and the drive time are yours: the site gives neither.</div>
+      </div>
+      <div class="card ref-tab" data-ref="airports">
+        <table class="rr">
+          <thead><tr><th>Airport</th><th>Time zone</th><th>Used as</th><th class="num">Searches</th><th><span class="sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="name">PHL</span> <span class="meta">Philadelphia</span></td><td>America/New_York</td><td>departure</td><td class="num">7</td><td class="actions"><button class="ibtn" title="Change time zone" aria-label="Change time zone"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+            <tr><td class="first"><span class="name">EWR</span> <span class="meta">Newark</span></td><td>America/New_York</td><td>departure</td><td class="num">4</td><td class="actions"><button class="ibtn" title="Change time zone" aria-label="Change time zone"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+            <tr><td class="first"><span class="name">UVF</span> <span class="meta">St. Lucia, Hewanorra</span></td><td>America/St_Lucia</td><td>gateway</td><td class="num">4</td><td class="actions"><button class="ibtn" title="Change time zone" aria-label="Change time zone"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button></td></tr>
+            <tr><td class="first"><span class="name">SVD</span> <span class="meta">St. Vincent, Argyle</span><div class="meta">first seen Fri Nov 7</div></td><td><span class="st rs warn">No time zone</span> <select class="select" aria-label="Time zone for SVD"><option>Choose&hellip;</option><option>America/St_Vincent</option><option>America/St_Lucia</option><option>America/Barbados</option></select></td><td>gateway</td><td class="num">0</td><td class="actions"><button class="btn primary">Save</button></td></tr>
+          </tbody>
+        </table>
+        <div class="hint" style="padding:8px 14px 12px">A new airport's time zone is filled in from a built-in list. One that the list does not know is flagged here and on your Dashboard; until you set it, its flight times are shown as the site gave them.</div>
+      </div>
+      <div class="card ref-tab" data-ref="vocab">
+        <table class="rr">
+          <thead><tr><th>Kind</th><th>Value</th><th>Last seen</th><th class="num">Searches filtering on it</th></tr></thead>
+          <tbody>
+            <tr><td>Room level</td><td class="first"><span class="name">Club</span></td><td>Fri Nov 7</td><td class="num">6</td></tr>
+            <tr><td>Room level</td><td class="first"><span class="name">Butler</span></td><td>Fri Nov 7</td><td class="num">5</td></tr>
+            <tr><td>View</td><td class="first"><span class="name">Oceanview</span></td><td>Fri Nov 7</td><td class="num">8</td></tr>
+            <tr><td>Must have</td><td class="first"><span class="name">Private pool</span></td><td>Fri Nov 7</td><td class="num">4</td></tr>
+            <tr><td class="dim">Must have</td><td class="first"><span class="name dim">Tranquility Soaking Tub&trade;</span><div class="meta">not seen in 7 runs &middot; greyed in the editor</div></td><td class="dim">Oct 11</td><td class="num dim">1</td></tr>
+          </tbody>
+        </table>
+        <div class="hint" style="padding:8px 14px 12px">Discovered from results, never typed in. A value that stops appearing is greyed after 6 runs and kept. Removing unused values is a later feature.</div>
+      </div>
+    </section>
+
+    <!-- ===== ADMIN: USERS ===== -->
+    <section data-screen="users">
+      <div class="page-h">
+        <div><h1>Users</h1><div class="sub">Everyone who has signed in. Inviting someone and giving them a role is done in Entra; they appear here after their first sign-in.</div></div>
+      </div>
+      <div class="two">
+        <div class="card">
+          <table class="rr">
+            <thead><tr><th>User</th><th>Role</th><th class="num">Active searches</th><th>Last sign-in</th><th>Terms</th></tr></thead>
+            <tbody>
+              <tr class="row sel"><td class="first"><span class="name">Alice Smith</span><div class="meta">alice.smith@gmail.com</div></td><td>Editor</td><td class="num">3 of 5</td><td>today 08:12</td><td>v1 accepted</td></tr>
+              <tr class="row"><td class="first"><span class="name">Bob Jones</span><div class="meta">bob.jones@outlook.com</div></td><td>Editor</td><td class="num">2 of 5</td><td>Tue Nov 4</td><td>v1 accepted</td></tr>
+              <tr class="row"><td class="first"><span class="name">Carol Diaz</span><div class="meta">carol.diaz@gmail.com</div></td><td>Viewer</td><td class="num">1 of 5</td><td>Oct 30</td><td>v1 accepted</td></tr>
+              <tr class="row"><td class="first"><span class="name">Dev Patel</span><div class="meta">dev.patel@gmail.com</div></td><td>Viewer</td><td class="num">0 of 5</td><td>Nov 6</td><td><span class="st rs warn">Not accepted yet</span></td></tr>
+              <tr class="row"><td class="first"><span class="name">Chris Wolfgang</span><div class="meta">you</div></td><td>Admin</td><td class="num">4 of 5</td><td>today 09:40</td><td>v1 accepted</td></tr>
+            </tbody>
+          </table>
+          <div class="hint" style="padding:8px 14px 12px">A search can be created only for someone in this list who has accepted the terms. Dev has signed in but not accepted, so he cannot own one yet.</div>
+        </div>
+        <div>
+          <div class="card" style="margin-bottom:14px">
+            <h2>Alice Smith <span class="meta" style="font-weight:400">Editor</span></h2>
+            <div class="body">
+              <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;padding-bottom:10px"><button class="btn" data-go="editor">+ New search for Alice</button><button class="btn" data-go="matrices">Her searches</button><button class="btn" data-go="digests">Her digests</button></div>
+            </div>
+          </div>
+          <div class="card" style="margin-bottom:14px">
+            <h2>Who else gets Alice's digests <span class="meta" style="font-weight:400">2 of 5</span></h2>
+            <div class="body">
+              <div class="addr"><span class="who"><b>Tom Smith</b><br><span class="meta">tom.smith@gmail.com &middot; on 2 searches</span></span><button class="ibtn" title="Edit Tom Smith" aria-label="Edit Tom Smith"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button><button class="ibtn danger" title="Remove Tom Smith" aria-label="Remove Tom Smith"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/><path d="M9 9v5M11 9v5"/></svg></button></div>
+              <div class="addr"><span class="who"><b>Mum</b><br><span class="meta">jean.porter@outlook.com &middot; on 1 search</span></span><button class="ibtn" title="Edit Mum" aria-label="Edit Mum"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 3.5l3 3L7 16H4v-3z"/><path d="M11.5 5.5l3 3"/></svg></button><button class="ibtn danger" title="Remove Mum" aria-label="Remove Mum"><svg viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h12M8 6V4h4v2M6 6l1 10h6l1-10"/><path d="M9 9v5M11 9v5"/></svg></button></div>
+              <div class="addf"><input placeholder="Name" aria-label="Recipient name"><input placeholder="E-mail address" aria-label="Recipient e-mail address"><button class="btn primary">Add</button></div>
+              <div class="hint" style="padding:4px 0 10px">Change an address here and every search that uses it follows. Which searches each person gets is chosen in the search editor.</div>
+            </div>
+          </div>
+          <div class="card">
+            <h2>Sign-in</h2>
+            <div class="body">
+              <div class="recip"><span class="who">Sign Alice out everywhere<br><span class="meta">Do this after changing or removing her role in Entra. She signs in again and gets the new role.</span></span><button class="btn">Sign out everywhere</button></div>
+              <div style="height:8px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== ADMIN: SYSTEM (settings registry) ===== -->
+    <section data-screen="system">
+      <div class="page-h">
+        <div><h1>System</h1><div class="sub">Settings an Admin can change without a deploy, and what is running.</div></div>
+      </div>
+      <div class="banner">A saved change takes effect here at once and everywhere else within 30 seconds. Every change is recorded with your name.</div>
+      <div class="card" style="margin-bottom:14px">
+        <h2>Settings <span class="meta" style="font-weight:400">9</span></h2>
+        <table class="rr">
+          <thead><tr><th>Setting</th><th>Value</th><th>Default</th><th>Last changed</th><th><span class="sr">Actions</span></th></tr></thead>
+          <tbody>
+            <tr><td class="first"><code>run.politeness_delay_ms</code><div class="meta">Pause between lookups. At least 1000.</div></td><td><input class="inl" value="3000" aria-label="run.politeness_delay_ms"> <span class="meta">ms</span></td><td class="dim">2500</td><td>Chris &middot; Oct 29</td><td class="actions"><button class="btn ghost">Reset to default</button></td></tr>
+            <tr><td class="first"><code>run.politeness_jitter_ms</code><div class="meta">Random extra pause added to each lookup.</div></td><td><input class="inl" value="750" aria-label="run.politeness_jitter_ms"> <span class="meta">ms</span></td><td class="dim">750</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>run.lease_seconds</code><div class="meta">How long the scraper holds a lookup before it is handed out again. At least 60.</div></td><td><input class="inl" value="300" aria-label="run.lease_seconds"> <span class="meta">s</span></td><td class="dim">300</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>run.min_lead_days</code><div class="meta">Earliest check-in searched is today plus this.</div></td><td><input class="inl" value="4" aria-label="run.min_lead_days"> <span class="meta">days</span></td><td class="dim">4</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>run.max_active_searches_per_user</code><div class="meta">Active searches one person may have.</div></td><td><input class="inl" value="5" aria-label="run.max_active_searches_per_user"></td><td class="dim">5</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>digest.sender_display_name</code><div class="meta">The From name on digest e-mails.</div></td><td><input class="inl w" value="Barefoot Vacation" aria-label="digest.sender_display_name"></td><td class="dim">Barefoot Vacation</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>digest.max_recipients_per_owner</code><div class="meta">Extra recipients one person may have. 0 to 20.</div></td><td><input class="inl" value="5" aria-label="digest.max_recipients_per_owner"></td><td class="dim">5</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>vocab.stale_after_runs</code><div class="meta">Runs without a sighting before a room value is greyed.</div></td><td><input class="inl" value="6" aria-label="vocab.stale_after_runs"> <span class="meta">runs</span></td><td class="dim">6</td><td class="dim">never</td><td></td></tr>
+            <tr><td class="first"><code>results.flight_options_page_size</code><div class="meta">Flight options loaded per "more" click. 1 to 50.</div></td><td><input class="inl" value="75" aria-label="results.flight_options_page_size" style="border-color:var(--bad)"><div class="err">Must be between 1 and 50.</div></td><td class="dim">10</td><td class="dim">never</td><td class="actions"><button class="btn primary" disabled>Save</button></td></tr>
+          </tbody>
+        </table>
+        <div class="hint" style="padding:8px 14px 12px">A row shows Save when its value is edited and valid. If someone else changed it meanwhile, you are told and shown their value. Passwords and keys are never settings.</div>
+      </div>
+      <div class="card" style="max-width:560px">
+        <h2>What is running</h2>
+        <dl class="kv" style="grid-template-columns:160px 1fr">
+          <dt>Web site</dt><dd>0.4.0 &middot; contract <code>v0</code> revision 7</dd>
+          <dt>API</dt><dd>0.4.0 &middot; contract <code>v0</code> revision 7 <span class="st rs ok">in step</span></dd>
+          <dt>Database schema</dt><dd><code>20261201_InitialCreate</code> <span class="st rs ok">up to date</span></dd>
+          <dt>Scraper last seen</dt><dd>NUC &middot; 0.4.0 &middot; 8 s ago</dd>
+        </dl>
+      </div>
+    </section>
+
     <footer class="foot">Barefoot Vacation is an independent tool and is not affiliated with or endorsed by Sandals Resorts International. “Sandals” and “Beaches” are trademarks of their owner and are used only to identify the resorts this tool searches. Prices come from the public booking site and may change at any time.</footer>
   </main>
 
@@ -1116,6 +1345,10 @@
     </div>
   </section>
 
+
+  <!-- ===== STARTUP STATES: full page, before the shell, every role ===== -->
+  <section class="ready" id="ready" role="status" aria-live="polite"><div class="ready-card" id="readyCard"></div></section>
+
   <!-- ---------- phone tab bar ---------- -->
   <nav class="tabbar" aria-label="Main">
     <a class="active" href="#" data-go="dashboard"><i>▦</i>Dashboard</a><a href="#" data-go="matrices"><i>▤</i>Searches</a><a href="#" data-go="results"><i>≡</i>Results</a><a href="#" data-go="digests"><i>✉</i>Digests</a><a href="#" data-go="profile"><i>☺</i>Profile</a>
@@ -1143,12 +1376,12 @@
   function setFlights(on){document.getElementById('flightFields').style.display=on?'':'none'; document.querySelectorAll('.flight-only').forEach(e=>e.style.display=on?'':'none'); document.querySelectorAll('.fanout .flights').forEach(e=>e.style.display=on?'':'none');}
   function setWindowMode(m){document.querySelectorAll('#winSeg button').forEach((b,i)=>b.setAttribute('aria-pressed', (i===0)===(m==='recurring'))); document.querySelectorAll('.win-recurring').forEach(e=>e.style.display=m==='recurring'?'':'none'); document.querySelectorAll('.win-onetime').forEach(e=>e.style.display=m==='onetime'?'':'none');}
   function setBrand(b){document.querySelectorAll('#brandSeg button').forEach((x,i)=>x.setAttribute('aria-pressed',(i===0)===(b==='sandals'))); document.querySelectorAll('.kids').forEach(e=>e.style.display=b==='beaches'?'':'none'); document.getElementById('brandHint').textContent=b==='beaches'?'Beaches resorts welcome families: children (2–15) and infants are priced differently, so they are part of the search.':'Beaches resorts are not searchable yet — the option is here so the shape is right when they are.';}
-  const notes={dashboard:"Dashboard · Searches → Edit opens the editor",matrices:"Searches · click a row or Edit",editor:"Search editor · desktop-first; Phone shows the stacked fallback",results:"Results · click an airport for its flights (full width); 'N more' loads ten at a time",digests:"My digests · find, filter and page the list; the right pane is the e-mail as sent, with Resend per recipient; Phone shows the list, tap one to read it",profile:"Profile · the address book is read-only until self-service",history:"Price history · hover the chart; Admin adds the all-users scope"};
+  const notes={dashboard:"Dashboard · Searches → Edit opens the editor",matrices:"Searches · click a row or Edit",editor:"Search editor · desktop-first; Phone shows the stacked fallback",results:"Results · click an airport for its flights (full width); 'N more' loads ten at a time",digests:"My digests · find, filter and page the list; the right pane is the e-mail as sent, with Resend per recipient; Phone shows the list, tap one to read it",profile:"Profile · the address book is read-only until self-service",history:"Price history · hover the chart; Admin adds the all-users scope",runs:"Runs · Admin only; the live card shows only while a run is in progress",deliveries:"Deliveries · Admin only; every recipient of every digest",reference:"Reference data · Admin only; three tabs; the site's facts are read-only",users:"Users · Admin only; pick a user for their address book and Sign out everywhere",system:"System · Admin only; the settings registry and what is running"};
   function show(name){
     document.querySelectorAll('[data-screen]').forEach(s=>s.classList.toggle('on',s.dataset.screen===name));
     const navName=name==='editor'?'matrices':name;
     document.querySelectorAll('[data-go]').forEach(a=>{ if(a.closest('.nav')||a.closest('.tabbar')) a.classList.toggle('active',a.dataset.go===navName); });
-    if(!document.querySelector('[data-screen="'+name+'"]')){ document.getElementById('note').textContent=({deliveries:'Deliveries',users:'Users',runs:'Runs',reference:'Reference data',system:'System'}[name]||name)+' — not drawn yet'; return; }
+    if(!document.querySelector('[data-screen="'+name+'"]')){ document.getElementById('note').textContent=(name)+' — not drawn yet'; return; }
     document.getElementById('note').textContent=notes[name]||name;
     document.querySelector('main').scrollTop=0;
     if(name==='history') drawHistory();
@@ -1219,6 +1452,19 @@
       const dl=d===null?'<span class="delta flat">first capture</span>':d===0?'<span class="delta flat">unchanged</span>':d<0?`<span class="delta down">▼ ${usd(-d)}</span>`:`<span class="delta up">▲ ${usd(d)}</span>`;
       return `<tr><td class="first"><span class="name">${p[1]}</span></td><td class="num">${usd(p[2])}</td><td class="num">${usd(p[3])}</td><td class="num"><span class="price">${usd(t)}</span></td><td class="num">${dl}</td></tr>`;}).join('');
   }
+
+  function setRef(k,b){document.querySelectorAll('#refSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b)); document.querySelectorAll('.ref-tab').forEach(t=>t.classList.toggle('on',t.dataset.ref===k));}
+  const BRAND=document.querySelector('.signin .brand.big').outerHTML;
+  const STATES={
+    waking:{t:'Warming up. Please wait&hellip;',b:'<p><span class="spin"></span>Waking the database &middot; <b>12 s</b></p><p>It goes to sleep when nobody is using it. This usually takes under a minute, and the page opens by itself when it is ready.</p>',a:''},
+    quota:{t:'Back on December 1',b:'<p>This month\'s free database allowance is used up, so the database is paused until <b>December 1, 2026, 00:00 UTC</b> (7:00 PM on November 30, your time).</p><p>Nothing is lost. Searches and digests start again by themselves.</p>',a:'<button class="btn">Try again</button>'},
+    migration:{t:'Being updated',b:'<p>The site is ahead of its database and can\'t be used until the database is updated.</p><div class="rd">Missing migration: <code>20261210_AddRecipient</code>. Run <code>bf-maint migrate</code>.</div><p class="meta">If you are not Chris, there is nothing you need to do.</p>',a:'<button class="btn">Try again</button>'},
+    newer:{t:'Being updated',b:'<p>The database is newer than this version of the site, so the site won\'t read or change anything until it is updated too.</p><div class="rd">The database is newer than this build. Deploy the matching API version.</div><p class="meta">If you are not Chris, there is nothing you need to do.</p>',a:'<button class="btn">Try again</button>'},
+    unavailable:{t:'Can\'t reach the database',b:'<p>We waited two minutes and it did not answer. It is checked again each time you try.</p><div class="rd">Last error: connection timed out after 90 s. Reference <code>4f2a9c1e</code>.</div>',a:'<button class="btn primary">Try again</button>'},
+    version:{t:'This site is out of step with its API',b:'<p>The two halves of the site were updated at different times and don\'t match yet.</p><div class="rd">This web site is built for contract <code>v0</code> revision 7; the API reports revision 8. Update the web site.</div><p class="meta">If you are not Chris, there is nothing you need to do.</p>',a:'<button class="btn">Try again</button>'}
+  };
+  function setState(k){const el=document.getElementById('ready'), st=STATES[k]; el.classList.toggle('on',!!st); if(!st) return;
+    document.getElementById('readyCard').innerHTML=BRAND+'<h2>'+st.t+'</h2>'+st.b+'<div class="acts">'+st.a+'<span class="sp"></span><a href="#" onclick="event.preventDefault();event.stopPropagation();document.getElementById(\'stateSel\').value=\'\';setState(\'\')" class="meta">mockup: back to the app</a></div>';}
   show('dashboard');
   renderIssues();
   setRole('editor');

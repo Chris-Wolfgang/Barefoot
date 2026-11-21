@@ -23,8 +23,16 @@ fan-out footer), the **notices modal** (per-item acknowledge), the **sign-in pag
 - **Price history** — pickers for Search, Resort, Room, Check-in and Flights from (the identity is resort + room + check-in date); range 30 days / 90 days / All; Admin adds *My captures / All users' captures*; a summary line (now, lowest seen, highest seen, room alone); one line chart with two series on one dollar axis (total with flights, room alone), direct labels at the line ends, hover crosshair and tooltip; and *Every capture* as the table view of the same numbers.
 - **Search editor, Recipients** (changed after the 2026-11-20 ADR review) — the owner's address always, then a pick-list from the owner's address book; an Admin ticks who gets this search, an Editor sees it read-only.
 
-Not yet drawn: Runs, Deliveries, Reference data, Users (with the address book and Sign out
-everywhere), System detail, the startup states (readiness, version mismatch).
+- **Runs** (Admin) — a live card while a run is in progress (started, scraper last seen, room lookups and flight sets done of total, each search's stage and count; refreshed every 30 s only while a run is in progress), then History, paged: started and trigger, outcome, duration, lookups, flight sets, digests, and the breaker's reason when it tripped. No Start button — lookups run from the home machine.
+- **Deliveries** (Admin) — every recipient of every digest: status chips (All / Sent / Failed / Pending), Find, a Run picker, attempts, last error, Resend per row and *Retry the N that failed*; an extra recipient is tagged as one. Message bodies are not shown here.
+- **Reference data** (Admin) — three tabs. *Resorts*: the site's facts read-only (code, name, brand, island, gateway, listed or offline since), with the **short name** and **drive from gateway** editable because the site gives neither; a newly seen resort arrives with both to fill in. *Airports*: code, name, time zone, used as departure or gateway; one the built-in list did not know shows **No time zone** with a picker. *Room vocabulary*: kind, value, last seen, searches filtering on it; stale values greyed.
+- **Users** (Admin) — everyone who has signed in (role, active searches of the limit, last sign-in, terms accepted or not); a user who has not accepted the terms cannot own a search. Selecting one shows *+ New search for …*, their searches and digests, **their address book** (add, edit, remove; "2 of 5") and **Sign out everywhere**.
+- **System** (Admin) — the settings registry: nine keys, each with its description, an editable value with inline validation, the default, who last changed it, Save on an edited row and *Reset to default* on a changed one; then *What is running* (web site and API build and contract revision, schema, scraper last seen).
+- **Startup states** — full page, before the shell, for every role; chosen from the *Startup state* picker in the mockup bar: Warming up (spinner and elapsed time), Quota used up (the reset instant, UTC and local), Missing migration, Newer schema, Unavailable (last error and Try again), Version mismatch. The three that only Chris can fix say so to everyone else.
+
+Fixed while drawing: the Admin dashboard no longer renders above every other screen when the role is Admin.
+
+Every screen of DESIGN §12 is now drawn. Two pages are both called "System" — the Admin's landing dashboard (locked) and the settings page; one of them wants another name.
 
 Open questions: whether Admin system notices share the modal; whether the fan-out footer shows
 "already looked up by other searches" savings. (Settled 2026-11-20: **the owner may resend any of
