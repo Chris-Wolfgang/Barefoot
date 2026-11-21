@@ -68,16 +68,26 @@ public static class WindowResolver
     {
         // The occurrence that began last year matters only for a window that runs across the new
         // year; the one that begins next year is the answer once this year's has passed.
-        for (var year = earliest.Year - 1; ; year++)
-        {
-            var first = window.First.InYear(year);
-            var last = window.Last.InYear(window.WrapsYear ? year + 1 : year);
+        var year = earliest.Year - 1;
+        var last = LastDayOfOccurrence(window, year);
 
-            if (last >= earliest)
-            {
-                return new ResolvedWindow(Later(first, earliest), last);
-            }
+        while (last < earliest)
+        {
+            year++;
+            last = LastDayOfOccurrence(window, year);
         }
+
+        return new ResolvedWindow(Later(window.First.InYear(year), earliest), last);
+    }
+
+
+
+    /// <summary>
+    /// The last day of the occurrence of <paramref name="window"/> that begins in <paramref name="year"/>.
+    /// </summary>
+    private static DateOnly LastDayOfOccurrence(RecurringWindow window, int year)
+    {
+        return window.Last.InYear(window.WrapsYear ? year + 1 : year);
     }
 
 

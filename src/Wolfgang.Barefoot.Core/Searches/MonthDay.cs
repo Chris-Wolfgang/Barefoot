@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Runtime.InteropServices;
 
 namespace Wolfgang.Barefoot.Core.Searches;
 
@@ -8,6 +9,7 @@ namespace Wolfgang.Barefoot.Core.Searches;
 /// <remarks>
 /// 29 February is a valid value. In a year that has no such day it means 28 February.
 /// </remarks>
+[StructLayout(LayoutKind.Auto)]
 public readonly record struct MonthDay
 {
     /// <summary>A leap year, used to decide how many days a month can have.</summary>
