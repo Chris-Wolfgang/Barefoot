@@ -1,4 +1,4 @@
-# v2 UI mockup (work in progress, 2026-11-06)
+# v2 UI mockup (every screen drawn and locked, 2026-11-20)
 
 `ui-mockup.html` — a single-page HTML mockup of the v2 web UI (DESIGN §12, ADR 0008), iterated in the browser
 during the design session. Open it in a browser; the dark bar at the top is mockup chrome: Light/Dark,
@@ -15,7 +15,7 @@ Editor/Admin, Laptop/Phone, App/Sign-in page, Re-show notices.
 Screens so far: **First sign-in disclaimer** (one-time, per user per disclaimer version; must tick to continue; Decline signs out; precedes the notices modal), **Dashboard** (Editor: status strip, notices, Open issues, Recent results, biggest movers, latest digest;
 Admin: System dashboard with budget & health tiles), **Searches list**, **Search editor** (two panes +
 fan-out footer), the **notices modal** (per-item acknowledge), the **sign-in page**.
-**Drawn 2026-11-20, not locked yet (awaiting Chris):**
+**Locked 2026-11-20 (approved by Chris):**
 
 - **My digests** (phone contract) — a list of every digest sent to me (date, search, matches, cheapest, delta, delivery status) beside the stored message; on a phone the list alone, tap one to read it, "‹ All digests" to go back. The list grows by a digest per search per run, so it is **found, filtered and paged**: a Find box (search, resort, room), a Search picker, a When picker (30 days / 90 days / this year / all time, default 90 days), a *Not delivered* chip, and Previous / Next with "1–6 of 78" (keyset paging, ADR 0012 — not infinite scroll, so a position can be linked and the phone keeps its place). Above the message: each recipient with its own delivery status and a **Resend** button, and *Open these results*.
 - **The e-mail** — drawn as the stored message inside My digests: 600 px single column, 16 px body; header with the name and tagline; search name and run date; a needs-attention block; **Summary** (one line per resort: cheapest and delta, offline resorts named); the primary *Open in <Name>* button; **What was searched** (resolved window, occupancy, airports, the filters applied, lookups completed); then a section per resort whose header carries its cheapest price, with **one card per room** — total large on the first line, room name, level · view · amenities, a check-in chip, then room price (regular struck) and the cheapest fare per departure airport — and an "N more at <resort>" link; footer with the not-a-quote and not-affiliated statements.
@@ -32,9 +32,9 @@ fan-out footer), the **notices modal** (per-item acknowledge), the **sign-in pag
 
 Fixed while drawing: the Admin dashboard no longer renders above every other screen when the role is Admin.
 
-Every screen of DESIGN §12 is now drawn. Two pages are both called "System" — the Admin's landing dashboard (locked) and the settings page; one of them wants another name.
+Every screen of DESIGN §12 is now drawn and locked.
 
-Open questions: whether Admin system notices share the modal; whether the fan-out footer shows
+Open questions: two pages are both called "System" — the Admin's landing dashboard and the settings page — and one of them wants another name; whether Admin system notices share the modal; whether the fan-out footer shows
 "already looked up by other searches" savings. (Settled 2026-11-20: **the owner may resend any of
 their own digests**, to any of that digest's recipients — ADR 0006 item 5 amended.) Product name is a placeholder. (Settled while locking
 the editor: resorts stay grouped by island; filters stay a pane, not a tab; "Later" is not offered —

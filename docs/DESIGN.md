@@ -434,6 +434,24 @@ with its legs, then "N more" which pages the remaining options **ten at a time, 
 from a paged flight-options endpoint per flight set. Offline resorts appear as a row. Phone: cards,
 one airport panel at a time.
 
+**The remaining screens (locked 2026-11-20).** Specifics are in the mockup README.
+*My digests*: found, filtered (search, date range, text, undelivered) and paged; the stored message
+beside the list, each recipient with its delivery status and Resend. *Profile*: identity read-only,
+time zone, default adults, the address book read-only. *Price history*: one room on one check-in
+date across runs — a two-series chart on one dollar axis (total with flights, room alone) with the
+same numbers as a table. *Runs*: a live card only while a run is in progress, then paged history
+with the breaker's reason under its row. *Deliveries*: every recipient of every digest, Resend and
+retry-failed. *Reference data*: Resorts (the short name and drive time are the Admin's to edit;
+the site's facts are not), Airports (a missing time zone is set here), Room vocabulary. *Users*:
+who has signed in and accepted the terms, each user's address book, Sign out everywhere. *System*:
+the settings registry with inline validation and reset, and what is running (builds, contract
+revision, schema). *Startup states*: Warming up, Quota used up, Missing migration, Newer schema,
+Unavailable, Version mismatch — full page, every role.
+
+**Tables never leave their card.** Long text wraps; a note about a row sits under it; on a narrow
+window the less important columns are dropped first, and Results drops none. Sideways scrolling
+inside the card is the last resort.
+
 **Budget & health (Admin dashboard).** Table-backed cards ship with the dashboard; the Azure
 Monitor cards follow once the API's managed identity has *Reader* on the database and
 *Monitoring Reader* on the resource group:

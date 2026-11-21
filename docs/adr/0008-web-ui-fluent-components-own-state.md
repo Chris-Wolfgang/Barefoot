@@ -1,6 +1,6 @@
 # ADR 0008 — Web UI: Blazor Web App on Fluent UI Blazor; components own their state; role-scoped IA
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: vocabulary, disclaimer, Open issues, locked screens; 2026-11-20: screen error states, accessibility acceptance, when the UI polls, the version-mismatch page, who can own a search)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: vocabulary, disclaimer, Open issues, locked screens; 2026-11-20: screen error states, accessibility acceptance, when the UI polls, the version-mismatch page, who can own a search, the remaining screens locked)
 - **Scope:** `Wolfgang.Barefoot.Web`, `Presentation`, the digest template
 
 ## Context
@@ -58,8 +58,12 @@ findings are designed out here.
     a run in progress**; a page that saw none does not poll, because a poll is a query and would
     hold the serverless database awake (ADR 0001). Nothing else in the UI polls.
 12. **Locked screens** (mockup `docs/mockups/v2/`, 2026-11-06): disclaimer + attention pop-up,
-    Editor Dashboard, Admin System dashboard, Searches list, Search editor, Results. Their
-    specifics are in DESIGN §12 and the mockup README; the remaining screens are drawn next.
+    Editor Dashboard, Admin System dashboard, Searches list, Search editor, Results. Locked
+    2026-11-20: My digests and the e-mail, Profile, Price history, Runs, Deliveries, Reference
+    data, Users, System, and the startup states. Their specifics are in DESIGN §12 and the mockup
+    README. Two rules came out of drawing them: a table never leaves its card (text wraps, a note
+    sits under its row, the less important columns go first on a narrow window, and Results drops
+    none), and long lists are found, filtered and paged.
 13. **Screen errors render in place.** Each screen has Loading, Loaded, Empty and Failed states; an
     `ErrorBoundary` in the gated layout keeps the shell alive for anything unexpected; errors are
     never modal (DESIGN §12).
