@@ -1,6 +1,8 @@
 # ADR 0001 — The database is Azure SQL Database (free offer, serverless) and the app tolerates it sleeping
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: readiness split, migrate-tool rules)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: readiness split, migrate-tool rules;
+  2026-11-20: a newer schema is a readiness state, `Unavailable` is re-probed on a request, exit
+  codes come from the shared enum, the firewall rule is for the `bf-maint` machine)
 - **Scope:** `Data`, the API host (ADR 0002), the maintenance tool, every UI host
 
 ## Context
@@ -63,8 +65,13 @@ Unknown ──probe──► Waking ──connect ok──► Ready
                      │
                      ├──quota error (§3)──► QuotaExhausted   (terminal until ResetsAtUtc)
                      ├──schema behind (§4)► MissingMigration (until bf-maint migrate runs)
-                     └──budget spent──────► Unavailable      (re-probed on a timer; LastError set)
+                     ├──schema ahead (§4)─► NewerSchema      (until a matching API build is deployed)
+                     └──budget spent──────► Unavailable      (re-probed on a request; LastError set)
 ```
+
+`Unavailable` is re-probed **only when a request arrives**, and at most once every 30 seconds —
+never from a timer. A background probe would wake the serverless database with nobody waiting for
+it (the same rule as the settings cache, ADR 0011 §4).
 
 It exposes `State`, `Elapsed`, `Attempts`, `LastError`, `ResetsAtUtc`, a `Changed` event and
 `WaitUntilReadyAsync(CancellationToken)`. The budget is the same one as §1 (connect timeout ×
@@ -88,8 +95,8 @@ computed from `TimeProvider`. The hosts show:
 > Monthly free database allowance used up. The database is paused until **1 December 2026 00:00 UTC**
 > (7:00 PM 30 November, local time). Retry
 
-A headless host prints the same sentence and exits with a distinct code so a scheduled task's
-history reads "quota", not "failed". A later enhancement (once managed identity has *Reader* on the
+A headless host prints the same sentence and exits with `QuotaExhausted` (9, ADR 0007) so a
+scheduled task's history reads "quota", not "failed". A later enhancement (once managed identity has *Reader* on the
 database) reads the Azure Monitor *Free amount remaining* metric to show a gauge before the wall is
 hit; it is out of scope here.
 
@@ -100,13 +107,17 @@ hit; it is out of scope here.
   database. The API's managed identity is `db_datareader` + `db_datawriter` only (ADR 0005).
 - The tool is **declarative**: you name a target (`--to <id|name|prefix|0>`, default latest) and it
   states the direction it took; `--status` reports current vs expected; `--script [--from] [--to]
-  --output` renders SQL offline. Exit codes: `0` ok, `1` a migration failed, `2` usage or
-  configuration, `3` the downgrade would lose data and `--confirm-data-loss` was not given, `4`
-  refused. A downgrade is screened for data loss (dropped tables/columns, narrowing column changes,
-  raw SQL) and the script carries a `-- Downgrade` header naming each step.
+  --output` renders SQL offline. Exit codes come from the one `ExitCode` enum every binary shares
+  (ADR 0007): `0` ok, `1` a migration failed, `4` usage or configuration, `6` the downgrade would
+  lose data and `--confirm-data-loss` was not given, `10` refused. A downgrade is screened for data
+  loss (dropped tables/columns, narrowing column changes, raw SQL) and the script carries a
+  `-- Downgrade` header naming each step.
 - **The database must exist**; the tool never creates one (a typo must not create a stray
-  database). **A schema newer than the build is never touched** (exit `4`), and that is the one
-  condition on which the API refuses to start — it cannot know what the newer columns mean.
+  database). **A schema newer than the build is never touched** (exit `10`). The API does not
+  refuse to start on it either: it reports the readiness state `NewerSchema` and answers its data
+  endpoints with `503 database.newer_schema` — it cannot know what the newer columns mean, so it
+  reads and writes nothing, but it stays up to say so ("The database is newer than this build.
+  Deploy the matching API version.").
 - **A schema behind the build is a readiness state**, not a crash: the API reports
   `MissingMigration` with the pending names ("Missing migration: `<names>`. Run `bf-maint
   migrate`.") and the UI renders it full-page. `GET /system/schema` answers `{current, expected,
@@ -119,8 +130,10 @@ hit; it is out of scope here.
 - Auto-pause delay **15 minutes**; free-limit exhaustion behaviour **auto-pause until next month**
   (never surprise billing — once switched to paid for a month it cannot be switched back).
 - `Authentication=Active Directory Default` on the connection string: no SQL password anywhere.
-- Firewall: the scraper host's public IP is allow-listed; home IPs change, so the scheduled task may
-  run `az sql server firewall-rule update` first, or the operator re-adds the rule when a run fails.
+- Firewall: the public IP of the machine that runs `bf-maint` is allow-listed — it is the only
+  client that connects to the database directly (ADR 0002); the scraper and `bf` reach the API over
+  HTTPS and need no rule. Home IPs change, so the operator runs `az sql server firewall-rule update`
+  before a `migrate`, or re-adds the rule when the tool cannot connect.
 - Nothing may hold a connection open between runs (SSMS Object Explorer, Azure Data Studio or a
   forgotten `sqlcmd` keeps the database awake and burns the allowance). There is **no manual
   pause** for a serverless database; the 15-minute inactivity delay is the only trigger, so session

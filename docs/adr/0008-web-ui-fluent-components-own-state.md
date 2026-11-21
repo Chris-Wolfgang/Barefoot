@@ -1,6 +1,6 @@
 # ADR 0008 — Web UI: Blazor Web App on Fluent UI Blazor; components own their state; role-scoped IA
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: vocabulary, disclaimer, Open issues, locked screens; 2026-11-20: screen error states, accessibility acceptance)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: vocabulary, disclaimer, Open issues, locked screens; 2026-11-20: screen error states, accessibility acceptance, when the UI polls, the version-mismatch page, who can own a search)
 - **Scope:** `Wolfgang.Barefoot.Web`, `Presentation`, the digest template
 
 ## Context
@@ -32,7 +32,8 @@ findings are designed out here.
 5. **Information architecture by role** (DESIGN §12): an Editor's world is their searches; an
    Admin's is the system. Runs, reference data, deliveries, users and failure details are
    Admin-only; Editors see per-search outcomes. Admin is also an Editor ("mine" by default).
-   Viewer is kept for v1.
+   Viewer is kept for v1; the Admin creates a Viewer's searches, and can pick as owner only someone
+   who has signed in once and accepted the disclaimer (ADR 0004 §8).
 6. **First sign-in disclaimer**, accepted once per user per disclaimer version
    (`AppUser.DisclaimerVersionAccepted`); Decline signs out. Re-shown only when the text version
    changes.
@@ -51,8 +52,11 @@ findings are designed out here.
 10. **Admin dashboard carries budget and health**: database status and free allowance remaining,
     storage, Container Apps compute vs grant (lagging), digests sent, last-run statistics, scraper
     last seen. Azure Monitor cards follow the managed-identity wiring.
-11. **Readiness** (warming up / quota / missing migration) is a full-page state before the shell;
-    live run progress is polled every ~30 s.
+11. **Readiness** (warming up / quota / missing migration / newer schema) is a full-page state
+    before the shell, and so is a **version mismatch** between the web host and the API
+    (ADR 0010 §8). Live run progress is polled every ~30 s, **only by a page whose last load showed
+    a run in progress**; a page that saw none does not poll, because a poll is a query and would
+    hold the serverless database awake (ADR 0001). Nothing else in the UI polls.
 12. **Locked screens** (mockup `docs/mockups/v2/`, 2026-11-06): disclaimer + attention pop-up,
     Editor Dashboard, Admin System dashboard, Searches list, Search editor, Results. Their
     specifics are in DESIGN §12 and the mockup README; the remaining screens are drawn next.
@@ -74,6 +78,7 @@ findings are designed out here.
 
 ## Consequences
 
-- Accessibility and the neutral theme come from the library rather than an audit.
+- The neutral theme comes from the library. Accessibility starts there and is then accepted screen
+  by screen (item 14), not assumed.
 - The editor is the single largest UI task; the thin screens are a day or two each.
 - A first-run tour/wizard is deferred to a future version; the empty Dashboard carries onboarding.

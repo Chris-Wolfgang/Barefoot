@@ -1,6 +1,7 @@
 # ADR 0003 — The API owns the run lifecycle; the scraper pulls work
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: attempt-token semantics)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-06: attempt-token semantics; 2026-11-20: no
+  idempotency header anywhere, "one transaction" means one `SaveChanges`)
 - **Scope:** `Business` (run lifecycle), `Api` (run resources), `Scraper`
 
 ## Context
@@ -35,12 +36,13 @@ cheap abort). Completion (aggregate + store digest) is an explicit call from the
 side effect of a `result`.
 
 **Attempt token = idempotency key.** A `claim` returns an `attempt` token (an opaque `Guid` stored
-on the row); the matching `result` carries it in its body, with no `Idempotency-Key` header. The
-API applies the general idempotency rule (ADR 0012) with the row itself as the record: the first
-`result` for an attempt is stored with a hash of its body; a repeat with the same body returns the
-same response; a repeat with a different body is `422`; a `result` for an expired or superseded
-attempt is `409 run.attempt_superseded` and ignored. The check runs inside the handler's transaction, so a retry racing the
-original cannot double-write.
+on the row); the matching `result` carries it in its body. There is no idempotency header: every
+write is safe to repeat because of its own state (ADR 0012 §4), and for a `result` the row itself is
+the record. The first `result` for an attempt is stored with a hash of its body; a repeat with the
+same body returns the same response; a repeat with a different body is `422`; a `result` for an
+expired or superseded attempt is `409 run.attempt_superseded` and ignored. The check and the write
+are one `SaveChanges` under the retrying execution strategy (ADR 0001 §1) — no transaction is
+wrapped by hand — and the row's `Version` token makes a retry racing the original lose.
 
 ## Not chosen
 
@@ -56,7 +58,7 @@ original cannot double-write.
 
 - `RunLifecycle` (Business) and `ScrapeLoop` (Scraper) are separate, separately tested classes;
   the lifecycle's checkpoint tests run server-side over SQLite.
-- Checkpoint atomicity is one server transaction per `result`.
+- Checkpoint atomicity is one `SaveChanges` per `result`.
 - A run knows its complete work list at creation (requests and flight sets are rows), so progress
   is countable and the UI can show a run in flight.
 - ~2 HTTP calls per lookup; ~200 lookups a run is under a minute of overhead.

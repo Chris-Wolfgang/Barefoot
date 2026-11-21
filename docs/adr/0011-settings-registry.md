@@ -2,7 +2,9 @@
 
 - **Status:** Accepted, 2026-11-20 (proposed 2026-11-06; amended on acceptance: the first write and
   reset of a setting, how workers receive their values, the cache probe, validator floors, no
-  secrets, and three keys removed from the initial registry)
+  secrets, and three keys removed from the initial registry; later the same day: session lifetimes
+  and the CORS allow-list are bootstrap configuration, `bf settings` signs the Admin in, one key
+  added for the recipient cap)
 - **Scope:** `Core` (`SettingKey<T>`), `Business` (`ISettings`, registry), `Data` (`Setting` table),
   `Api` (`/settings`, the run resource), `Web` (Admin → System), `Admin` (`bf settings`),
   `appsettings.*`
@@ -28,8 +30,8 @@ below is that design with the multi-site cascade removed.
 2. **One `SettingRegistry`** collects every key at startup and rejects duplicates; `GET /settings`
    and `GET /settings/{key}` return the registry (key, type, default, description, current value,
    `Version`, updated-by/at) for the Admin **System** page. Both need `Permission.SettingsRead` and
-   writes need `Permission.SettingsWrite`; only the Admin role and the `Admin` host's service principal (`bf`,
-   ADR 0005) hold either.
+   writes need `Permission.SettingsWrite`; only the Admin role holds either. No service principal
+   does (ADR 0005).
 3. **Values are stored as invariant text** in one `Setting` table (`Key` PK, `Value`, `UpdatedUtc`,
    `Version`) through a `SettingCodec<T>` per type (bool, int, long, double, string, `TimeSpan`,
    `DateTimeOffset`, string lists). Missing row = default. The table is audited by
@@ -50,11 +52,15 @@ below is that design with the multi-site cascade removed.
    - `RequiresRestart` stays on `SettingKey<T>` and shows a banner on the System page until the API
      restarts. No key in the initial registry sets it: all of them are read per use.
 6. **`appsettings` holds bootstrap keys only**: the connection string and every database option of
-   ADR 0001 §1, Entra tenant/client ids, the hosting flags (`BehindProxy`), logging. Anything the
-   API needs **before or without the database** is bootstrap by definition — which is why
+   ADR 0001 §1, Entra tenant/client ids, the hosting flags (`BehindProxy`), logging, the API's CORS
+   allow-list, and on the web host the session lifetimes (absolute and idle). Anything a host needs
+   **before or without the database** is bootstrap by definition — which is why
    `FreeQuotaErrorNumbers` and `FreeQuotaMessagePattern` stay there: they are read exactly when the
-   database cannot be. An unknown key under the application's section produces a startup warning so
-   a setting cannot hide there by mistake.
+   database cannot be. The session lifetimes and the CORS allow-list are the same case. The web
+   host applies the lifetimes before any user is signed in, and the registry is readable only by a
+   signed-in Admin, so it could never have read them from it. The API applies the allow-list when
+   it starts, which it does whether or not the database is awake (ADR 0001 §2). An unknown key under
+   the application's section produces a startup warning so a setting cannot hide there by mistake.
 7. **Scope is global.** No per-site, per-zone or per-user cascade; per-user preferences (time zone,
    default occupancy) live on `AppUser`, not in the registry.
 8. **No secret is ever a setting.** `GET /settings` and the audit trail both show values. A key
@@ -65,20 +71,17 @@ below is that design with the multi-site cascade removed.
    picks up a changed value. `run.min_lead_days` never reaches the worker: the API applies it when
    it resolves check-in windows (DESIGN §4). The lease length is the API's alone: `claim` takes no
    `leaseSeconds`, the API applies `run.lease_seconds` and returns `leaseExpiresUtc`. `bf` reads and
-   writes settings through the same endpoints as its service principal (`bf settings list`, `get`,
-   `set`, `reset`); the audit trail names that principal (ADR 0005).
-10. **Validators carry floors where a bad value locks people out or hammers the site**:
-    `auth.session_idle_minutes` ≥ 5, `auth.session_absolute_hours` ≥ 1 and not shorter than the idle
-    time, `run.lease_seconds` ≥ 60, `run.politeness_delay_ms` ≥ 1000, `run.min_lead_days` ≥ 0,
-    `run.max_active_searches_per_user` ≥ 1, `results.flight_options_page_size` 1–50. Each
-    `auth.cors_origins` entry is an absolute `https` origin with no path. `bf settings set`
-    authenticates with client credentials, not a web session, so it still works when a session
-    setting is wrong.
-11. **Initial registry** (defaults in parentheses): `run.lease_seconds` (300), `run.min_lead_days`
-    (4), `run.politeness_delay_ms` (2500) and `run.politeness_jitter_ms` (750),
+   writes settings through the same endpoints (`bf settings list`, `get`, `set`, `reset`) as the
+   Admin it signs in interactively; the audit trail names that person (ADR 0005).
+10. **Validators carry floors where a bad value hammers the site or breaks a screen**:
+    `run.lease_seconds` ≥ 60, `run.politeness_delay_ms` ≥ 1000, `run.min_lead_days` ≥ 0,
+    `run.max_active_searches_per_user` ≥ 1, `digest.max_recipients_per_owner` 0–20,
+    `results.flight_options_page_size` 1–50.
+11. **Initial registry** — nine keys (defaults in parentheses): `run.lease_seconds` (300),
+    `run.min_lead_days` (4), `run.politeness_delay_ms` (2500) and `run.politeness_jitter_ms` (750),
     `run.max_active_searches_per_user` (5), `digest.sender_display_name` (the product name),
-    `vocab.stale_after_runs` (6), `auth.session_absolute_hours` (8), `auth.session_idle_minutes`
-    (30), `auth.cors_origins` (empty), `results.flight_options_page_size` (10).
+    `digest.max_recipients_per_owner` (5; ADR 0006), `vocab.stale_after_runs` (6),
+    `results.flight_options_page_size` (10).
 
     A key is added with the code that reads it, never ahead of it. Left out on that rule:
     - *`digest.retention_days`* — no purge job is designed (ADR 0006); it arrives with the purge.
@@ -86,6 +89,9 @@ below is that design with the multi-site cascade removed.
       constant beside the text (ADR 0008). As a setting it could be raised without a text change,
       or left alone after one.
     - *`database.free_quota_error_numbers`* — bootstrap, item 6.
+    - *`auth.session_absolute_hours`, `auth.session_idle_minutes`, `auth.cors_origins`* —
+      bootstrap, item 6. As settings the lifetimes had no reader (the web host cannot read the
+      registry before someone is signed in), and the allow-list is needed at start-up.
 
 ## Not chosen
 
