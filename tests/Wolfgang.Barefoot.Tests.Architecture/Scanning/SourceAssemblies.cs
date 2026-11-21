@@ -10,9 +10,12 @@ namespace Wolfgang.Barefoot.Tests.Architecture.Scanning;
 internal static class SourceAssemblies
 {
     /// <summary>
-    /// One assembly per project under <c>src/</c>. Empty until the first source project arrives.
+    /// One assembly per project under <c>src/</c>.
     /// </summary>
-    public static IReadOnlyList<Assembly> All { get; } = [];
+    public static IReadOnlyList<Assembly> All { get; } =
+    [
+        typeof(Core.Keys.ErrorCode).Assembly,
+    ];
 
 
 
