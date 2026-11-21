@@ -1,6 +1,8 @@
 # ADR 0002 — Every client reaches the database through one Web API; DAL and BLL are separate layers
 
-- **Status:** Accepted, 2026-11-06 (amended 2026-11-20: the version check names what is compared)
+- **Status:** Accepted, 2026-11-06 (amended 2026-11-20: the version check names what is compared;
+  amended 2026-11-21: the Core interfaces speak in `Contracts` records, so `ToDto` moves from `Api`
+  to `Business`)
 - **Scope:** solution structure; every host
 
 ## Context
@@ -30,10 +32,17 @@ the rules drift, and neither knows who the user is.
    command classes behind the Core interfaces — not a generic repository. Rules: one query class
    per read with an `AsNoTracking` projection; no `IQueryable` crosses a Core interface; no
    `Set<T>()` on the unit-of-work surface; conversion methods live where the conventions say
-   (`ToDto` in `Api`, `ToEntity` in `Data`).
-4. **The Core interfaces are the API surface.** `Api` exposes one resource per interface;
-   `ApiClient` implements the same interfaces over HTTP (ADR 0010); `Presentation` does not know
-   which implementation it has. DTOs live in `Contracts`, shared by `Api` and `ApiClient`.
+   (`ToDto` in `Business`, `ToEntity` in `Data`).
+4. **The Core interfaces are the API surface, and they speak in `Contracts` records.** `Api`
+   exposes one resource per interface; `ApiClient` implements the same interfaces over HTTP
+   (ADR 0010); `Presentation` does not know which implementation it has. The request and response
+   records live in `Contracts`, and the Core interfaces take and return those records directly:
+   - `Core` references `Contracts`. `Contracts` references no project and no framework.
+   - One set of records crosses the API. `Api` serializes what `Business` returns and `ApiClient`
+     returns what it deserialized; neither converts.
+   - The entities stay behind the interfaces. `Business` turns an entity into a record (`ToDto`,
+     `FromDto`); a read in `Data` may project straight to the record.
+   - An enum that a record carries is defined in `Contracts`, because `Contracts` cannot see `Core`.
 5. **Dependency rules** are enforced by project references and by architecture tests (DESIGN §2,
    §14): no UI or worker project references `Data` or an EF package.
 
@@ -46,6 +55,10 @@ the rules drift, and neither knows who the user is.
   per-read query class and explicit registration rules are kept from that style.
 - *Generic repositories over EF.* A second abstraction over the unit of work that hides the
   queries that matter for a database billed per second.
+- *Core with its own model types, converted to and from the `Contracts` records in both `Api` and
+  `ApiClient`.* Two sets of near-identical types and two sets of conversions that must agree, for
+  one consumer family. It also contradicts ADR 0010 §1, where the client uses the `Contracts`
+  records directly so that shapes cannot drift.
 
 ## Consequences
 

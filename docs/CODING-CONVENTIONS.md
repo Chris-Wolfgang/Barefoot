@@ -62,7 +62,7 @@ var page = await searches
 |---|---|
 | An async method ends in `Async`; test methods are excluded | `VSTHRD200` (*error*, `src/.editorconfig`) |
 | A test is named `MethodUnderTest_when_condition_expected_result` | `TestNamingTests` |
-| A conversion is an extension method named for the lower-level type: `ToDto()` / `FromDto()` live in `Api`, `ToEntity()` / `FromEntity()` live in `Data`, and no other project defines either (ADR 0002 §3) | `ConversionMethodPlacementTests` |
+| A conversion is an extension method named for the lower-level type: `ToDto()` / `FromDto()` live in `Business`, `ToEntity()` / `FromEntity()` live in `Data`, and no other project defines either (ADR 0002 §3) | `ConversionMethodPlacementTests` |
 | A project is `Wolfgang.Barefoot.<Name>` under `src/`; its tests are `Wolfgang.Barefoot.<Name>.Tests.Unit` under `tests/` | `ProjectLayoutTests` |
 
 ## Time
@@ -135,13 +135,14 @@ Text from the booking site is input nobody here controls (DESIGN §3).
 ## Layers
 
 The project table and the dependency rules are DESIGN §2. In short: every client reaches the database
-through the API; `Core` and `Presentation` reference no framework.
+through the API; `Core`, `Contracts` and `Presentation` reference no framework.
 
 | Rule | Enforced by |
 |---|---|
 | `Scraper`, `Admin` and `Web` reference neither `Data` nor an EF Core or database package | `ProjectDependencyTests` |
 | `Admin` never references `Obe`; `Maintenance` never references `ApiClient` or `Obe`; `Api` never references `Obe` | `ProjectDependencyTests` |
-| `Core` and `Presentation` reference no framework: no ASP.NET Core, no EF Core, no Playwright, no UI package | `ProjectDependencyTests` |
+| `Core`, `Contracts` and `Presentation` reference no framework: no ASP.NET Core, no EF Core, no Playwright, no UI package | `ProjectDependencyTests` |
+| `Contracts` references no project; `Core` references only `Contracts` (ADR 0002 §4) | `ProjectDependencyTests` |
 | Every project under `src/` is one the design names | `ProjectLayoutTests` |
 | Services are registered explicitly; nothing scans an assembly for types to register | review |
 | No `IQueryable` crosses a `Core` interface; one query class per read, projecting with `AsNoTracking` | review; `docs/DATABASE-CONVENTIONS.md` (phase 2) |
