@@ -1,9 +1,6 @@
-# Wolfgang.Barefoot Documentation
+# Barefoot documentation
 
-Welcome to the documentation section. Browse the topics in the navigation menu to get started.
+Pages for the people who run and use Barefoot. A page appears here when the feature it describes is built.
 
-## Available Documentation
-
-- [Introduction](introduction.md) - Overview and introduction
-- [Getting Started](getting-started.md) - Quick start guide
-
+- [What Barefoot is](introduction.md)
+- [Running Barefoot](getting-started.md)

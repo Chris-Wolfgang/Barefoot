@@ -1,53 +1,28 @@
-# Getting Started
+# Running Barefoot
 
-This guide will help you quickly get up and running with Wolfgang.Barefoot.
+Barefoot is not released yet, so there is nothing to install today. This page says what an
+installation will consist of. Each step gets its own page here when the feature behind it is built.
 
-## Prerequisites
+## What an installation needs
 
-<!-- List any prerequisites needed. For example:
-- .NET 10.0 SDK or later (see Supported Frameworks in the README for the runtimes the package targets)
-- Visual Studio 2022 or Visual Studio Code
--->
+| Need | Used for |
+|---|---|
+| An Azure subscription | The database (Azure SQL Database, free offer) and the two containers (API and web site), which stop when idle |
+| A Microsoft Entra tenant | Sign-in. People are invited as guests; there is no sign-up page and no stored password |
+| A machine at home that can stay on twice a week | `bf-scraper`, which needs a browser and a residential connection |
+| A mailbox that can send | The digests |
 
-## Installation
+## The steps, in order
 
-### Via NuGet Package Manager
+1. Create the database and the two containers.
+2. Register the application in Entra and invite the people who will use it.
+3. Create the schema with `bf-maint migrate`.
+4. Schedule the semiweekly job on the home machine: refresh the airport and resort lists, run the
+   lookups, send the digests.
+5. Sign in to the web site and create a search.
 
-```bash
-dotnet add package Wolfgang.Barefoot
-```
+## Until those pages exist
 
-### Via Package Manager Console
-
-```powershell
-Install-Package Wolfgang.Barefoot
-```
-
-## Quick Start
-
-<!-- Add a quick start example. For example: -->
-
-```csharp
-// Add your quick start code example here
-// This should show the simplest way to use your library
-
-using Wolfgang.Barefoot;
-
-// Example usage
-```
-
-## Next Steps
-
-- Explore the [API Reference](../api/index.md) for detailed documentation
-- Read the [Introduction](introduction.md) to learn more about Wolfgang.Barefoot
-- Check out example projects in the [GitHub repository](https://github.com/Chris-Wolfgang/barefoot)
-
-## Common Issues
-
-<!-- Add common issues and their solutions here -->
-
-## Additional Resources
-
-- [GitHub Repository](https://github.com/Chris-Wolfgang/barefoot)
-- [Contributing Guidelines](https://github.com/Chris-Wolfgang/barefoot/blob/main/CONTRIBUTING.md)
-- [Report an Issue](https://github.com/Chris-Wolfgang/barefoot/issues)
+The design document describes each of these in full:
+[DESIGN.md](https://github.com/Chris-Wolfgang/barefoot/blob/main/docs/DESIGN.md) — the database in
+§11, sign-in in §10, the scheduled job in §5.
