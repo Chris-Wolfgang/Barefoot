@@ -10,8 +10,9 @@
 *.userosscache
 *.sln.docstates
 *.env
-# Claude Code
-.claude/
+# Claude Code: local state is ignored; the skills are part of the delivery process and are committed
+.claude/*
+!.claude/skills/
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

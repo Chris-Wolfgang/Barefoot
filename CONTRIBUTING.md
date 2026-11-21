@@ -58,7 +58,7 @@ You can contribute in several ways:
    - **Changelog Fragment Check** — a PR that touches `src/` must add a fragment (see below).
    - **ReSharper InspectCode** — error-severity findings fail; warnings go to the Security tab.
    - **Stage 1 (Linux), Stage 2 (Windows), Stage 3 (macOS)** — build and test every target framework
-     of every test project, with coverage gates of **90 % line coverage for `src/`** and
+     of every test project, with coverage gates of **95 % line coverage for `src/`** and
      **100 % for `tests/`**. A framework on which zero tests ran fails the stage.
    - **Security Scan (DevSkim)** and **Security Scan (CodeQL)** (`codeql.yaml`).
    - **actionlint** and **zizmor** (`actions-audit.yaml`) on the workflow files themselves.
@@ -230,7 +230,7 @@ dotnet test --collect:"XPlat Code Coverage"
 
 ```powershell
 # Mirrors pr.yaml's Windows stage on this machine: build, every-TFM tests, coverage gates
-# (90 % src / 100 % tests), DevSkim, gitleaks. The Linux and macOS stages only run in CI.
+# (95 % src / 100 % tests), DevSkim, gitleaks. The Linux and macOS stages only run in CI.
 pwsh ./scripts/build-pr.ps1
 
 # Skip the security scans or the coverage gate while iterating
