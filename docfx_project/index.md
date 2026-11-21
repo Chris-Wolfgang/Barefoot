@@ -2,40 +2,31 @@
 _layout: landing
 ---
 
-# Wolfgang.Barefoot Documentation
+# Barefoot
 
-Welcome to the Wolfgang.Barefoot documentation. This site contains comprehensive guides, API reference, and examples to help you get started.
+Flexible-date room and flight price search for Sandals & Beaches resorts.
 
-## Quick Links
+Save a search once — resorts, departure airports, a flexible check-in window, nights, travellers —
+and Barefoot looks up every combination on the public booking site about twice a week, keeps every
+result so prices can be compared over time, and e-mails a digest when the run is done.
 
-- [Getting Started](docs/getting-started.md) - Learn the basics
-- [API Reference](api/index.md) - Complete API documentation
-- [GitHub Repository](https://github.com/Chris-Wolfgang/barefoot) - View source code
+## Status
 
-## About Wolfgang.Barefoot
+**Barefoot is being built.** The design is complete and the application is not yet released. This
+site is published with each release, so the pages for running Barefoot arrive here together with
+the features they describe.
 
-Flexible-date room and flight price search for Sandals & Beaches resorts
+## Where to read now
 
-## Installation
-
-```bash
-dotnet add package Wolfgang.Barefoot
-```
-
-## Documentation Sections
-
-### 📖 [Documentation](docs/getting-started.md)
-Step-by-step guides and tutorials to help you use Wolfgang.Barefoot effectively.
-
-### 📚 [API Reference](api/index.md)
-Complete API documentation automatically generated from source code XML comments.
-
-## Additional Resources
-
-- [Contributing Guidelines](https://github.com/Chris-Wolfgang/barefoot/blob/main/CONTRIBUTING.md)
-- [Code of Conduct](https://github.com/Chris-Wolfgang/barefoot/blob/main/CODE_OF_CONDUCT.md)
-- [License](https://github.com/Chris-Wolfgang/barefoot/blob/main/LICENSE)
+- [What Barefoot is](docs/introduction.md)
+- [Running Barefoot](docs/getting-started.md) — what an installation consists of
+- [The design](https://github.com/Chris-Wolfgang/barefoot/blob/main/docs/DESIGN.md) and
+  [the decisions behind it](https://github.com/Chris-Wolfgang/barefoot/tree/main/docs/adr), on GitHub
+- [API reference](api/index.md), generated from the source
 
 ---
 
-*Documentation built with [DocFX](https://dotnet.github.io/docfx/)*
+*Barefoot is an independent tool. It is not affiliated with or endorsed by Sandals Resorts
+International. "Sandals" and "Beaches" are trademarks of their owner, used only to identify the
+resorts this tool searches. Prices shown are what the public site displayed at the time of a
+lookup; they are not quotes.*
