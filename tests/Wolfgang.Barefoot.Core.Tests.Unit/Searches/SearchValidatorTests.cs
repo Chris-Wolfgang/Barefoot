@@ -607,6 +607,14 @@ public sealed class SearchValidatorTests
 
 
     [Fact]
+    public void Validate_when_the_stay_is_one_night_reports_nothing()
+    {
+        Assert.Empty(SearchValidator.Validate(Recurring() with { Nights = 1 }));
+    }
+
+
+
+    [Fact]
     public void Validate_when_one_adult_travels_alone_reports_nothing()
     {
         Assert.Empty(SearchValidator.Validate(Recurring() with { Adults = 1 }));
