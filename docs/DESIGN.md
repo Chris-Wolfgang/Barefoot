@@ -84,8 +84,8 @@ that is too old *and* one that is too new. `bf-scraper` and `bf` say which side 
 
 `Obe` drives the booking UI in Chromium through Playwright and reads the rendered room and flight
 cards. The site knowledge — page flow, selectors, the price-text formats and their traps — is the
-one thing taken from the earlier tool's notes (`docs/API-NOTES.md` on the archive branch; it is
-redacted before it is copied here, per sandals-search#261). Politeness: sequential, a delay
+one thing taken from the earlier tool's notes, redacted per sandals-search#261:
+[`docs/API-NOTES.md`](API-NOTES.md). Politeness: sequential, a delay
 (~2.5 s) plus jitter that the run hands to the worker (`run.politeness_delay_ms`,
 `run.politeness_jitter_ms`; ADR 0011), one lookup at a time. Earliest searchable check-in ≈ today +
 `run.min_lead_days`. Prices are what the public site shows for the given occupancy, taxes included.
