@@ -63,3 +63,7 @@ dotnet_diagnostic.xUnit1030.severity = error
 # IDE0161: file-scoped namespaces, as under src/.
 csharp_style_namespace_declarations = file_scoped:error
 dotnet_diagnostic.IDE0161.severity = error
+
+# CA1062: a public test method's parameters are supplied by xUnit from [InlineData] or
+# [MemberData], never by an outside caller, so a null check on them guards nothing.
+dotnet_diagnostic.CA1062.severity = none
