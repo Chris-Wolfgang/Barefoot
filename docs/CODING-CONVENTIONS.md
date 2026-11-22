@@ -111,6 +111,16 @@ Error codes, permissions and setting keys are small key types in `Wolfgang.Baref
 | Entities are classes, because EF Core needs to construct and mutate them | review |
 | A type used as a test's expected value supports value equality (a `record`) | review |
 
+## Range checks
+
+`IsInRange` and `IsBetween` come from `Wolfgang.Extensions.IComparable`. A range check says which
+bounds it includes by the method it calls, not by which of `<` and `<=` it happens to use.
+
+| Rule | Enforced by |
+|---|---|
+| A value checked against a lower and an upper bound uses `IsInRange` when both bounds are allowed and `IsBetween` when neither is: `status.IsInRange(400, 599)`, never `status is >= 400 and <= 599` or two comparisons joined by `&&` | review |
+| A check against one bound, or a range with one bound allowed and the other not, stays a plain comparison | review |
+
 ## Regular expressions
 
 Text from the booking site is input nobody here controls (DESIGN §3).
