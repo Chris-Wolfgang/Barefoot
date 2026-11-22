@@ -9,6 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <!-- Range checks read as what they mean: IsInRange (bounds included), IsBetween (bounds excluded). -->
+    <PackageReference Include="Wolfgang.Extensions.IComparable" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <InternalsVisibleTo Include="Wolfgang.Barefoot.Core.Tests.Unit" />
   </ItemGroup>
 

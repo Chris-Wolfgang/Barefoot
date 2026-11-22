@@ -13,3 +13,4 @@ Projects covered: `Wolfgang.Barefoot.Core`.
 | Package | Version(s) | License | Copyright | Project URL | Used by |
 |---|---|---|---|---|---|
 | System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Core |
+| Wolfgang.Extensions.IComparable | 1.1.2 | MIT | Copyright (c) Chris Wolfgang | <https://github.com/Chris-Wolfgang/IComparable-Extensions> | Wolfgang.Barefoot.Core |
