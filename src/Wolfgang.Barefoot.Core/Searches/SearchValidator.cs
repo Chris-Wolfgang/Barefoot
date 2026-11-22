@@ -1,4 +1,5 @@
 using Wolfgang.Barefoot.Core.Validation;
+using Wolfgang.Extensions.IComparable;
 
 namespace Wolfgang.Barefoot.Core.Searches;
 
@@ -110,7 +111,7 @@ public static class SearchValidator
         CheckYoungTravellers(definition.Children, nameof(definition.Children), definition.Brand, failures);
         CheckYoungTravellers(definition.Infants, nameof(definition.Infants), definition.Brand, failures);
 
-        if (definition.RunOrder is < LowestRunOrder or > HighestRunOrder)
+        if (!definition.RunOrder.IsInRange(LowestRunOrder, HighestRunOrder))
         {
             failures.Add
             (
@@ -214,7 +215,7 @@ public static class SearchValidator
 
         if (month is { } m && day is { } d && !IsDayOfYear(m, d))
         {
-            failures.Add(ValidationFailure.Of(SearchErrors.WindowDayInvalid, m is < 1 or > 12 ? monthField : dayField, m, d));
+            failures.Add(ValidationFailure.Of(SearchErrors.WindowDayInvalid, m.IsInRange(1, 12) ? dayField : monthField, m, d));
         }
     }
 
@@ -223,7 +224,7 @@ public static class SearchValidator
     private static bool IsDayOfYear(int month, int day)
     {
         // 2024 is a leap year: 29 February is a day a recurring window may name.
-        return month is >= 1 and <= 12 && day >= 1 && day <= DateTime.DaysInMonth(2024, month);
+        return month.IsInRange(1, 12) && day.IsInRange(1, DateTime.DaysInMonth(2024, month));
     }
 
 
