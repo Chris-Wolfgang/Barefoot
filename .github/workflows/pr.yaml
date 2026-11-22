@@ -30,7 +30,7 @@ env:
   # host, and the run then aborts with no test having failed.
   VSTEST_CONNECTION_TIMEOUT: 300
   # Minimum line coverage for PRODUCTION assemblies (anything under src/).
-  CODECOV_MINIMUM: 90
+  CODECOV_MINIMUM: 95
   # Minimum line coverage for TEST assemblies (anything under tests/).
   # Test code that never executes has no purpose — an uncovered helper, fake, or
   # branch in a test project is dead code and should be exercised or deleted.
