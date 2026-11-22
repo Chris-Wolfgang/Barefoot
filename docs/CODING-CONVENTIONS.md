@@ -171,6 +171,7 @@ The deny list and its reasons are in `DependencyPolicyTests`, the one place they
 | A test that changes process-wide state — an environment variable, the current directory, the default culture, the exit code, the console streams — is in a collection that does not run in parallel | `TestIsolationTests` |
 | Test doubles live in `Wolfgang.Barefoot.TestKit`; no test project defines its own fake clock or fake site client | `TestKitOwnershipTests` |
 | Boundary cases the production code handles are exercised | review; Stryker's break threshold |
+| Every `.Tests.Unit` project has a `stryker-config.json` that names the project it mutates and sets `thresholds.break` above zero. The floor is raised as the score allows, never lowered | `MutationFloorTests`; `stryker.yaml` fails a PR that scores below the floor |
 | Tests use xUnit's built-in assertions; no assertion or mocking library | `DependencyPolicyTests` |
 | An existing assertion is not weakened or removed to make a build pass | review; the PR lists such changes under **Test changes (for review)** |
 
