@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Runtime.InteropServices;
+using Wolfgang.Extensions.IComparable;
 
 namespace Wolfgang.Barefoot.Core.Searches;
 
@@ -25,12 +26,12 @@ public readonly record struct MonthDay
     /// <exception cref="ArgumentOutOfRangeException">The month or the day does not exist.</exception>
     public MonthDay(int month, int day)
     {
-        if (month is < 1 or > 12)
+        if (!month.IsInRange(1, 12))
         {
             throw new ArgumentOutOfRangeException(nameof(month), month, "A month is between 1 and 12.");
         }
 
-        if (day < 1 || day > DateTime.DaysInMonth(LeapYear, month))
+        if (!day.IsInRange(1, DateTime.DaysInMonth(LeapYear, month)))
         {
             throw new ArgumentOutOfRangeException(nameof(day), day, $"Month {month} has no day {day}.");
         }
