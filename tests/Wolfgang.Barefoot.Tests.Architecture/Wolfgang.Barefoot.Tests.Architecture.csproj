@@ -4,6 +4,11 @@
     <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <IsPackable>false</IsPackable>
+    <!-- Coverage on a CI build: coverlet maps the deterministic paths in the PDB back to files from
+         the project references, and this project has none until the first project under src/ exists.
+         Without the mapping it records nothing for this assembly. The assembly is never shipped, so
+         it keeps real paths. -->
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
 
   <ItemGroup>
