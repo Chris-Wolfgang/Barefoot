@@ -1,7 +1,7 @@
 # ADR 0006 — E-mail: store the digest on completion, send in a separate step, owner-only recipients
 
 - **Status:** Accepted, 2026-11-06 (amended 2026-11-20: where extra recipients are stored, who is
-  told about a failed delivery, `digests/send` answers synchronously)
+  told about a failed delivery, `digests/send` answers synchronously, the owner may resend)
 - **Scope:** `Business` (digest building and delivery), `Api` (`/digests`), `Admin` (`send-digests`)
 
 ## Context
@@ -53,7 +53,12 @@ tool did all three; each is designed out here.
    transactional provider on an owned domain with SPF/DKIM (DMARC `p=none` to start). One
    `ISmtpClient` implementation either way; a file-sink implementation for local runs.
 5. **Views:** Admin sees every delivery and status; a user sees "my digests" rendered from the
-   stored HTML, each linking to its results. `resend` is an Admin action.
+   stored HTML, each linking to its results. The list is paged (ADR 0012 §5) and can be narrowed
+   by search, by date range, by text and to undelivered ones, because it grows by one digest per
+   search per run. **A user may resend any of their own digests**, to any one of that digest's
+   recipients; an Admin may resend anyone's. A resend mails the stored body again, unchanged, to an
+   address that digest already went to — never to a new one, so it is not a relay — and is recorded
+   as a further attempt on that delivery.
 6. **Markup is mobile-first** (DESIGN §9): one card per room, 600 px single column, inline CSS,
    plain-text part always, deep links to the phone-contract screens; a fixture test pins it.
 

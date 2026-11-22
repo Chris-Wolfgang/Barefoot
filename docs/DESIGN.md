@@ -281,7 +281,9 @@ Resort, ResortSpan, Airport, RoomCategory, vocabularies (+ Version)   audited
   transactional provider on an owned domain with SPF/DKIM. One `ISmtpClient` implementation either
   way; a file-sink implementation for local runs.
 - **Views:** Admin — every delivery and its status (`GET /digests`); user — "my digests", rendered
-  from the stored HTML (`GET /digests/mine`). `resend` is an Admin action.
+  from the stored HTML (`GET /digests/mine`, paged, filtered by search, date range, text and
+  undelivered). A user may **resend** any of their own digests to any of its recipients; an Admin
+  may resend anyone's. A resend mails the stored body again, unchanged.
 - **Failure notices** go to the Admin only; a user's digest says "3 of 14 lookups did not
   complete", never why.
 - Content: §1 summary per resort, §2 resolved criteria incl. offline-resort notices, §3 detail
@@ -380,9 +382,9 @@ the system. Everything an Editor sees is reachable from a search they own.
 | Work | **Searches** (locked list, below) → **Search editor** (below) | Owner column + owner filter; "mine" by default, "all owners" toggle; can open any search |
 | Read | **Results** (below) — search + run pickers (runs are Admin objects), digest-filters/everything toggle, paged grid, flights per departure airport | any owner |
 | Read | **Price history** — over *my* captures only (v1) | cross-user view over all captures |
-| Read | **My digests** — every digest sent to me, rendered from the stored body, linking to its results | **Deliveries** — every delivery, status, attempts, error, resend |
+| Read | **My digests** — every digest sent to me, found, filtered and paged, rendered from the stored body, linking to its results; Resend per recipient | **Deliveries** — every delivery, status, attempts, error, resend |
 | Me | **Profile** — name/e-mail (from sign-in, read-only), time zone, default occupancy; my extra recipients (read-only until self-service) | — |
-| Admin | — | **Runs** (history + live progress: requests and flight sets done/total, per-search stage, abort reasons), **Reference data** (resorts + spans, airports + time zones, vocab with the future prune action), **Users** (role, search count, last sign-in, the user's extra recipients, Sign out everywhere; inviting stays in Entra), **System** (settings registry, read/write — ADR 0011) |
+| Admin | — | **Runs** (history + live progress: requests and flight sets done/total, per-search stage, abort reasons), **Reference data** (resorts + spans, airports + time zones, vocab with the future prune action), **Users** (role, search count, last sign-in, the user's extra recipients, Sign out everywhere; inviting stays in Entra), **Settings** (settings registry, read/write — ADR 0011) |
 
 - Admin is also an Editor (own searches). **Viewer** = receives digests and browses results; the
   Admin creates searches *for* them, once they have signed in and accepted the disclaimer — until
@@ -401,7 +403,8 @@ the system. Everything an Editor sees is reachable from a search they own.
 - **Polling.** A page polls the API every ~30 s **only while its last load showed a run
   `InProgress`**. A page that saw no run in progress does not poll, and nothing else in the UI
   polls: a poll is a query, and a query holds the serverless database awake (§11).
-- No user-facing Settings page (Admin **System** holds the registry); no run history for
+- No per-user Settings page (the Admin's **Settings** page holds the registry; a user's own
+  preferences are on Profile); no run history for
   non-admins; no "Refresh now" on Reference data (scraping is `bf-scraper` on the home machine).
 - Future version: a first-run tour / wizard.
 
@@ -431,6 +434,24 @@ and check-in. Clicking an airport opens that airport alone across the row: the c
 with its legs, then "N more" which pages the remaining options **ten at a time, price ascending**,
 from a paged flight-options endpoint per flight set. Offline resorts appear as a row. Phone: cards,
 one airport panel at a time.
+
+**The remaining screens (locked 2026-11-20).** Specifics are in the mockup README.
+*My digests*: found, filtered (search, date range, text, undelivered) and paged; the stored message
+beside the list, each recipient with its delivery status and Resend. *Profile*: identity read-only,
+time zone, default adults, the address book read-only. *Price history*: one room on one check-in
+date across runs — a two-series chart on one dollar axis (total with flights, room alone) with the
+same numbers as a table. *Runs*: a live card only while a run is in progress, then paged history
+with the breaker's reason under its row. *Deliveries*: every recipient of every digest, Resend and
+retry-failed. *Reference data*: Resorts (the short name and drive time are the Admin's to edit;
+the site's facts are not), Airports (a missing time zone is set here), Room vocabulary. *Users*:
+who has signed in and accepted the terms, each user's address book, Sign out everywhere. *Settings*:
+the settings registry with inline validation and reset, and what is running (builds, contract
+revision, schema). *Startup states*: Warming up, Quota used up, Missing migration, Newer schema,
+Unavailable, Version mismatch — full page, every role.
+
+**Tables never leave their card.** Long text wraps; a note about a row sits under it; on a narrow
+window the less important columns are dropped first, and Results drops none. Sideways scrolling
+inside the card is the last resort.
 
 **Budget & health (Admin dashboard).** Table-backed cards ship with the dashboard; the Azure
 Monitor cards follow once the API's managed identity has *Reader* on the database and
@@ -541,7 +562,7 @@ Warning. Every log entry for an API call carries the `traceId` the problem detai
 | Path versioning, committed OpenAPI equal to served, `frozen.txt` diff gate | ADR 0010; `docs/API-VERSIONING.md` |
 | Every endpoint declares a permission or `AllowAnonymous` with a reason, enforced by a test; grants recomputed per request; cookie on web, token server-side; security headers with a test; CORS and session lifetimes configurable (here as bootstrap configuration, ADR 0011 §6) | ADR 0005; §10 |
 | `HttpAuditUserProvider` / `SystemAuditUserProvider` split; AuditTrail gaps to re-check | ADR 0005; §8 |
-| Typed settings registry, codecs, bootstrap-only `appsettings`, unknown-key warning | ADR 0011; Admin System page |
+| Typed settings registry, codecs, bootstrap-only `appsettings`, unknown-key warning | ADR 0011; Admin Settings page |
 | Architecture tests with positive-control fixtures (UI never references data packages, no `DateTime` on public surface, dependency deny-list, conversion placement, page gate) | §14; phase 0 |
 | Database conventions: snake_case prefixes, `Restrict` FKs, model-convention verifier, index-cites-query | ADR 0004 §12; `docs/DATABASE-CONVENTIONS.md` |
 | `TimeProvider` injected, `DateTimeOffset.Now/UtcNow` banned; typed keys; DTOs are records; conventions docs that pair each rule with its enforcement; engineering doc ↔ operator doc twins | `docs/CODING-CONVENTIONS.md` (phase 0); docfx pages |
