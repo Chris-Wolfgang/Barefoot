@@ -1,4 +1,5 @@
 using System.Globalization;
+using Wolfgang.Extensions.IComparable;
 
 namespace Wolfgang.Barefoot.Core.Keys;
 
@@ -35,7 +36,7 @@ public sealed class ErrorCode
     {
         Name = KeyName.Require(name, nameof(name));
 
-        if (status is < 400 or > 599)
+        if (!status.IsInRange(400, 599))
         {
             throw new ArgumentOutOfRangeException(nameof(status), status, "An error code's status is between 400 and 599.");
         }
