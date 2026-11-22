@@ -26,8 +26,9 @@ dotnet_diagnostic.S108.severity = none
 # S1215: Remove use of GC.GetTotalMemory — acceptable in perf/memory tests
 dotnet_diagnostic.S1215.severity = none
 
-# S2699: Add assertion to test case — some tests verify no-throw behavior
-dotnet_diagnostic.S2699.severity = none
+# S2699: a test with no assertion is an error (docs/CODING-CONVENTIONS.md "Tests"). A test
+# that only proves "does not throw" says so: `Assert.Null(Record.Exception(...))`.
+dotnet_diagnostic.S2699.severity = error
 
 # S6562: Provide DateTimeKind — test data doesn't need DateTimeKind
 dotnet_diagnostic.S6562.severity = none
@@ -46,3 +47,23 @@ dotnet_diagnostic.S1144.severity = none
 
 # xUnit2013: Use Assert.Single instead of Assert.Equal for collection size
 dotnet_diagnostic.xUnit2013.severity = none
+
+# RS0030: the banned symbols apply to tests too. The root .editorconfig turns the rule off
+# under tests/; this turns it back on, because a test that reads DateTimeOffset.UtcNow or
+# TimeProvider.System passes or fails with the calendar. Tests take the clock from the test
+# kit's fake TimeProvider.
+dotnet_diagnostic.RS0030.severity = error
+
+# xUnit1030: a test never awaits with ConfigureAwait(false) - xUnit runs tests on its own
+# synchronization context and a continuation that leaves it escapes the runner's limits.
+# This is why CA2007 stays off under tests/ (root .editorconfig): the two rules ask for
+# opposite things, and inside a test xUnit's is the correct one.
+dotnet_diagnostic.xUnit1030.severity = error
+
+# IDE0161: file-scoped namespaces, as under src/.
+csharp_style_namespace_declarations = file_scoped:error
+dotnet_diagnostic.IDE0161.severity = error
+
+# CA1062: a public test method's parameters are supplied by xUnit from [InlineData] or
+# [MemberData], never by an outside caller, so a null check on them guards nothing.
+dotnet_diagnostic.CA1062.severity = none

@@ -66,14 +66,26 @@ M:System.Net.WebClient.UploadString(System.String,System.String); Use 'HttpClien
 # Obsolete/Insecure Serialization
 T:System.Runtime.Serialization.Formatters.Binary.BinaryFormatter; Insecure and deprecated - use System.Text.Json.JsonSerializer instead
 T:System.Runtime.Serialization.Formatters.Soap.SoapFormatter; Insecure and deprecated - use System.Text.Json.JsonSerializer instead
-# DateTime Anti-patterns - Prefer DateTimeOffset for timezone safety
-P:System.DateTime.Now; Use 'DateTimeOffset.UtcNow' or 'DateTimeOffset.Now' for timezone-aware operations
+# The clock - time comes from an injected TimeProvider, never from a static property
+# (docs/CODING-CONVENTIONS.md "Time"). A static clock cannot be set by a test, so code that
+# reads one is tested against whatever day the build happens to run on.
+P:System.DateTime.Now; Read the injected TimeProvider: 'timeProvider.GetUtcNow()'
+P:System.DateTime.UtcNow; Read the injected TimeProvider: 'timeProvider.GetUtcNow()'
+P:System.DateTime.Today; Read the injected TimeProvider: 'timeProvider.GetUtcNow()' and take the date in the zone the rule names
+P:System.DateTimeOffset.Now; Read the injected TimeProvider: 'timeProvider.GetUtcNow()'
+P:System.DateTimeOffset.UtcNow; Read the injected TimeProvider: 'timeProvider.GetUtcNow()'
+P:System.TimeProvider.System; Take a TimeProvider as a constructor parameter. Only a host's composition root names TimeProvider.System, inside a justified '#pragma warning disable RS0030'
 # Synchronous Parallel operations - Use async alternatives
 M:System.Threading.Tasks.Parallel.For(System.Int32,System.Int32,System.Action{System.Int32}); Synchronous - prefer async concurrency patterns (e.g., 'Task.WhenAll()', dataflow). On .NET 6+ targets, 'Parallel.ForEachAsync()' is also available.
 M:System.Threading.Tasks.Parallel.For(System.Int32,System.Int32,System.Threading.Tasks.ParallelOptions,System.Action{System.Int32}); Synchronous - prefer async concurrency patterns (e.g., 'Task.WhenAll()', dataflow). On .NET 6+ targets, 'Parallel.ForEachAsync()' is also available.
 M:System.Threading.Tasks.Parallel.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Action{``0}); Synchronous - prefer async concurrency patterns (e.g., 'Task.WhenAll()', dataflow). On .NET 6+ targets, 'Parallel.ForEachAsync()' is also available.
 M:System.Threading.Tasks.Parallel.ForEach``1(System.Collections.Generic.IEnumerable{``0},System.Threading.Tasks.ParallelOptions,System.Action{``0}); Synchronous - prefer async concurrency patterns (e.g., 'Task.WhenAll()', dataflow). On .NET 6+ targets, 'Parallel.ForEachAsync()' is also available.
 M:System.Threading.Tasks.Parallel.Invoke(System.Action[]); Synchronous - use 'Task.WhenAll()' with async delegates instead
+# The console - a host logs through ILogger and writes a verb's own output to the TextWriter
+# it was handed (docs/CODING-CONVENTIONS.md "Logging"), so output can be captured by a test
+# and stdout stays parseable. Only a host's Program.cs names Console, to pass Console.Out and
+# Console.Error in, inside a justified '#pragma warning disable RS0030'.
+T:System.Console; Log through ILogger, or write to the TextWriter the host passes in
 # Console Blocking operations - Avoid in async code
 M:System.Console.ReadLine(); Blocking - avoid in async code paths
 M:System.Console.Read(); Blocking - avoid in async code paths
