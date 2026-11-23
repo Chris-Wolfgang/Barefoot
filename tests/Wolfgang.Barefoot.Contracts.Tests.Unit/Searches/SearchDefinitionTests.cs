@@ -11,15 +11,15 @@ public sealed class SearchDefinitionTests
         {
             Name = "Anniversary",
             Brand = Brand.Sandals,
-            Nights = 7,
-            Adults = 2,
+            NightCount = 7,
+            AdultCount = 2,
             WindowKind = WindowKind.Recurring,
         };
 
         Assert.Equal("Anniversary", definition.Name);
         Assert.Equal(Brand.Sandals, definition.Brand);
-        Assert.Equal(7, definition.Nights);
-        Assert.Equal(2, definition.Adults);
+        Assert.Equal(7, definition.NightCount);
+        Assert.Equal(2, definition.AdultCount);
         Assert.Equal(WindowKind.Recurring, definition.WindowKind);
         Assert.Empty(definition.ResortIds);
         Assert.Empty(definition.DepartureAirportIds);
@@ -28,8 +28,8 @@ public sealed class SearchDefinitionTests
         Assert.Empty(definition.RoomViewIds);
         Assert.Empty(definition.RoomTypeIds);
         Assert.Empty(definition.MustHaveFeatureIds);
-        Assert.Equal(0, definition.Children);
-        Assert.Equal(0, definition.Infants);
+        Assert.Equal(0, definition.ChildCount);
+        Assert.Equal(0, definition.InfantCount);
         Assert.False(definition.IncludeFlights);
         Assert.Null(definition.Cabin);
         Assert.Null(definition.RecurringFirstMonth);
@@ -38,10 +38,10 @@ public sealed class SearchDefinitionTests
         Assert.Null(definition.RecurringLastDay);
         Assert.Null(definition.FirstCheckIn);
         Assert.Null(definition.LastCheckIn);
-        Assert.Null(definition.MaxTotalPrice);
+        Assert.Null(definition.MaxTotalAmount);
         Assert.Null(definition.MaxDriveMinutes);
         Assert.Null(definition.MaxFlightMinutes);
-        Assert.Null(definition.MaxStops);
+        Assert.Null(definition.MaxStopCount);
         Assert.Equal(50, definition.RunOrder);
         Assert.Equal(50, SearchDefinition.NormalRunOrder);
     }
@@ -58,10 +58,10 @@ public sealed class SearchDefinitionTests
             Name = "Family week",
             Brand = Brand.Beaches,
             ResortIds = [resort],
-            Nights = 5,
-            Adults = 2,
-            Children = 2,
-            Infants = 1,
+            NightCount = 5,
+            AdultCount = 2,
+            ChildCount = 2,
+            InfantCount = 1,
             WindowKind = WindowKind.OneTime,
             RecurringFirstMonth = 3,
             RecurringFirstDay = 1,
@@ -76,18 +76,18 @@ public sealed class SearchDefinitionTests
             RoomViewIds = [airport],
             RoomTypeIds = [resort, airport],
             MustHaveFeatureIds = [airport, resort],
-            MaxTotalPrice = 9000m,
+            MaxTotalAmount = 9000m,
             MaxDriveMinutes = 90,
             MaxFlightMinutes = 600,
-            MaxStops = 1,
+            MaxStopCount = 1,
             RecipientIds = [airport],
             RunOrder = 75,
         };
 
         Assert.Equal(Brand.Beaches, definition.Brand);
         Assert.Equal([resort], definition.ResortIds);
-        Assert.Equal(2, definition.Children);
-        Assert.Equal(1, definition.Infants);
+        Assert.Equal(2, definition.ChildCount);
+        Assert.Equal(1, definition.InfantCount);
         Assert.Equal(WindowKind.OneTime, definition.WindowKind);
         Assert.Equal(3, definition.RecurringFirstMonth);
         Assert.Equal(1, definition.RecurringFirstDay);
@@ -98,10 +98,10 @@ public sealed class SearchDefinitionTests
         Assert.True(definition.IncludeFlights);
         Assert.Equal(Cabin.PremiumEconomy, definition.Cabin);
         Assert.Equal([airport], definition.DepartureAirportIds);
-        Assert.Equal(9000m, definition.MaxTotalPrice);
+        Assert.Equal(9000m, definition.MaxTotalAmount);
         Assert.Equal(90, definition.MaxDriveMinutes);
         Assert.Equal(600, definition.MaxFlightMinutes);
-        Assert.Equal(1, definition.MaxStops);
+        Assert.Equal(1, definition.MaxStopCount);
         Assert.Equal([airport], definition.RecipientIds);
         Assert.Equal([resort], definition.RoomLevelIds);
         Assert.Equal([airport], definition.RoomViewIds);

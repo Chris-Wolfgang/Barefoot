@@ -9,9 +9,9 @@ namespace Wolfgang.Barefoot.Contracts.Runs;
 /// <param name="ResortCode">The resort's code on the booking site.</param>
 /// <param name="CheckIn">The check-in date.</param>
 /// <param name="CheckOut">The check-out date.</param>
-/// <param name="Adults">The number of adults.</param>
-/// <param name="Children">The number of children.</param>
-/// <param name="Infants">The number of infants.</param>
+/// <param name="AdultCount">The number of adults.</param>
+/// <param name="ChildCount">The number of children.</param>
+/// <param name="InfantCount">The number of infants.</param>
 public sealed record ClaimedLookup
 (
     Guid RequestId,
@@ -20,7 +20,7 @@ public sealed record ClaimedLookup
     string ResortCode,
     DateOnly CheckIn,
     DateOnly CheckOut,
-    int Adults,
-    int Children,
-    int Infants
+    int AdultCount,
+    int ChildCount,
+    int InfantCount
 );

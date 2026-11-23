@@ -3,7 +3,7 @@ namespace Wolfgang.Barefoot.Contracts.Scraping;
 /// <summary>
 /// One round trip the booking site offered for a flight set (<c>docs/API-NOTES.md</c>, "Itinerary cards").
 /// </summary>
-/// <param name="RoomAndFlightsTotal">
+/// <param name="TotalAmount">
 /// The "room + flights" total on the card, in US dollars. The site shows no air-only figure: the
 /// API derives the airfare by subtracting the room price (DESIGN §6).
 /// </param>
@@ -12,7 +12,7 @@ namespace Wolfgang.Barefoot.Contracts.Scraping;
 /// <param name="Return">The way back.</param>
 public sealed record ScrapedItinerary
 (
-    decimal RoomAndFlightsTotal,
+    decimal TotalAmount,
     string RoomCategoryCode,
     ScrapedDirection Outbound,
     ScrapedDirection Return

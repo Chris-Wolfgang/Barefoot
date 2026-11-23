@@ -88,7 +88,7 @@ race a retry against the original (phase 3); the API contract tests for `412` / 
 |---|---|---|
 | `SearchMatrix` | `(OwnerId, NormalizedName)` | search names unique per owner; `NormalizedName` is trimmed, upper-invariant; a race is `409` |
 | `Run` | `Status`, filtered to `InProgress` | the run lock: at most one run in progress |
-| `SearchRequest` | `(Run, Resort, CheckIn, CheckOut, Adults, Children, Infants)` | dedupe per run; `Cabin` is not in the key |
+| `SearchRequest` | `(Run, Resort, CheckIn, CheckOut, AdultCount, ChildCount, InfantCount)` | dedupe per run; `Cabin` is not in the key |
 | `SearchItem` | `(MatrixRun, SearchRequest)` | one link per search wanting the request |
 | `Recipient` | `(OwnerId, Address)` | the owner's address book; `Address` is trimmed, lower-cased; a duplicate is `409` |
 | `SearchRecipient` | `(SearchMatrix, Recipient)` | which recipients a search mails |

@@ -12,7 +12,7 @@ namespace Wolfgang.Barefoot.Contracts.Results;
 /// <param name="DepartureAirportCode">The three-letter code of the departure airport.</param>
 /// <param name="ArrivalTime">The local arrival time.</param>
 /// <param name="ArrivalAirportCode">The three-letter code of the arrival airport.</param>
-/// <param name="Overnight">Whether the site marks the flight as overnight.</param>
+/// <param name="IsOvernight">Whether the site marks the flight as overnight.</param>
 /// <param name="LayoverMinutes">
 /// The wait at the arrival airport before the next flight of the direction. It is
 /// <see langword="null"/> after the last flight, and when it cannot be worked out.
@@ -28,6 +28,6 @@ public sealed record FlightLegResponse
     string DepartureAirportCode,
     TimeOnly ArrivalTime,
     string ArrivalAirportCode,
-    bool Overnight,
+    bool IsOvernight,
     int? LayoverMinutes
 );

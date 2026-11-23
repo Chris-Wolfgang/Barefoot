@@ -14,8 +14,8 @@ namespace Wolfgang.Barefoot.Contracts.Runs;
 /// </param>
 /// <param name="Lookups">The run's room lookups.</param>
 /// <param name="FlightSets">The run's flight sets.</param>
-/// <param name="DigestsSent">How many of the run's digests were sent.</param>
-/// <param name="DigestsFailed">How many could not be delivered.</param>
+/// <param name="SentDigestCount">How many of the run's digests were sent.</param>
+/// <param name="FailedDigestCount">How many could not be delivered.</param>
 /// <param name="SecondsPerLookup">
 /// The run's time divided by the lookups and flight sets done, or <see langword="null"/> when none
 /// was done.
@@ -34,8 +34,8 @@ public sealed record RunHistoryResponse
     int? DurationMinutes,
     WorkProgress Lookups,
     WorkProgress FlightSets,
-    int DigestsSent,
-    int DigestsFailed,
+    int SentDigestCount,
+    int FailedDigestCount,
     decimal? SecondsPerLookup,
     string? Note
 );

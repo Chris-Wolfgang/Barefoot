@@ -42,7 +42,7 @@ public sealed class RoomResult
 
 
     /// <summary>How many rooms the site said were left, or <see langword="null"/> when it did not say.</summary>
-    public int? RoomsLeft { get; set; }
+    public int? RemainingRoomCount { get; set; }
 
 
 
@@ -50,12 +50,12 @@ public sealed class RoomResult
     /// The price of the whole stay for all guests, taxes included, in US dollars, or
     /// <see langword="null"/> when the room is sold out.
     /// </summary>
-    public decimal? TotalPrice { get; set; }
+    public decimal? TotalAmount { get; set; }
 
 
 
     /// <summary>The price before a promotion, or <see langword="null"/> when the site showed none.</summary>
-    public decimal? RegularPrice { get; set; }
+    public decimal? RegularAmount { get; set; }
 
 
 

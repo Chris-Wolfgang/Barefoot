@@ -51,11 +51,11 @@ public sealed class ResultRecordsTests
 
         Assert.Equal(62, summary.MatchCount);
         Assert.Equal(214, summary.FoundCount);
-        Assert.Equal(4918m, summary.CheapestRoomPrice);
-        Assert.Equal(-486m, summary.ChangeSincePrevious);
+        Assert.Equal(4918m, summary.CheapestRoomAmount);
+        Assert.Equal(-486m, summary.ChangeAmount);
         Assert.Equal(Captured, summary.PreviousCapturedUtc);
         Assert.Equal(["Halcyon Beach"], summary.OfflineResorts);
-        Assert.Equal(6142m, summary.CheapestTotal!.Total);
+        Assert.Equal(6142m, summary.CheapestTotal!.TotalAmount);
         Assert.Equal("Grande St. Lucian", summary.CheapestTotal.ResortName);
         Assert.Equal(new DateOnly(2027, 2, 24), summary.CheapestTotal.CheckIn);
         Assert.Equal("AAA", summary.CheapestTotal.AirportCode);
@@ -70,9 +70,9 @@ public sealed class ResultRecordsTests
 
         Assert.Equal(0, summary.MatchCount);
         Assert.Equal(12, summary.FoundCount);
-        Assert.Null(summary.CheapestRoomPrice);
+        Assert.Null(summary.CheapestRoomAmount);
         Assert.Null(summary.CheapestTotal);
-        Assert.Null(summary.ChangeSincePrevious);
+        Assert.Null(summary.ChangeAmount);
         Assert.Null(summary.PreviousCapturedUtc);
         Assert.Empty(summary.OfflineResorts);
     }
@@ -118,16 +118,16 @@ public sealed class ResultRecordsTests
         Assert.Equal(Second, row.ResortId);
         Assert.Equal("Grande St. Lucian", row.ResortName);
         Assert.Equal(new DateOnly(2027, 2, 24), row.CheckIn);
-        Assert.Equal(7, row.Nights);
+        Assert.Equal(7, row.NightCount);
         Assert.Equal("BCL", row.RoomCategoryCode);
         Assert.Equal("Beachfront Club Level Room", row.RoomName);
         Assert.Equal("Club", row.Level);
         Assert.Equal("Beachfront", row.View);
-        Assert.Equal(4918m, row.RoomPrice);
-        Assert.Equal(6410m, row.RegularPrice);
+        Assert.Equal(4918m, row.RoomAmount);
+        Assert.Equal(6410m, row.RegularAmount);
         Assert.Equal("$1,500 off", row.Promotion);
-        Assert.Equal(5530m, row.Total);
-        Assert.Equal(-486m, row.ChangeSincePrevious);
+        Assert.Equal(5530m, row.TotalAmount);
+        Assert.Equal(-486m, row.ChangeAmount);
         Assert.False(row.IsNew);
         Assert.True(row.MatchesFilters);
 
@@ -135,8 +135,8 @@ public sealed class ResultRecordsTests
 
         Assert.Equal(Second, airport.FlightSetId);
         Assert.Equal("AAA", airport.AirportCode);
-        Assert.Equal(612m, airport.CheapestFare);
-        Assert.Equal(1048m, airport.DearestFare);
+        Assert.Equal(612m, airport.CheapestAirfareAmount);
+        Assert.Equal(1048m, airport.DearestAirfareAmount);
         Assert.Equal(36, airport.OptionCount);
     }
 
@@ -168,10 +168,10 @@ public sealed class ResultRecordsTests
 
         Assert.Null(row.Level);
         Assert.Null(row.View);
-        Assert.Null(row.RegularPrice);
+        Assert.Null(row.RegularAmount);
         Assert.Null(row.Promotion);
         Assert.Empty(row.Flights);
-        Assert.Null(row.ChangeSincePrevious);
+        Assert.Null(row.ChangeAmount);
         Assert.True(row.IsNew);
         Assert.False(row.MatchesFilters);
     }
@@ -192,7 +192,7 @@ public sealed class ResultRecordsTests
             "AAA",
             new TimeOnly(10, 5),
             "BBB",
-            Overnight: false,
+            IsOvernight: false,
             80
         );
         var last = first with
@@ -202,24 +202,24 @@ public sealed class ResultRecordsTests
             DepartureAirportCode = "BBB",
             ArrivalTime = new TimeOnly(14, 15),
             ArrivalAirportCode = "CCC",
-            Overnight = true,
+            IsOvernight = true,
             LayoverMinutes = null,
         };
-        var outbound = new FlightDirectionResponse([first, last], 1, 365, Overnight: true);
-        var back = new FlightDirectionResponse([last], 0, null, Overnight: false);
+        var outbound = new FlightDirectionResponse([first, last], 1, 365, IsOvernight: true);
+        var back = new FlightDirectionResponse([last], 0, null, IsOvernight: false);
         var option = new FlightOptionResponse(First, 612m, outbound, back);
 
         Assert.Equal(First, option.Id);
-        Assert.Equal(612m, option.Fare);
+        Assert.Equal(612m, option.AirfareAmount);
         Assert.Same(outbound, option.Outbound);
         Assert.Same(back, option.Return);
         Assert.Equal([first, last], outbound.Legs);
-        Assert.Equal(1, outbound.Stops);
+        Assert.Equal(1, outbound.StopCount);
         Assert.Equal(365, outbound.DurationMinutes);
-        Assert.True(outbound.Overnight);
-        Assert.Equal(0, back.Stops);
+        Assert.True(outbound.IsOvernight);
+        Assert.Equal(0, back.StopCount);
         Assert.Null(back.DurationMinutes);
-        Assert.False(back.Overnight);
+        Assert.False(back.IsOvernight);
         Assert.Equal("AA", first.Carrier);
         Assert.Equal("1204", first.FlightNumber);
         Assert.Equal("American Airlines", first.OperatingCarrier);
@@ -229,9 +229,9 @@ public sealed class ResultRecordsTests
         Assert.Equal("AAA", first.DepartureAirportCode);
         Assert.Equal(new TimeOnly(10, 5), first.ArrivalTime);
         Assert.Equal("BBB", first.ArrivalAirportCode);
-        Assert.False(first.Overnight);
+        Assert.False(first.IsOvernight);
         Assert.Equal(80, first.LayoverMinutes);
-        Assert.True(last.Overnight);
+        Assert.True(last.IsOvernight);
         Assert.Null(last.LayoverMinutes);
     }
 }

@@ -18,7 +18,7 @@ public sealed class ScrapeResultRecordsTests
         "AAA",
         new TimeOnly(8, 52),
         "BBB",
-        Overnight: true
+        IsOvernight: true
     );
 
 
@@ -26,14 +26,14 @@ public sealed class ScrapeResultRecordsTests
     [Fact]
     public void ScrapedRoom_when_built_for_a_priced_card_keeps_each_value()
     {
-        var room = new ScrapedRoom("OWB", "Overwater Bungalow", "Butler", 28418m, SoldOut: false, 4, "Oceanfront", "Bungalow", ["Patio"]);
+        var room = new ScrapedRoom("OWB", "Overwater Bungalow", "Butler", 28418m, IsSoldOut: false, 4, "Oceanfront", "Bungalow", ["Patio"]);
 
         Assert.Equal("OWB", room.CategoryCode);
         Assert.Equal("Overwater Bungalow", room.Name);
         Assert.Equal("Butler", room.Level);
-        Assert.Equal(28418m, room.TotalPrice);
-        Assert.False(room.SoldOut);
-        Assert.Equal(4, room.RoomsLeft);
+        Assert.Equal(28418m, room.TotalAmount);
+        Assert.False(room.IsSoldOut);
+        Assert.Equal(4, room.RemainingRoomCount);
         Assert.Equal("Oceanfront", room.View);
         Assert.Equal("Bungalow", room.Type);
         Assert.Equal(["Patio"], room.Features);
@@ -44,11 +44,11 @@ public sealed class ScrapeResultRecordsTests
     [Fact]
     public void ScrapedRoom_when_built_for_a_sold_out_card_has_no_price_and_no_count()
     {
-        var room = new ScrapedRoom("LX", "Luxury Oceanview", "Luxury", null, SoldOut: true, null, null, null, []);
+        var room = new ScrapedRoom("LX", "Luxury Oceanview", "Luxury", null, IsSoldOut: true, null, null, null, []);
 
-        Assert.True(room.SoldOut);
-        Assert.Null(room.TotalPrice);
-        Assert.Null(room.RoomsLeft);
+        Assert.True(room.IsSoldOut);
+        Assert.Null(room.TotalAmount);
+        Assert.Null(room.RemainingRoomCount);
         Assert.Null(room.View);
         Assert.Null(room.Type);
         Assert.Empty(room.Features);
@@ -69,7 +69,7 @@ public sealed class ScrapeResultRecordsTests
         Assert.Equal("AAA", Leg.DepartureAirportCode);
         Assert.Equal(new TimeOnly(8, 52), Leg.ArrivalTime);
         Assert.Equal("BBB", Leg.ArrivalAirportCode);
-        Assert.True(Leg.Overnight);
+        Assert.True(Leg.IsOvernight);
     }
 
 
@@ -77,17 +77,17 @@ public sealed class ScrapeResultRecordsTests
     [Fact]
     public void ScrapedItinerary_when_built_keeps_the_total_the_room_and_both_directions()
     {
-        var outbound = new ScrapedDirection([Leg, Leg], Overnight: false);
-        var back = new ScrapedDirection([Leg], Overnight: true);
+        var outbound = new ScrapedDirection([Leg, Leg], IsOvernight: false);
+        var back = new ScrapedDirection([Leg], IsOvernight: true);
         var itinerary = new ScrapedItinerary(15750.66m, "RP", outbound, back);
 
-        Assert.Equal(15750.66m, itinerary.RoomAndFlightsTotal);
+        Assert.Equal(15750.66m, itinerary.TotalAmount);
         Assert.Equal("RP", itinerary.RoomCategoryCode);
         Assert.Same(outbound, itinerary.Outbound);
         Assert.Same(back, itinerary.Return);
         Assert.Equal(2, itinerary.Outbound.Legs.Count);
-        Assert.False(itinerary.Outbound.Overnight);
-        Assert.True(itinerary.Return.Overnight);
+        Assert.False(itinerary.Outbound.IsOvernight);
+        Assert.True(itinerary.Return.IsOvernight);
     }
 
 

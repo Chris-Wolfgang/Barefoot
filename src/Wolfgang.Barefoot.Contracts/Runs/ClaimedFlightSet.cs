@@ -15,9 +15,9 @@ namespace Wolfgang.Barefoot.Contracts.Runs;
 /// <param name="DepartDate">The date of the way out.</param>
 /// <param name="ReturnDate">The date of the way back.</param>
 /// <param name="Cabin">The cabin to look up.</param>
-/// <param name="Adults">The number of adults.</param>
-/// <param name="Children">The number of children.</param>
-/// <param name="Infants">The number of infants.</param>
+/// <param name="AdultCount">The number of adults.</param>
+/// <param name="ChildCount">The number of children.</param>
+/// <param name="InfantCount">The number of infants.</param>
 public sealed record ClaimedFlightSet
 (
     Guid FlightSetId,
@@ -29,7 +29,7 @@ public sealed record ClaimedFlightSet
     DateOnly DepartDate,
     DateOnly ReturnDate,
     Cabin Cabin,
-    int Adults,
-    int Children,
-    int Infants
+    int AdultCount,
+    int ChildCount,
+    int InfantCount
 );

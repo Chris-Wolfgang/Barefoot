@@ -20,5 +20,5 @@ public sealed class FlightOption
     /// The airfare for the whole party in US dollars: the site's combined total less the room price
     /// (DESIGN §6).
     /// </summary>
-    public required decimal Fare { get; set; }
+    public required decimal AirfareAmount { get; set; }
 }

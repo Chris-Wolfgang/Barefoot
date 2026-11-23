@@ -62,17 +62,17 @@ public sealed class AppUser
 
 
     /// <summary>How many adults a new search of theirs starts with.</summary>
-    public int DefaultAdults { get; set; }
+    public int DefaultAdultCount { get; set; }
 
 
 
     /// <summary>How many children a new search of theirs starts with.</summary>
-    public int DefaultChildren { get; set; }
+    public int DefaultChildCount { get; set; }
 
 
 
     /// <summary>How many infants a new search of theirs starts with.</summary>
-    public int DefaultInfants { get; set; }
+    public int DefaultInfantCount { get; set; }
 
 
 

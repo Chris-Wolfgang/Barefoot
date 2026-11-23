@@ -42,9 +42,9 @@ public sealed class CatalogRecordsTests
     {
         var response = new CatalogRefreshResponse(2, 3, 1, ["SGL appeared twice with different names."]);
 
-        Assert.Equal(2, response.Added);
-        Assert.Equal(3, response.Updated);
-        Assert.Equal(1, response.Deactivated);
+        Assert.Equal(2, response.AddedCount);
+        Assert.Equal(3, response.UpdatedCount);
+        Assert.Equal(1, response.DeactivatedCount);
         Assert.Equal(["SGL appeared twice with different names."], response.Warnings);
     }
 }

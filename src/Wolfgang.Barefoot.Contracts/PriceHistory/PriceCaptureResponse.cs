@@ -8,18 +8,18 @@ namespace Wolfgang.Barefoot.Contracts.PriceHistory;
 /// guess.
 /// </remarks>
 /// <param name="CapturedUtc">When the price was read.</param>
-/// <param name="RoomPrice">
+/// <param name="RoomAmount">
 /// The price of the room for the whole stay, or <see langword="null"/> when the lookup failed or the
 /// room was not offered.
 /// </param>
-/// <param name="CheapestFare">
+/// <param name="CheapestAirfareAmount">
 /// The cheapest airfare from the departure airport asked for, or <see langword="null"/> when none
 /// was asked for or none was found.
 /// </param>
-/// <param name="Total">
+/// <param name="TotalAmount">
 /// The room price plus the cheapest airfare, or <see langword="null"/> when either is missing.
 /// </param>
-/// <param name="ChangeSincePrevious">
+/// <param name="ChangeAmount">
 /// The change against the capture before this one that has a price: of the total when an airport was
 /// asked for, of the room price otherwise. Negative is cheaper. It is <see langword="null"/> for the
 /// first capture and for one without a price.
@@ -27,8 +27,8 @@ namespace Wolfgang.Barefoot.Contracts.PriceHistory;
 public sealed record PriceCaptureResponse
 (
     DateTimeOffset CapturedUtc,
-    decimal? RoomPrice,
-    decimal? CheapestFare,
-    decimal? Total,
-    decimal? ChangeSincePrevious
+    decimal? RoomAmount,
+    decimal? CheapestAirfareAmount,
+    decimal? TotalAmount,
+    decimal? ChangeAmount
 );

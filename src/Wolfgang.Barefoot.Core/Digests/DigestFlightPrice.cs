@@ -4,5 +4,5 @@ namespace Wolfgang.Barefoot.Core.Digests;
 /// The cheapest airfare from one departure airport, as a digest shows it beside a room.
 /// </summary>
 /// <param name="AirportCode">The departure airport's code.</param>
-/// <param name="Price">The airfare for all travellers, in US dollars.</param>
-public sealed record DigestFlightPrice(string AirportCode, decimal Price);
+/// <param name="AirfareAmount">The airfare for all travellers, in US dollars.</param>
+public sealed record DigestFlightPrice(string AirportCode, decimal AirfareAmount);

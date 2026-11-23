@@ -32,17 +32,17 @@ public sealed class SearchRequest
 
 
     /// <summary>How many adults travel.</summary>
-    public required int Adults { get; set; }
+    public required int AdultCount { get; set; }
 
 
 
     /// <summary>How many children travel.</summary>
-    public int Children { get; set; }
+    public int ChildCount { get; set; }
 
 
 
     /// <summary>How many infants travel.</summary>
-    public int Infants { get; set; }
+    public int InfantCount { get; set; }
 
 
 
@@ -60,7 +60,7 @@ public sealed class SearchRequest
 
 
     /// <summary>How many times it has been handed to a worker.</summary>
-    public int Tries { get; set; }
+    public int AttemptCount { get; set; }
 
 
 

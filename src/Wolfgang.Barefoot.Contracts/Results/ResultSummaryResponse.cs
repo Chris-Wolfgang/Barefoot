@@ -6,13 +6,13 @@ namespace Wolfgang.Barefoot.Contracts.Results;
 /// </summary>
 /// <param name="MatchCount">The number of room options that pass the search's digest filters.</param>
 /// <param name="FoundCount">The number of room options the run found for the search.</param>
-/// <param name="CheapestRoomPrice">
+/// <param name="CheapestRoomAmount">
 /// The lowest room price among the matches, or <see langword="null"/> when nothing matched.
 /// </param>
 /// <param name="CheapestTotal">
 /// The match with the lowest total, or <see langword="null"/> when nothing matched.
 /// </param>
-/// <param name="ChangeSincePrevious">
+/// <param name="ChangeAmount">
 /// The cheapest total less the previous run's cheapest total: negative is cheaper. It is
 /// <see langword="null"/> when there is no previous run to compare with.
 /// </param>
@@ -26,9 +26,9 @@ public sealed record ResultSummaryResponse
 (
     int MatchCount,
     int FoundCount,
-    decimal? CheapestRoomPrice,
+    decimal? CheapestRoomAmount,
     CheapestTotalResponse? CheapestTotal,
-    decimal? ChangeSincePrevious,
+    decimal? ChangeAmount,
     DateTimeOffset? PreviousCapturedUtc,
     IReadOnlyList<string> OfflineResorts
 );

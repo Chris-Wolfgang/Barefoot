@@ -35,7 +35,7 @@ public sealed class DigestRecordsTests
         Assert.Equal("someone@example.com", delivery.RecipientAddress);
         Assert.Equal("Anniversary", delivery.Subject);
         Assert.Equal(DeliveryStatus.Sent, delivery.Status);
-        Assert.Equal(2, delivery.Attempts);
+        Assert.Equal(2, delivery.AttemptCount);
         Assert.Equal(Created, delivery.CreatedUtc);
         Assert.Equal(Created.AddMinutes(5), delivery.SentUtc);
     }
@@ -88,8 +88,8 @@ public sealed class DigestRecordsTests
     {
         var response = new DigestSendResponse(11, 1);
 
-        Assert.Equal(11, response.Sent);
-        Assert.Equal(1, response.Failed);
+        Assert.Equal(11, response.SentCount);
+        Assert.Equal(1, response.FailedCount);
     }
 
 

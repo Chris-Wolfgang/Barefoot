@@ -13,8 +13,8 @@ public sealed class SearchResponseTests
         {
             Name = "Anniversary",
             Brand = Brand.Sandals,
-            Nights = 7,
-            Adults = 2,
+            NightCount = 7,
+            AdultCount = 2,
             WindowKind = WindowKind.Recurring,
         };
 

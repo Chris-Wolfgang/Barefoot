@@ -25,22 +25,22 @@ public sealed record SearchToExpand
 
 
     /// <summary>The length of the stay in nights. At least one.</summary>
-    public required int Nights { get; init; }
+    public required int NightCount { get; init; }
 
 
 
     /// <summary>The number of adults.</summary>
-    public required int Adults { get; init; }
+    public required int AdultCount { get; init; }
 
 
 
     /// <summary>The number of children.</summary>
-    public int Children { get; init; }
+    public int ChildCount { get; init; }
 
 
 
     /// <summary>The number of infants.</summary>
-    public int Infants { get; init; }
+    public int InfantCount { get; init; }
 
 
 

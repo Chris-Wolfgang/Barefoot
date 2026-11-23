@@ -10,7 +10,7 @@ namespace Wolfgang.Barefoot.Contracts.Digests;
 /// <param name="RecipientAddress">The address, as it was when the digest was stored.</param>
 /// <param name="Subject">The subject line.</param>
 /// <param name="Status">Where the delivery stands.</param>
-/// <param name="Attempts">How many times sending was tried, resends included.</param>
+/// <param name="AttemptCount">How many times sending was tried, resends included.</param>
 /// <param name="CreatedUtc">When the digest was stored.</param>
 /// <param name="SentUtc">When it was last sent, or <see langword="null"/> when it never was.</param>
 public sealed record DigestDeliveryResponse
@@ -21,7 +21,7 @@ public sealed record DigestDeliveryResponse
     string RecipientAddress,
     string Subject,
     DeliveryStatus Status,
-    int Attempts,
+    int AttemptCount,
     DateTimeOffset CreatedUtc,
     DateTimeOffset? SentUtc
 );

@@ -55,7 +55,7 @@ public sealed class DigestDelivery
 
 
     /// <summary>How many times sending it has been tried.</summary>
-    public int Attempts { get; set; }
+    public int AttemptCount { get; set; }
 
 
 

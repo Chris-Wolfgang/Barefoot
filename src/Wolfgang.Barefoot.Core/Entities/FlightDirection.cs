@@ -22,5 +22,5 @@ public sealed class FlightDirection
 
 
     /// <summary>Whether the site marks the direction as overnight.</summary>
-    public bool Overnight { get; set; }
+    public bool IsOvernight { get; set; }
 }

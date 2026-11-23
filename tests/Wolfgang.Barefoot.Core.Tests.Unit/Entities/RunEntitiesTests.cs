@@ -196,12 +196,12 @@ public sealed class RunEntitiesTests
             ResortId = Other,
             CheckIn = new DateOnly(2027, 2, 13),
             CheckOut = new DateOnly(2027, 2, 20),
-            Adults = 2,
-            Children = 1,
-            Infants = 1,
+            AdultCount = 2,
+            ChildCount = 1,
+            InfantCount = 1,
             RunOrder = 75,
             Status = WorkStatus.Failed,
-            Tries = 2,
+            AttemptCount = 2,
             LastError = "The page did not load.",
             CapturedUtc = Instant,
             LeasedBy = "scraper-1",
@@ -216,12 +216,12 @@ public sealed class RunEntitiesTests
         Assert.Equal(Other, request.ResortId);
         Assert.Equal(new DateOnly(2027, 2, 13), request.CheckIn);
         Assert.Equal(new DateOnly(2027, 2, 20), request.CheckOut);
-        Assert.Equal(2, request.Adults);
-        Assert.Equal(1, request.Children);
-        Assert.Equal(1, request.Infants);
+        Assert.Equal(2, request.AdultCount);
+        Assert.Equal(1, request.ChildCount);
+        Assert.Equal(1, request.InfantCount);
         Assert.Equal(75, request.RunOrder);
         Assert.Equal(WorkStatus.Failed, request.Status);
-        Assert.Equal(2, request.Tries);
+        Assert.Equal(2, request.AttemptCount);
         Assert.Equal("The page did not load.", request.LastError);
         Assert.Equal(Instant, request.CapturedUtc);
         Assert.Equal("scraper-1", request.LeasedBy);
@@ -243,14 +243,14 @@ public sealed class RunEntitiesTests
             ResortId = Other,
             CheckIn = new DateOnly(2027, 2, 13),
             CheckOut = new DateOnly(2027, 2, 20),
-            Adults = 2,
+            AdultCount = 2,
             RunOrder = 50,
             Status = WorkStatus.Pending,
         };
 
-        Assert.Equal(0, request.Children);
-        Assert.Equal(0, request.Infants);
-        Assert.Equal(0, request.Tries);
+        Assert.Equal(0, request.ChildCount);
+        Assert.Equal(0, request.InfantCount);
+        Assert.Equal(0, request.AttemptCount);
         Assert.Null(request.LastError);
         Assert.Null(request.CapturedUtc);
         Assert.Null(request.LeasedBy);

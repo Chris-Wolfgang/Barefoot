@@ -101,18 +101,18 @@ public static class SearchValidator
             failures.Add(ValidationFailure.Of(SearchErrors.ResortsRequired, nameof(definition.ResortIds)));
         }
 
-        if (definition.Nights < 1)
+        if (definition.NightCount < 1)
         {
-            failures.Add(ValidationFailure.Of(SearchErrors.NightsNotPositive, nameof(definition.Nights), definition.Nights));
+            failures.Add(ValidationFailure.Of(SearchErrors.NightsNotPositive, nameof(definition.NightCount), definition.NightCount));
         }
 
-        if (definition.Adults < 1)
+        if (definition.AdultCount < 1)
         {
-            failures.Add(ValidationFailure.Of(SearchErrors.AdultsNotPositive, nameof(definition.Adults), definition.Adults));
+            failures.Add(ValidationFailure.Of(SearchErrors.AdultsNotPositive, nameof(definition.AdultCount), definition.AdultCount));
         }
 
-        CheckYoungTravellers(definition.Children, nameof(definition.Children), definition.Brand, failures);
-        CheckYoungTravellers(definition.Infants, nameof(definition.Infants), definition.Brand, failures);
+        CheckYoungTravellers(definition.ChildCount, nameof(definition.ChildCount), definition.Brand, failures);
+        CheckYoungTravellers(definition.InfantCount, nameof(definition.InfantCount), definition.Brand, failures);
 
         if (!definition.RunOrder.IsInRange(LowestRunOrder, HighestRunOrder))
         {
@@ -292,7 +292,7 @@ public static class SearchValidator
         RefuseWithoutFlights(definition.Cabin.HasValue, nameof(definition.Cabin), failures);
         RefuseWithoutFlights(definition.DepartureAirportIds.Count > 0, nameof(definition.DepartureAirportIds), failures);
         RefuseWithoutFlights(definition.MaxFlightMinutes.HasValue, nameof(definition.MaxFlightMinutes), failures);
-        RefuseWithoutFlights(definition.MaxStops.HasValue, nameof(definition.MaxStops), failures);
+        RefuseWithoutFlights(definition.MaxStopCount.HasValue, nameof(definition.MaxStopCount), failures);
     }
 
 
@@ -309,9 +309,9 @@ public static class SearchValidator
 
     private static void CheckFilters(SearchDefinition definition, List<ValidationFailure> failures)
     {
-        if (definition.MaxTotalPrice is <= 0)
+        if (definition.MaxTotalAmount is <= 0)
         {
-            failures.Add(ValidationFailure.Of(SearchErrors.LimitNotPositive, nameof(definition.MaxTotalPrice), definition.MaxTotalPrice));
+            failures.Add(ValidationFailure.Of(SearchErrors.LimitNotPositive, nameof(definition.MaxTotalAmount), definition.MaxTotalAmount));
         }
 
         if (definition.MaxDriveMinutes is <= 0)
@@ -324,9 +324,9 @@ public static class SearchValidator
             failures.Add(ValidationFailure.Of(SearchErrors.LimitNotPositive, nameof(definition.MaxFlightMinutes), definition.MaxFlightMinutes));
         }
 
-        if (definition.MaxStops is < 0)
+        if (definition.MaxStopCount is < 0)
         {
-            failures.Add(ValidationFailure.Of(SearchErrors.MaxStopsNegative, nameof(definition.MaxStops), definition.MaxStops));
+            failures.Add(ValidationFailure.Of(SearchErrors.MaxStopsNegative, nameof(definition.MaxStopCount), definition.MaxStopCount));
         }
 
         RefuseRepeats(definition.RoomLevelIds, SearchErrors.FilterValueRepeated, nameof(definition.RoomLevelIds), failures);
