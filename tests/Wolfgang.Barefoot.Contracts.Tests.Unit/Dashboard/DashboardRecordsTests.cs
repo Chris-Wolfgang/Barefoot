@@ -54,21 +54,21 @@ public sealed class DashboardRecordsTests
 
         Assert.Equal(First, row.SearchId);
         Assert.Equal("Late April", row.SearchName);
-        Assert.Equal(10, row.Nights);
-        Assert.Equal(2, row.Adults);
-        Assert.Equal(1, row.Children);
-        Assert.Equal(1, row.Infants);
+        Assert.Equal(10, row.NightCount);
+        Assert.Equal(2, row.AdultCount);
+        Assert.Equal(1, row.ChildCount);
+        Assert.Equal(1, row.InfantCount);
         Assert.True(row.IncludeFlights);
         Assert.Equal(Second, row.SearchRunId);
         Assert.Equal(Started, row.RunStartedUtc);
         Assert.Equal(55, row.DurationMinutes);
         Assert.Equal(RecentResultStatus.Incomplete, row.Status);
-        Assert.Equal(32, row.LookupsDone);
-        Assert.Equal(32, row.LookupsTotal);
-        Assert.Equal(2, row.LookupsFailed);
+        Assert.Equal(32, row.DoneLookupCount);
+        Assert.Equal(32, row.LookupCount);
+        Assert.Equal(2, row.FailedLookupCount);
         Assert.Equal("2 failed", row.Note);
-        Assert.Equal(9840m, row.Cheapest);
-        Assert.Equal(120m, row.ChangeSincePrevious);
+        Assert.Equal(9840m, row.CheapestTotalAmount);
+        Assert.Equal(120m, row.ChangeAmount);
         Assert.Equal(Started.AddMinutes(28), row.DigestSentUtc);
     }
 
@@ -101,8 +101,8 @@ public sealed class DashboardRecordsTests
 
         Assert.Null(row.SearchRunId);
         Assert.Null(row.DurationMinutes);
-        Assert.Null(row.Cheapest);
-        Assert.Null(row.ChangeSincePrevious);
+        Assert.Null(row.CheapestTotalAmount);
+        Assert.Null(row.ChangeAmount);
         Assert.Null(row.DigestSentUtc);
         Assert.False(row.IncludeFlights);
     }
@@ -118,8 +118,8 @@ public sealed class DashboardRecordsTests
         Assert.Equal("Halcyon Beach", mover.ResortName);
         Assert.Equal("Beachfront Butler", mover.RoomName);
         Assert.Equal(new DateOnly(2027, 2, 22), mover.CheckIn);
-        Assert.Equal(7, mover.Nights);
-        Assert.Equal(-486m, mover.Change);
+        Assert.Equal(7, mover.NightCount);
+        Assert.Equal(-486m, mover.ChangeAmount);
     }
 
 
@@ -134,7 +134,7 @@ public sealed class DashboardRecordsTests
         Assert.Equal("February week", digest.SearchName);
         Assert.Equal(Started, digest.SentUtc);
         Assert.Equal(38, digest.MatchCount);
-        Assert.Equal(7212m, digest.Cheapest);
+        Assert.Equal(7212m, digest.CheapestTotalAmount);
         Assert.Equal(2, digest.ResortCount);
     }
 
@@ -145,7 +145,7 @@ public sealed class DashboardRecordsTests
     {
         var digest = new LatestDigestResponse(First, Second, "February week", Started, 0, null, 0);
 
-        Assert.Null(digest.Cheapest);
+        Assert.Null(digest.CheapestTotalAmount);
     }
 
 

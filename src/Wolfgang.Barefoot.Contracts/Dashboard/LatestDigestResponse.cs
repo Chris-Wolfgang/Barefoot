@@ -8,7 +8,7 @@ namespace Wolfgang.Barefoot.Contracts.Dashboard;
 /// <param name="SearchName">The name of the search the digest reports on.</param>
 /// <param name="SentUtc">When the digest was sent.</param>
 /// <param name="MatchCount">How many rooms matched the search's filters.</param>
-/// <param name="Cheapest">The cheapest total among them, or <see langword="null"/> when none matched.</param>
+/// <param name="CheapestTotalAmount">The cheapest total among them, or <see langword="null"/> when none matched.</param>
 /// <param name="ResortCount">How many resorts they are at.</param>
 public sealed record LatestDigestResponse
 (
@@ -17,6 +17,6 @@ public sealed record LatestDigestResponse
     string SearchName,
     DateTimeOffset SentUtc,
     int MatchCount,
-    decimal? Cheapest,
+    decimal? CheapestTotalAmount,
     int ResortCount
 );

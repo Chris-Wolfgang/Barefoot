@@ -8,14 +8,14 @@ namespace Wolfgang.Barefoot.Contracts.Dashboard;
 /// <param name="ResortName">The resort's short name.</param>
 /// <param name="RoomName">The room's name.</param>
 /// <param name="CheckIn">The check-in date.</param>
-/// <param name="Nights">How many nights the stay is.</param>
-/// <param name="Change">The latest price less the previous one: negative for a drop.</param>
+/// <param name="NightCount">How many nights the stay is.</param>
+/// <param name="ChangeAmount">The latest price less the previous one: negative for a drop.</param>
 public sealed record PriceMoverResponse
 (
     Guid SearchRunId,
     string ResortName,
     string RoomName,
     DateOnly CheckIn,
-    int Nights,
-    decimal Change
+    int NightCount,
+    decimal ChangeAmount
 );
