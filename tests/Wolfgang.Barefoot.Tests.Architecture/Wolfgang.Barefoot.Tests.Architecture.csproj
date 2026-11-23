@@ -34,6 +34,7 @@
   <!-- Every project under src/ is referenced from here so that its assembly can be scanned, and is
        listed in SourceAssemblies. A test in ScanningTests fails when one is missing from that list. -->
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Contracts\Wolfgang.Barefoot.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Core\Wolfgang.Barefoot.Core.csproj" />
   </ItemGroup>
 
