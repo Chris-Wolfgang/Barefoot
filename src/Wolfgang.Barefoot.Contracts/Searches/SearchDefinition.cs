@@ -122,6 +122,14 @@ public sealed record SearchDefinition
 
 
     /// <summary>
+    /// The extra addresses the search's digest is mailed to, chosen from the owner's address book
+    /// (ADR 0006 §2). The owner's own sign-in address always gets the digest and is not listed.
+    /// </summary>
+    public IReadOnlyList<Guid> RecipientIds { get; init; } = [];
+
+
+
+    /// <summary>
     /// When the search runs relative to the owner's others: 1 (last) to 99 (first). 50 is normal.
     /// </summary>
     public int RunOrder { get; init; } = NormalRunOrder;

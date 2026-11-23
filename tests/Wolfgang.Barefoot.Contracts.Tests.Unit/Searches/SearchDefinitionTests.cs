@@ -23,6 +23,7 @@ public sealed class SearchDefinitionTests
         Assert.Equal(WindowKind.Recurring, definition.WindowKind);
         Assert.Empty(definition.ResortIds);
         Assert.Empty(definition.DepartureAirportIds);
+        Assert.Empty(definition.RecipientIds);
         Assert.Equal(0, definition.Children);
         Assert.Equal(0, definition.Infants);
         Assert.False(definition.IncludeFlights);
@@ -71,6 +72,7 @@ public sealed class SearchDefinitionTests
             MaxDriveMinutes = 90,
             MaxFlightMinutes = 600,
             MaxStops = 1,
+            RecipientIds = [airport],
             RunOrder = 75,
         };
 
@@ -92,6 +94,7 @@ public sealed class SearchDefinitionTests
         Assert.Equal(90, definition.MaxDriveMinutes);
         Assert.Equal(600, definition.MaxFlightMinutes);
         Assert.Equal(1, definition.MaxStops);
+        Assert.Equal([airport], definition.RecipientIds);
         Assert.Equal(75, definition.RunOrder);
     }
 

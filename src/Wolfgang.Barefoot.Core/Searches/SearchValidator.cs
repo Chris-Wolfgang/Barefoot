@@ -11,7 +11,7 @@ namespace Wolfgang.Barefoot.Core.Searches;
 /// <remarks>
 /// Every broken rule is reported, each with the field it is about and a typed code from
 /// <see cref="SearchErrors"/>. The rules that need the database — the name is unique per owner, the
-/// resorts and airports exist, the owner's active-search limit — are not here; they arrive with the
+/// resorts and airports exist, the recipients are the owner's, the owner's active-search limit — are not here; they arrive with the
 /// layer that can check them.
 /// </remarks>
 public static class SearchValidator
@@ -47,6 +47,7 @@ public static class SearchValidator
         CheckWindow(definition, failures);
         CheckFlights(definition, failures);
         CheckFilters(definition, failures);
+        CheckRecipients(definition, failures);
 
         return failures;
     }
@@ -326,5 +327,18 @@ public static class SearchValidator
         {
             failures.Add(ValidationFailure.Of(SearchErrors.MaxStopsNegative, nameof(definition.MaxStops), definition.MaxStops));
         }
+    }
+
+
+    private static void CheckRecipients(SearchDefinition definition, List<ValidationFailure> failures)
+    {
+        failures.AddRange
+        (
+            definition
+                .RecipientIds
+                .GroupBy(id => id)
+                .Where(group => group.Skip(1).Any())
+                .Select(group => ValidationFailure.Of(SearchErrors.RecipientRepeated, nameof(definition.RecipientIds), group.Key))
+        );
     }
 }

@@ -569,6 +569,35 @@ public sealed class SearchValidatorTests
 
 
     [Fact]
+    public void Validate_when_a_recipient_is_chosen_twice_reports_it_once_and_leaves_the_others()
+    {
+        var twice = Guid.Parse("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+        var once = Guid.Parse("5d0c6f0e-3a51-4c1d-8a43-1b2c3d4e5f60");
+        var definition = Recurring() with { RecipientIds = [twice, once, twice, twice] };
+
+        var failure = Assert.Single(SearchValidator.Validate(definition));
+
+        Assert.Same(SearchErrors.RecipientRepeated, failure.Code);
+        Assert.Equal("RecipientIds", failure.Field);
+        Assert.Equal("A recipient can be chosen once per search; 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d is chosen more than once.", failure.Message);
+    }
+
+
+
+    [Fact]
+    public void Validate_when_each_recipient_is_chosen_once_reports_nothing()
+    {
+        var definition = Recurring() with
+        {
+            RecipientIds = [Guid.Parse("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d"), Guid.Parse("5d0c6f0e-3a51-4c1d-8a43-1b2c3d4e5f60")],
+        };
+
+        Assert.Empty(SearchValidator.Validate(definition));
+    }
+
+
+
+    [Fact]
     public void Validate_when_every_error_code_is_read_finds_them_all_422_warnings_with_unique_names()
     {
         var codes = typeof(SearchErrors)
@@ -576,7 +605,7 @@ public sealed class SearchValidatorTests
             .Select(field => (ErrorCode)field.GetValue(null)!)
             .ToList();
 
-        Assert.Equal(19, codes.Count);
+        Assert.Equal(20, codes.Count);
         Assert.Equal(codes.Count, codes.Select(code => code.Name).Distinct(StringComparer.Ordinal).Count());
         Assert.All
         (
