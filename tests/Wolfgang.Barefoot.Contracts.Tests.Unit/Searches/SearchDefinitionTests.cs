@@ -98,8 +98,9 @@ public sealed class SearchDefinitionTests
 
 
     [Theory]
-    [InlineData(Brand.Sandals, 0)]
-    [InlineData(Brand.Beaches, 1)]
+    [InlineData(Brand.NotSet, 0)]
+    [InlineData(Brand.Sandals, 1)]
+    [InlineData(Brand.Beaches, 2)]
     public void Brand_when_cast_to_a_number_keeps_its_declared_value(Brand brand, int expected)
     {
         Assert.Equal(expected, (int)brand);
@@ -120,8 +121,9 @@ public sealed class SearchDefinitionTests
 
 
     [Theory]
-    [InlineData(WindowKind.Recurring, 0)]
-    [InlineData(WindowKind.OneTime, 1)]
+    [InlineData(WindowKind.NotSet, 0)]
+    [InlineData(WindowKind.Recurring, 1)]
+    [InlineData(WindowKind.OneTime, 2)]
     public void WindowKind_when_cast_to_a_number_keeps_its_declared_value(WindowKind kind, int expected)
     {
         Assert.Equal(expected, (int)kind);
