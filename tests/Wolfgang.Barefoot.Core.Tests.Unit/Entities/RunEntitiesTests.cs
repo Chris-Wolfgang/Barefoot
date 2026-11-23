@@ -51,19 +51,6 @@ public sealed class RunEntitiesTests
 
 
 
-    [Theory]
-    [InlineData(MatrixRunStage.NotSet, 0)]
-    [InlineData(MatrixRunStage.Exploded, 1)]
-    [InlineData(MatrixRunStage.Downloaded, 2)]
-    [InlineData(MatrixRunStage.Aggregated, 3)]
-    [InlineData(MatrixRunStage.Emailed, 4)]
-    public void MatrixRunStage_when_cast_to_a_number_keeps_its_declared_value(MatrixRunStage stage, int expected)
-    {
-        Assert.Equal(expected, (int)stage);
-    }
-
-
-
     [Fact]
     public void MatrixRun_when_every_value_is_given_keeps_each_value()
     {
@@ -74,7 +61,7 @@ public sealed class RunEntitiesTests
             SearchMatrixId = Other,
             FirstCheckIn = new DateOnly(2027, 2, 1),
             LastCheckIn = new DateOnly(2027, 2, 21),
-            Stage = MatrixRunStage.Aggregated,
+            Stage = SearchRunStage.Aggregated,
             Outcome = RunStatus.Complete,
         };
 
@@ -83,7 +70,7 @@ public sealed class RunEntitiesTests
         Assert.Equal(Other, matrixRun.SearchMatrixId);
         Assert.Equal(new DateOnly(2027, 2, 1), matrixRun.FirstCheckIn);
         Assert.Equal(new DateOnly(2027, 2, 21), matrixRun.LastCheckIn);
-        Assert.Equal(MatrixRunStage.Aggregated, matrixRun.Stage);
+        Assert.Equal(SearchRunStage.Aggregated, matrixRun.Stage);
         Assert.Equal(RunStatus.Complete, matrixRun.Outcome);
     }
 
@@ -99,7 +86,7 @@ public sealed class RunEntitiesTests
             SearchMatrixId = Other,
             FirstCheckIn = new DateOnly(2027, 2, 1),
             LastCheckIn = new DateOnly(2027, 2, 21),
-            Stage = MatrixRunStage.Exploded,
+            Stage = SearchRunStage.Exploded,
         };
 
         Assert.Equal(RunStatus.InProgress, matrixRun.Outcome);

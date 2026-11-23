@@ -34,7 +34,7 @@ public sealed class MatrixRun
 
 
     /// <summary>How far the search has come within the run.</summary>
-    public required MatrixRunStage Stage { get; set; }
+    public required SearchRunStage Stage { get; set; }
 
 
 
