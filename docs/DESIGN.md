@@ -572,7 +572,7 @@ Warning. Every log entry for an API call carries the `traceId` the problem detai
 | `docs/STACKED-PRS.md` + `scripts/restack.ps1` | copied verbatim |
 | `Generate-ThirdPartyNotices.ps1` with `-Check` | phase 0; release skill |
 | Regex hygiene (`\A(?:…)\z`, `NonBacktracking`, timeout) | §3 parsers |
-| ADR format: "Not chosen" bullets (wms's dated in-place amendments were used until ADR 0000 replaced them); README "Features: on main today / arrives with" table | these ADRs; README at phase 1 |
+| ADR format: "Not chosen" bullets (wms's dated in-place amendments were used for changed decisions until ADR 0000 replaced them); README "Features: on main today / arrives with" table | these ADRs; README at phase 1 |
 
 Deliberately **not** taken (reasons in the review note): global sequence-backed row version, `long`
 identity keys, SQL Server + PostgreSQL dual provider, local accounts and HMAC integrity rows,

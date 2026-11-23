@@ -5,8 +5,11 @@ This folder records the design decisions behind this repository that the code ca
 record.
 
 A record is not rewritten once **Accepted**. A reversed decision gets a new record that supersedes the old one, and
-the old one stays with its status updated. Numbers never change and are never reused; a retired number keeps its row
-below. The dated amendments in some records predate this rule and stay as they are.
+the old one stays with its status updated. A partly changed decision gets a new record that amends the old one, which
+stays Accepted and gains `Amended by [NNNN]` in its status. If the decision is unchanged, typos and broken links are
+fixed directly and a factual correction is a dated note beside the original text. Numbers never change and are never
+reused; a retired number keeps its row below. The dated amendments in some records predate this rule and stay as they
+are.
 
 | # | Title | Status |
 |---|-------|--------|

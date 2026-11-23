@@ -72,7 +72,8 @@ fail a violation; check before you push.
   `DATABASE-CONVENTIONS.md`, `MIGRATE.md` or `SETTINGS.md`. Each rule on those pages names what
   enforces it.
 - A decision with alternatives is an ADR under `docs/adr/`. An accepted ADR is not
-  rewritten: a changed decision is a new ADR that supersedes it (ADR 0000).
+  rewritten (ADR 0000): a changed decision is a new ADR that supersedes or amends it, and the old
+  one's status names the new one. A dated note only corrects a fact and leaves the decision alone.
 - A change to behaviour that DESIGN.md describes changes DESIGN.md.
 
 ## 5. Changelog fragment
