@@ -40,4 +40,12 @@ public sealed class MatrixRun
 
     /// <summary>How the run went for this search. It is in progress until the run is finished.</summary>
     public RunStatus Outcome { get; set; }
+
+
+
+    /// <summary>
+    /// Why the run left the search out, for example because its window had passed, or
+    /// <see langword="null"/> when the search was run. A skipped search has no lookups.
+    /// </summary>
+    public string? SkipReason { get; set; }
 }
