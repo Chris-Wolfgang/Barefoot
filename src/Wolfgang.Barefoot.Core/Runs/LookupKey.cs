@@ -10,16 +10,16 @@ namespace Wolfgang.Barefoot.Core.Runs;
 /// <param name="ResortId">The resort.</param>
 /// <param name="CheckIn">The check-in date.</param>
 /// <param name="CheckOut">The check-out date.</param>
-/// <param name="Adults">The number of adults.</param>
-/// <param name="Children">The number of children.</param>
-/// <param name="Infants">The number of infants.</param>
+/// <param name="AdultCount">The number of adults.</param>
+/// <param name="ChildCount">The number of children.</param>
+/// <param name="InfantCount">The number of infants.</param>
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct LookupKey
 (
     Guid ResortId,
     DateOnly CheckIn,
     DateOnly CheckOut,
-    int Adults,
-    int Children,
-    int Infants
+    int AdultCount,
+    int ChildCount,
+    int InfantCount
 );

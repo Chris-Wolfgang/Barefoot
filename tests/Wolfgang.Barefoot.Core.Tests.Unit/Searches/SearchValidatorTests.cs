@@ -27,15 +27,15 @@ public sealed class SearchValidatorTests
         var definition = OneTime() with
         {
             Brand = Brand.Beaches,
-            Children = 2,
-            Infants = 1,
+            ChildCount = 2,
+            InfantCount = 1,
             IncludeFlights = true,
             Cabin = Cabin.PremiumEconomy,
             DepartureAirportIds = [Airport],
-            MaxTotalPrice = 0.01m,
+            MaxTotalAmount = 0.01m,
             MaxDriveMinutes = 1,
             MaxFlightMinutes = 1,
-            MaxStops = 0,
+            MaxStopCount = 0,
             RunOrder = 99,
         };
 
@@ -95,9 +95,9 @@ public sealed class SearchValidatorTests
     {
         AssertOnly
         (
-            Recurring() with { Nights = nights },
+            Recurring() with { NightCount = nights },
             SearchErrors.NightsNotPositive,
-            "Nights",
+            "NightCount",
             string.Create(System.Globalization.CultureInfo.InvariantCulture, $"A stay is at least 1 night; {nights} was given.")
         );
     }
@@ -111,9 +111,9 @@ public sealed class SearchValidatorTests
     {
         AssertOnly
         (
-            Recurring() with { Adults = adults },
+            Recurring() with { AdultCount = adults },
             SearchErrors.AdultsNotPositive,
-            "Adults",
+            "AdultCount",
             string.Create(System.Globalization.CultureInfo.InvariantCulture, $"A search needs at least 1 adult; {adults} was given.")
         );
     }
@@ -123,13 +123,13 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Validate_when_children_or_infants_are_negative_reports_each_field()
     {
-        var failures = SearchValidator.Validate(Recurring() with { Brand = Brand.Beaches, Children = -1, Infants = -3 });
+        var failures = SearchValidator.Validate(Recurring() with { Brand = Brand.Beaches, ChildCount = -1, InfantCount = -3 });
 
         Assert.Equal
         (
             [
-                (SearchErrors.TravellersNegative, "Children", "A number of travellers cannot be below 0; -1 was given."),
-                (SearchErrors.TravellersNegative, "Infants", "A number of travellers cannot be below 0; -3 was given."),
+                (SearchErrors.TravellersNegative, "ChildCount", "A number of travellers cannot be below 0; -1 was given."),
+                (SearchErrors.TravellersNegative, "InfantCount", "A number of travellers cannot be below 0; -3 was given."),
             ],
             failures.Select(Shape)
         );
@@ -140,14 +140,14 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Validate_when_a_Sandals_search_has_children_or_infants_reports_each_field()
     {
-        var failures = SearchValidator.Validate(Recurring() with { Children = 1, Infants = 2 });
+        var failures = SearchValidator.Validate(Recurring() with { ChildCount = 1, InfantCount = 2 });
 
         const string Message = "Sandals resorts are adults-only. Children and infants can travel only on a Beaches search.";
         Assert.Equal
         (
             [
-                (SearchErrors.ChildrenNeedBeaches, "Children", Message),
-                (SearchErrors.ChildrenNeedBeaches, "Infants", Message),
+                (SearchErrors.ChildrenNeedBeaches, "ChildCount", Message),
+                (SearchErrors.ChildrenNeedBeaches, "InfantCount", Message),
             ],
             failures.Select(Shape)
         );
@@ -158,7 +158,7 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Validate_when_a_Beaches_search_has_children_and_infants_reports_nothing()
     {
-        Assert.Empty(SearchValidator.Validate(Recurring() with { Brand = Brand.Beaches, Children = 3, Infants = 1 }));
+        Assert.Empty(SearchValidator.Validate(Recurring() with { Brand = Brand.Beaches, ChildCount = 3, InfantCount = 1 }));
     }
 
 
@@ -435,7 +435,7 @@ public sealed class SearchValidatorTests
             Cabin = Cabin.Economy,
             DepartureAirportIds = [Airport],
             MaxFlightMinutes = 600,
-            MaxStops = 1,
+            MaxStopCount = 1,
         };
 
         Assert.Empty(SearchValidator.Validate(definition));
@@ -466,12 +466,12 @@ public sealed class SearchValidatorTests
             Cabin = Cabin.Business,
             DepartureAirportIds = [Airport],
             MaxFlightMinutes = 600,
-            MaxStops = 1,
+            MaxStopCount = 1,
         };
 
         var failures = SearchValidator.Validate(definition);
 
-        Assert.Equal(["Cabin", "DepartureAirportIds", "MaxFlightMinutes", "MaxStops"], failures.Select(failure => failure.Field));
+        Assert.Equal(["Cabin", "DepartureAirportIds", "MaxFlightMinutes", "MaxStopCount"], failures.Select(failure => failure.Field));
         Assert.All
         (
             failures,
@@ -487,11 +487,11 @@ public sealed class SearchValidatorTests
 
     [Theory]
     [InlineData("MaxFlightMinutes")]
-    [InlineData("MaxStops")]
+    [InlineData("MaxStopCount")]
     public void Validate_when_flights_are_off_and_one_flight_filter_is_set_reports_only_that_one(string field)
     {
-        var definition = string.Equals(field, "MaxStops", StringComparison.Ordinal)
-            ? Recurring() with { MaxStops = 0 }
+        var definition = string.Equals(field, "MaxStopCount", StringComparison.Ordinal)
+            ? Recurring() with { MaxStopCount = 0 }
             : Recurring() with { MaxFlightMinutes = 300 };
 
         AssertOnly
@@ -513,19 +513,19 @@ public sealed class SearchValidatorTests
             IncludeFlights = true,
             Cabin = Cabin.Economy,
             DepartureAirportIds = [Airport],
-            MaxTotalPrice = 0m,
+            MaxTotalAmount = 0m,
             MaxDriveMinutes = -5,
             MaxFlightMinutes = 0,
-            MaxStops = -1,
+            MaxStopCount = -1,
         };
 
         Assert.Equal
         (
             [
-                (SearchErrors.LimitNotPositive, "MaxTotalPrice", "This limit must be greater than 0; 0 was given."),
+                (SearchErrors.LimitNotPositive, "MaxTotalAmount", "This limit must be greater than 0; 0 was given."),
                 (SearchErrors.LimitNotPositive, "MaxDriveMinutes", "This limit must be greater than 0; -5 was given."),
                 (SearchErrors.LimitNotPositive, "MaxFlightMinutes", "This limit must be greater than 0; 0 was given."),
-                (SearchErrors.MaxStopsNegative, "MaxStops", "The most stops cannot be below 0; -1 was given."),
+                (SearchErrors.MaxStopsNegative, "MaxStopCount", "The most stops cannot be below 0; -1 was given."),
             ],
             SearchValidator.Validate(definition).Select(Shape)
         );
@@ -538,9 +538,9 @@ public sealed class SearchValidatorTests
     {
         AssertOnly
         (
-            Recurring() with { MaxTotalPrice = -1234.5m },
+            Recurring() with { MaxTotalAmount = -1234.5m },
             SearchErrors.LimitNotPositive,
-            "MaxTotalPrice",
+            "MaxTotalAmount",
             "This limit must be greater than 0; -1234.5 was given."
         );
     }
@@ -554,14 +554,14 @@ public sealed class SearchValidatorTests
         {
             Name = " ",
             ResortIds = [],
-            Nights = 0,
+            NightCount = 0,
             RecurringLastDay = null,
             MaxDriveMinutes = 0,
         };
 
         Assert.Equal
         (
-            ["Name", "ResortIds", "Nights", "RecurringLastDay", "MaxDriveMinutes"],
+            ["Name", "ResortIds", "NightCount", "RecurringLastDay", "MaxDriveMinutes"],
             SearchValidator.Validate(definition).Select(failure => failure.Field)
         );
     }
@@ -631,7 +631,7 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Validate_when_the_stay_is_one_night_reports_nothing()
     {
-        Assert.Empty(SearchValidator.Validate(Recurring() with { Nights = 1 }));
+        Assert.Empty(SearchValidator.Validate(Recurring() with { NightCount = 1 }));
     }
 
 
@@ -639,7 +639,7 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Validate_when_one_adult_travels_alone_reports_nothing()
     {
-        Assert.Empty(SearchValidator.Validate(Recurring() with { Adults = 1 }));
+        Assert.Empty(SearchValidator.Validate(Recurring() with { AdultCount = 1 }));
     }
 
 
@@ -719,7 +719,7 @@ public sealed class SearchValidatorTests
     [Fact]
     public void BuildWindow_when_only_other_fields_are_invalid_still_builds_the_window()
     {
-        var window = SearchValidator.BuildWindow(Recurring() with { Name = string.Empty, Nights = 0 });
+        var window = SearchValidator.BuildWindow(Recurring() with { Name = string.Empty, NightCount = 0 });
 
         Assert.IsType<RecurringWindow>(window);
     }
@@ -737,10 +737,10 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Of_when_given_a_code_and_values_fills_the_message()
     {
-        var failure = ValidationFailure.Of(SearchErrors.NightsNotPositive, "Nights", 0);
+        var failure = ValidationFailure.Of(SearchErrors.NightsNotPositive, "NightCount", 0);
 
         Assert.Same(SearchErrors.NightsNotPositive, failure.Code);
-        Assert.Equal("Nights", failure.Field);
+        Assert.Equal("NightCount", failure.Field);
         Assert.Equal("A stay is at least 1 night; 0 was given.", failure.Message);
     }
 
@@ -749,7 +749,7 @@ public sealed class SearchValidatorTests
     [Fact]
     public void Of_when_the_code_is_null_throws()
     {
-        Assert.Throws<ArgumentNullException>(() => ValidationFailure.Of(null!, "Nights"));
+        Assert.Throws<ArgumentNullException>(() => ValidationFailure.Of(null!, "NightCount"));
     }
 
 
@@ -761,8 +761,8 @@ public sealed class SearchValidatorTests
             Name = "Spring in Jamaica",
             Brand = Brand.Sandals,
             ResortIds = [Resort],
-            Nights = 7,
-            Adults = 2,
+            NightCount = 7,
+            AdultCount = 2,
             WindowKind = WindowKind.Recurring,
             RecurringFirstMonth = 3,
             RecurringFirstDay = 10,
@@ -780,8 +780,8 @@ public sealed class SearchValidatorTests
             Name = "Anniversary",
             Brand = Brand.Sandals,
             ResortIds = [Resort],
-            Nights = 5,
-            Adults = 2,
+            NightCount = 5,
+            AdultCount = 2,
             WindowKind = WindowKind.OneTime,
             FirstCheckIn = new DateOnly(2027, 6, 1),
             LastCheckIn = new DateOnly(2027, 6, 14),

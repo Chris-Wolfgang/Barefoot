@@ -27,10 +27,10 @@ public sealed class SearchEntitiesTests
             Brand = Brand.Beaches,
             Status = SearchStatus.Active,
             RunOrder = 75,
-            Nights = 7,
-            Adults = 2,
-            Children = 1,
-            Infants = 1,
+            NightCount = 7,
+            AdultCount = 2,
+            ChildCount = 1,
+            InfantCount = 1,
             WindowKind = WindowKind.Recurring,
             RecurringFirstMonth = 2,
             RecurringFirstDay = 1,
@@ -38,10 +38,10 @@ public sealed class SearchEntitiesTests
             RecurringLastDay = 21,
             IncludeFlights = true,
             Cabin = Cabin.Economy,
-            MaxTotalPrice = 9500.50m,
+            MaxTotalAmount = 9500.50m,
             MaxDriveMinutes = 45,
             MaxFlightMinutes = 480,
-            MaxStops = 1,
+            MaxStopCount = 1,
             CreatedUtc = Instant,
             Version = 6,
         };
@@ -53,10 +53,10 @@ public sealed class SearchEntitiesTests
         Assert.Equal(Brand.Beaches, search.Brand);
         Assert.Equal(SearchStatus.Active, search.Status);
         Assert.Equal(75, search.RunOrder);
-        Assert.Equal(7, search.Nights);
-        Assert.Equal(2, search.Adults);
-        Assert.Equal(1, search.Children);
-        Assert.Equal(1, search.Infants);
+        Assert.Equal(7, search.NightCount);
+        Assert.Equal(2, search.AdultCount);
+        Assert.Equal(1, search.ChildCount);
+        Assert.Equal(1, search.InfantCount);
         Assert.Equal(WindowKind.Recurring, search.WindowKind);
         Assert.Equal(2, search.RecurringFirstMonth);
         Assert.Equal(1, search.RecurringFirstDay);
@@ -64,10 +64,10 @@ public sealed class SearchEntitiesTests
         Assert.Equal(21, search.RecurringLastDay);
         Assert.True(search.IncludeFlights);
         Assert.Equal(Cabin.Economy, search.Cabin);
-        Assert.Equal(9500.50m, search.MaxTotalPrice);
+        Assert.Equal(9500.50m, search.MaxTotalAmount);
         Assert.Equal(45, search.MaxDriveMinutes);
         Assert.Equal(480, search.MaxFlightMinutes);
-        Assert.Equal(1, search.MaxStops);
+        Assert.Equal(1, search.MaxStopCount);
         Assert.Equal(Instant, search.CreatedUtc);
         Assert.Equal(6, search.Version);
     }
@@ -96,15 +96,15 @@ public sealed class SearchEntitiesTests
             Name = "Anniversary",
             NormalizedName = "ANNIVERSARY",
             Brand = Brand.Sandals,
-            Nights = 7,
-            Adults = 2,
+            NightCount = 7,
+            AdultCount = 2,
             WindowKind = WindowKind.OneTime,
         };
 
         Assert.Equal(SearchStatus.Draft, search.Status);
         Assert.Equal(SearchDefinition.NormalRunOrder, search.RunOrder);
-        Assert.Equal(0, search.Children);
-        Assert.Equal(0, search.Infants);
+        Assert.Equal(0, search.ChildCount);
+        Assert.Equal(0, search.InfantCount);
         Assert.Null(search.RecurringFirstMonth);
         Assert.Null(search.RecurringFirstDay);
         Assert.Null(search.RecurringLastMonth);
@@ -113,10 +113,10 @@ public sealed class SearchEntitiesTests
         Assert.Null(search.LastCheckIn);
         Assert.False(search.IncludeFlights);
         Assert.Null(search.Cabin);
-        Assert.Null(search.MaxTotalPrice);
+        Assert.Null(search.MaxTotalAmount);
         Assert.Null(search.MaxDriveMinutes);
         Assert.Null(search.MaxFlightMinutes);
-        Assert.Null(search.MaxStops);
+        Assert.Null(search.MaxStopCount);
         Assert.Equal(0, search.Version);
     }
 
@@ -202,8 +202,8 @@ public sealed class SearchEntitiesTests
             Name = "Anniversary",
             NormalizedName = "ANNIVERSARY",
             Brand = Brand.Sandals,
-            Nights = 7,
-            Adults = 2,
+            NightCount = 7,
+            AdultCount = 2,
             WindowKind = WindowKind.OneTime,
             FirstCheckIn = new DateOnly(2027, 2, 13),
             LastCheckIn = new DateOnly(2027, 2, 20),

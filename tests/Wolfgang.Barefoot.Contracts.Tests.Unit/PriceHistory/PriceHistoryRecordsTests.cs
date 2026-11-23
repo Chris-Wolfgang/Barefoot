@@ -84,19 +84,19 @@ public sealed class PriceHistoryRecordsTests
         var failed = new PriceCaptureResponse(Captured.AddDays(3), null, null, null, null);
         var history = new PriceHistoryResponse(7, 2, 1, 0, [priced, failed]);
 
-        Assert.Equal(7, history.Nights);
-        Assert.Equal(2, history.Adults);
-        Assert.Equal(1, history.Children);
-        Assert.Equal(0, history.Infants);
+        Assert.Equal(7, history.NightCount);
+        Assert.Equal(2, history.AdultCount);
+        Assert.Equal(1, history.ChildCount);
+        Assert.Equal(0, history.InfantCount);
         Assert.Equal([priced, failed], history.Captures);
         Assert.Equal(Captured, priced.CapturedUtc);
-        Assert.Equal(4918m, priced.RoomPrice);
-        Assert.Equal(1224m, priced.CheapestFare);
-        Assert.Equal(6142m, priced.Total);
-        Assert.Equal(-486m, priced.ChangeSincePrevious);
-        Assert.Null(failed.RoomPrice);
-        Assert.Null(failed.CheapestFare);
-        Assert.Null(failed.Total);
-        Assert.Null(failed.ChangeSincePrevious);
+        Assert.Equal(4918m, priced.RoomAmount);
+        Assert.Equal(1224m, priced.CheapestAirfareAmount);
+        Assert.Equal(6142m, priced.TotalAmount);
+        Assert.Equal(-486m, priced.ChangeAmount);
+        Assert.Null(failed.RoomAmount);
+        Assert.Null(failed.CheapestAirfareAmount);
+        Assert.Null(failed.TotalAmount);
+        Assert.Null(failed.ChangeAmount);
     }
 }

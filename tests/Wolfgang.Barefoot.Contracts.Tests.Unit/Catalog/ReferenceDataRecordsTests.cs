@@ -132,7 +132,7 @@ public sealed class ReferenceDataRecordsTests
         Assert.Equal(VocabularyKind.RoomFeature, value.Kind);
         Assert.Equal("Soaking tub", value.Value);
         Assert.Equal(Seen, value.LastSeenUtc);
-        Assert.Equal(7, value.RunsSinceSeen);
+        Assert.Equal(7, value.RunsSinceSeenCount);
         Assert.True(value.IsStale);
         Assert.Equal(1, value.SearchCount);
     }
@@ -144,7 +144,7 @@ public sealed class ReferenceDataRecordsTests
     {
         var value = new VocabularyValueResponse(Id, VocabularyKind.RoomLevel, "Club", Seen, 0, IsStale: false, null);
 
-        Assert.Equal(0, value.RunsSinceSeen);
+        Assert.Equal(0, value.RunsSinceSeenCount);
         Assert.False(value.IsStale);
         Assert.Null(value.SearchCount);
     }

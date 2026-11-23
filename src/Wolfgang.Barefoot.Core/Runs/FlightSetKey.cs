@@ -13,9 +13,9 @@ namespace Wolfgang.Barefoot.Core.Runs;
 /// <param name="Depart">The outbound date: the check-in date.</param>
 /// <param name="Return">The return date: the check-out date.</param>
 /// <param name="Cabin">The cabin.</param>
-/// <param name="Adults">The number of adults.</param>
-/// <param name="Children">The number of children.</param>
-/// <param name="Infants">The number of infants.</param>
+/// <param name="AdultCount">The number of adults.</param>
+/// <param name="ChildCount">The number of children.</param>
+/// <param name="InfantCount">The number of infants.</param>
 [StructLayout(LayoutKind.Auto)]
 public readonly record struct FlightSetKey
 (
@@ -24,7 +24,7 @@ public readonly record struct FlightSetKey
     DateOnly Depart,
     DateOnly Return,
     Cabin Cabin,
-    int Adults,
-    int Children,
-    int Infants
+    int AdultCount,
+    int ChildCount,
+    int InfantCount
 );

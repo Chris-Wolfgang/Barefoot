@@ -103,8 +103,8 @@ public sealed class SystemStatusRecordsTests
 
         Assert.Equal(lastRun, dashboard.LastRun);
         Assert.Equal(budget, dashboard.Budget);
-        Assert.Equal(44, dashboard.DigestsSentThisMonth);
-        Assert.Equal(2, dashboard.DigestsFailedThisMonth);
+        Assert.Equal(44, dashboard.MonthSentDigestCount);
+        Assert.Equal(2, dashboard.MonthFailedDigestCount);
         Assert.Equal("scraper-1", dashboard.WorkerName);
         Assert.Equal(Instant, dashboard.WorkerLastSeenUtc);
         Assert.Equal(9, dashboard.UserCount);

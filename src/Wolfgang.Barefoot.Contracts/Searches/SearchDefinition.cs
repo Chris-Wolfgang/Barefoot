@@ -32,22 +32,22 @@ public sealed record SearchDefinition
 
 
     /// <summary>The length of the stay in nights. At least one.</summary>
-    public required int Nights { get; init; }
+    public required int NightCount { get; init; }
 
 
 
     /// <summary>The number of adults. At least one.</summary>
-    public required int Adults { get; init; }
+    public required int AdultCount { get; init; }
 
 
 
     /// <summary>The number of children. Only a Beaches search may have any.</summary>
-    public int Children { get; init; }
+    public int ChildCount { get; init; }
 
 
 
     /// <summary>The number of infants. Only a Beaches search may have any.</summary>
-    public int Infants { get; init; }
+    public int InfantCount { get; init; }
 
 
 
@@ -134,7 +134,7 @@ public sealed record SearchDefinition
 
 
     /// <summary>Digest filter: the highest total price to show. Greater than zero when set.</summary>
-    public decimal? MaxTotalPrice { get; init; }
+    public decimal? MaxTotalAmount { get; init; }
 
 
 
@@ -149,7 +149,7 @@ public sealed record SearchDefinition
 
 
     /// <summary>Digest filter, flights only: the most stops. Zero means non-stop only.</summary>
-    public int? MaxStops { get; init; }
+    public int? MaxStopCount { get; init; }
 
 
 

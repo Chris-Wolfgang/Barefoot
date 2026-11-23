@@ -49,22 +49,22 @@ public sealed class SearchMatrix
 
 
     /// <summary>How many nights the stay is.</summary>
-    public required int Nights { get; set; }
+    public required int NightCount { get; set; }
 
 
 
     /// <summary>How many adults travel.</summary>
-    public required int Adults { get; set; }
+    public required int AdultCount { get; set; }
 
 
 
     /// <summary>How many children travel.</summary>
-    public int Children { get; set; }
+    public int ChildCount { get; set; }
 
 
 
     /// <summary>How many infants travel.</summary>
-    public int Infants { get; set; }
+    public int InfantCount { get; set; }
 
 
 
@@ -114,7 +114,7 @@ public sealed class SearchMatrix
 
 
     /// <summary>The most the stay and flights may cost together, or <see langword="null"/> for no limit.</summary>
-    public decimal? MaxTotalPrice { get; set; }
+    public decimal? MaxTotalAmount { get; set; }
 
 
 
@@ -129,7 +129,7 @@ public sealed class SearchMatrix
 
 
     /// <summary>The most stops a flight may make, or <see langword="null"/> for no limit.</summary>
-    public int? MaxStops { get; set; }
+    public int? MaxStopCount { get; set; }
 
 
 

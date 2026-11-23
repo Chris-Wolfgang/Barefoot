@@ -31,9 +31,9 @@ public sealed class ScrapeResultRecordsTests
         Assert.Equal("OWB", room.CategoryCode);
         Assert.Equal("Overwater Bungalow", room.Name);
         Assert.Equal("Butler", room.Level);
-        Assert.Equal(28418m, room.TotalPrice);
+        Assert.Equal(28418m, room.TotalAmount);
         Assert.False(room.SoldOut);
-        Assert.Equal(4, room.RoomsLeft);
+        Assert.Equal(4, room.RemainingRoomCount);
         Assert.Equal("Oceanfront", room.View);
         Assert.Equal("Bungalow", room.Type);
         Assert.Equal(["Patio"], room.Features);
@@ -47,8 +47,8 @@ public sealed class ScrapeResultRecordsTests
         var room = new ScrapedRoom("LX", "Luxury Oceanview", "Luxury", null, SoldOut: true, null, null, null, []);
 
         Assert.True(room.SoldOut);
-        Assert.Null(room.TotalPrice);
-        Assert.Null(room.RoomsLeft);
+        Assert.Null(room.TotalAmount);
+        Assert.Null(room.RemainingRoomCount);
         Assert.Null(room.View);
         Assert.Null(room.Type);
         Assert.Empty(room.Features);
@@ -81,7 +81,7 @@ public sealed class ScrapeResultRecordsTests
         var back = new ScrapedDirection([Leg], Overnight: true);
         var itinerary = new ScrapedItinerary(15750.66m, "RP", outbound, back);
 
-        Assert.Equal(15750.66m, itinerary.RoomAndFlightsTotal);
+        Assert.Equal(15750.66m, itinerary.TotalAmount);
         Assert.Equal("RP", itinerary.RoomCategoryCode);
         Assert.Same(outbound, itinerary.Outbound);
         Assert.Same(back, itinerary.Return);

@@ -159,9 +159,9 @@ public sealed class DigestRendererTests
 
         var second = club with
         {
-            TotalPrice = 6362m,
+            TotalAmount = 6362m,
             CheckIn = new DateOnly(2027, 2, 23),
-            RoomPrice = 5100m,
+            RoomAmount = 5100m,
             Promotion = null,
             Flights = [new DigestFlightPrice("AAA", 1262m)],
         };

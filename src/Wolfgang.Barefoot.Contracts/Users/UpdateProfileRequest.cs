@@ -8,13 +8,13 @@ namespace Wolfgang.Barefoot.Contracts.Users;
 /// The IANA time zone to show instants in, or <see langword="null"/> to use the zone of the device
 /// they are on.
 /// </param>
-/// <param name="DefaultAdults">The number of adults a new search starts with. At least one.</param>
-/// <param name="DefaultChildren">The number of children a new Beaches search starts with.</param>
-/// <param name="DefaultInfants">The number of infants a new Beaches search starts with.</param>
+/// <param name="DefaultAdultCount">The number of adults a new search starts with. At least one.</param>
+/// <param name="DefaultChildCount">The number of children a new Beaches search starts with.</param>
+/// <param name="DefaultInfantCount">The number of infants a new Beaches search starts with.</param>
 public sealed record UpdateProfileRequest
 (
     string? TimeZoneId,
-    int DefaultAdults,
-    int DefaultChildren = 0,
-    int DefaultInfants = 0
+    int DefaultAdultCount,
+    int DefaultChildCount = 0,
+    int DefaultInfantCount = 0
 );

@@ -25,9 +25,9 @@ namespace Wolfgang.Barefoot.Contracts.Users;
 /// Whether a search can be created for the person: they have accepted the terms now in force
 /// (ADR 0004 §8). A person who has not is left out of the owner picker.
 /// </param>
-/// <param name="DefaultAdults">The number of adults a new search of theirs starts with.</param>
-/// <param name="DefaultChildren">The number of children a new Beaches search of theirs starts with.</param>
-/// <param name="DefaultInfants">The number of infants a new Beaches search of theirs starts with.</param>
+/// <param name="DefaultAdultCount">The number of adults a new search of theirs starts with.</param>
+/// <param name="DefaultChildCount">The number of children a new Beaches search of theirs starts with.</param>
+/// <param name="DefaultInfantCount">The number of infants a new Beaches search of theirs starts with.</param>
 /// <param name="SessionsValidAfterUtc">
 /// The instant set by the last "Sign out everywhere": a sign-in older than it is no longer accepted.
 /// It is <see langword="null"/> when that was never done.
@@ -46,9 +46,9 @@ public sealed record UserResponse
     DateTimeOffset? DisclaimerAcceptedUtc,
     bool CanOwnSearch,
     string? TimeZoneId,
-    int DefaultAdults,
-    int DefaultChildren,
-    int DefaultInfants,
+    int DefaultAdultCount,
+    int DefaultChildCount,
+    int DefaultInfantCount,
     DateTimeOffset? SessionsValidAfterUtc,
     long Version
 );

@@ -4,8 +4,8 @@ namespace Wolfgang.Barefoot.Core.Digests;
 /// One resort's part of a digest: a line of the summary and a section of room cards (DESIGN §9).
 /// </summary>
 /// <param name="Name">The resort's name as the summary shows it.</param>
-/// <param name="FromPrice">The cheapest total at the resort, or <see langword="null"/> when nothing matched.</param>
-/// <param name="PriceChange">
+/// <param name="FromAmount">The cheapest total at the resort, or <see langword="null"/> when nothing matched.</param>
+/// <param name="ChangeAmount">
 /// How the cheapest total moved since the run before: negative is cheaper, zero unchanged,
 /// <see langword="null"/> when there is nothing to compare with.
 /// </param>
@@ -16,8 +16,8 @@ namespace Wolfgang.Barefoot.Core.Digests;
 public sealed record DigestResort
 (
     string Name,
-    decimal? FromPrice,
-    decimal? PriceChange,
+    decimal? FromAmount,
+    decimal? ChangeAmount,
     bool Offline,
     IReadOnlyList<DigestRoom> Rooms,
     int MoreCount,

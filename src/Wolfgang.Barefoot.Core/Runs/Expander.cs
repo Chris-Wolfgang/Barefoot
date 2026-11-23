@@ -65,9 +65,9 @@ public static class Expander
                             key.Lookup.CheckIn,
                             key.Lookup.CheckOut,
                             search.Cabin!.Value,
-                            search.Adults,
-                            search.Children,
-                            search.Infants
+                            search.AdultCount,
+                            search.ChildCount,
+                            search.InfantCount
                         )
                     )
                     .ToList();
@@ -111,10 +111,10 @@ public static class Expander
                             (
                                 resort.ResortId,
                                 checkIn,
-                                checkIn.AddDays(search.Nights),
-                                search.Adults,
-                                search.Children,
-                                search.Infants
+                                checkIn.AddDays(search.NightCount),
+                                search.AdultCount,
+                                search.ChildCount,
+                                search.InfantCount
                             ),
                             resort.GatewayAirportId
                         )
@@ -126,9 +126,9 @@ public static class Expander
 
     private static void Require(SearchToExpand search, string parameterName)
     {
-        if (search.Nights < 1)
+        if (search.NightCount < 1)
         {
-            throw new ArgumentException($"Search {search.SearchId} has {search.Nights} night(s); a stay is at least one.", parameterName);
+            throw new ArgumentException($"Search {search.SearchId} has {search.NightCount} night(s); a stay is at least one.", parameterName);
         }
 
         if (search.Cabin is null != (search.DepartureAirportIds.Count == 0))

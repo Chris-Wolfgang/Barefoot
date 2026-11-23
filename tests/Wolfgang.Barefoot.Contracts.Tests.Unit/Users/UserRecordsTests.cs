@@ -56,9 +56,9 @@ public sealed class UserRecordsTests
         Assert.Equal(1, user.DisclaimerVersionAccepted);
         Assert.Equal(Accepted, user.DisclaimerAcceptedUtc);
         Assert.Equal("America/New_York", user.TimeZoneId);
-        Assert.Equal(2, user.DefaultAdults);
-        Assert.Equal(1, user.DefaultChildren);
-        Assert.Equal(1, user.DefaultInfants);
+        Assert.Equal(2, user.DefaultAdultCount);
+        Assert.Equal(1, user.DefaultChildCount);
+        Assert.Equal(1, user.DefaultInfantCount);
         Assert.Equal(Seen.AddDays(-1), user.SessionsValidAfterUtc);
         Assert.Equal(7, user.Version);
         Assert.True(user.CanOwnSearch);
@@ -86,9 +86,9 @@ public sealed class UserRecordsTests
         var request = new UpdateProfileRequest(null, 2);
 
         Assert.Null(request.TimeZoneId);
-        Assert.Equal(2, request.DefaultAdults);
-        Assert.Equal(0, request.DefaultChildren);
-        Assert.Equal(0, request.DefaultInfants);
+        Assert.Equal(2, request.DefaultAdultCount);
+        Assert.Equal(0, request.DefaultChildCount);
+        Assert.Equal(0, request.DefaultInfantCount);
     }
 
 
@@ -99,8 +99,8 @@ public sealed class UserRecordsTests
         var request = new UpdateProfileRequest("Europe/London", 2, 3, 1);
 
         Assert.Equal("Europe/London", request.TimeZoneId);
-        Assert.Equal(3, request.DefaultChildren);
-        Assert.Equal(1, request.DefaultInfants);
+        Assert.Equal(3, request.DefaultChildCount);
+        Assert.Equal(1, request.DefaultInfantCount);
     }
 
 

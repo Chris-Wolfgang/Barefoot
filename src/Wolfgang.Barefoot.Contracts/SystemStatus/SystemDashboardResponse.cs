@@ -8,8 +8,8 @@ namespace Wolfgang.Barefoot.Contracts.SystemStatus;
 /// </summary>
 /// <param name="LastRun">The most recent run that is over, or <see langword="null"/> when there has been none.</param>
 /// <param name="Budget">How much of the free allowances is used.</param>
-/// <param name="DigestsSentThisMonth">How many digests were sent this calendar month.</param>
-/// <param name="DigestsFailedThisMonth">How many could not be delivered this calendar month.</param>
+/// <param name="MonthSentDigestCount">How many digests were sent this calendar month.</param>
+/// <param name="MonthFailedDigestCount">How many could not be delivered this calendar month.</param>
 /// <param name="WorkerName">The worker that last claimed work, or <see langword="null"/> when none ever has.</param>
 /// <param name="WorkerLastSeenUtc">When it last claimed work, or <see langword="null"/>.</param>
 /// <param name="UserCount">How many people have signed in at least once.</param>
@@ -20,8 +20,8 @@ public sealed record SystemDashboardResponse
 (
     RunHistoryResponse? LastRun,
     BudgetResponse Budget,
-    int DigestsSentThisMonth,
-    int DigestsFailedThisMonth,
+    int MonthSentDigestCount,
+    int MonthFailedDigestCount,
     string? WorkerName,
     DateTimeOffset? WorkerLastSeenUtc,
     int UserCount,

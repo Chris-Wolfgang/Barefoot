@@ -39,9 +39,9 @@ public sealed class RunRecordsTests
         Assert.Equal("SGL", claimed.ResortCode);
         Assert.Equal(new DateOnly(2027, 3, 1), claimed.CheckIn);
         Assert.Equal(new DateOnly(2027, 3, 8), claimed.CheckOut);
-        Assert.Equal(2, claimed.Adults);
-        Assert.Equal(1, claimed.Children);
-        Assert.Equal(0, claimed.Infants);
+        Assert.Equal(2, claimed.AdultCount);
+        Assert.Equal(1, claimed.ChildCount);
+        Assert.Equal(0, claimed.InfantCount);
     }
 
 
@@ -74,9 +74,9 @@ public sealed class RunRecordsTests
         Assert.Equal(new DateOnly(2027, 3, 1), claimed.DepartDate);
         Assert.Equal(new DateOnly(2027, 3, 8), claimed.ReturnDate);
         Assert.Equal(Cabin.Business, claimed.Cabin);
-        Assert.Equal(2, claimed.Adults);
-        Assert.Equal(1, claimed.Children);
-        Assert.Equal(1, claimed.Infants);
+        Assert.Equal(2, claimed.AdultCount);
+        Assert.Equal(1, claimed.ChildCount);
+        Assert.Equal(1, claimed.InfantCount);
     }
 
 

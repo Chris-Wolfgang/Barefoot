@@ -30,9 +30,9 @@ public sealed class ResultEntitiesTests
             RoomViewId = Parent,
             RoomTypeId = Other,
             IsSoldOut = true,
-            RoomsLeft = 2,
-            TotalPrice = 8120.40m,
-            RegularPrice = 9300m,
+            RemainingRoomCount = 2,
+            TotalAmount = 8120.40m,
+            RegularAmount = 9300m,
             Promotion = "Save up to 15 %",
         };
 
@@ -43,9 +43,9 @@ public sealed class ResultEntitiesTests
         Assert.Equal(Parent, result.RoomViewId);
         Assert.Equal(Other, result.RoomTypeId);
         Assert.True(result.IsSoldOut);
-        Assert.Equal(2, result.RoomsLeft);
-        Assert.Equal(8120.40m, result.TotalPrice);
-        Assert.Equal(9300m, result.RegularPrice);
+        Assert.Equal(2, result.RemainingRoomCount);
+        Assert.Equal(8120.40m, result.TotalAmount);
+        Assert.Equal(9300m, result.RegularAmount);
         Assert.Equal("Save up to 15 %", result.Promotion);
     }
 
@@ -60,9 +60,9 @@ public sealed class ResultEntitiesTests
         Assert.Null(result.RoomViewId);
         Assert.Null(result.RoomTypeId);
         Assert.False(result.IsSoldOut);
-        Assert.Null(result.RoomsLeft);
-        Assert.Null(result.TotalPrice);
-        Assert.Null(result.RegularPrice);
+        Assert.Null(result.RemainingRoomCount);
+        Assert.Null(result.TotalAmount);
+        Assert.Null(result.RegularAmount);
         Assert.Null(result.Promotion);
     }
 
@@ -92,9 +92,9 @@ public sealed class ResultEntitiesTests
             DepartDate = new DateOnly(2027, 2, 13),
             ReturnDate = new DateOnly(2027, 2, 20),
             Cabin = Cabin.PremiumEconomy,
-            Adults = 2,
-            Children = 1,
-            Infants = 1,
+            AdultCount = 2,
+            ChildCount = 1,
+            InfantCount = 1,
             Status = WorkStatus.Succeeded,
             LastError = "The page did not load.",
             CapturedUtc = Instant,
@@ -112,9 +112,9 @@ public sealed class ResultEntitiesTests
         Assert.Equal(new DateOnly(2027, 2, 13), set.DepartDate);
         Assert.Equal(new DateOnly(2027, 2, 20), set.ReturnDate);
         Assert.Equal(Cabin.PremiumEconomy, set.Cabin);
-        Assert.Equal(2, set.Adults);
-        Assert.Equal(1, set.Children);
-        Assert.Equal(1, set.Infants);
+        Assert.Equal(2, set.AdultCount);
+        Assert.Equal(1, set.ChildCount);
+        Assert.Equal(1, set.InfantCount);
         Assert.Equal(WorkStatus.Succeeded, set.Status);
         Assert.Equal("The page did not load.", set.LastError);
         Assert.Equal(Instant, set.CapturedUtc);
@@ -139,12 +139,12 @@ public sealed class ResultEntitiesTests
             DepartDate = new DateOnly(2027, 2, 13),
             ReturnDate = new DateOnly(2027, 2, 20),
             Cabin = Cabin.Economy,
-            Adults = 2,
+            AdultCount = 2,
             Status = WorkStatus.Pending,
         };
 
-        Assert.Equal(0, set.Children);
-        Assert.Equal(0, set.Infants);
+        Assert.Equal(0, set.ChildCount);
+        Assert.Equal(0, set.InfantCount);
         Assert.Null(set.LastError);
         Assert.Null(set.CapturedUtc);
         Assert.Null(set.LeasedBy);
@@ -171,11 +171,11 @@ public sealed class ResultEntitiesTests
     [Fact]
     public void FlightOption_when_every_value_is_given_keeps_each_value()
     {
-        var option = new FlightOption { Id = Id, FlightSetId = Parent, Fare = 1840.25m };
+        var option = new FlightOption { Id = Id, FlightSetId = Parent, AirfareAmount = 1840.25m };
 
         Assert.Equal(Id, option.Id);
         Assert.Equal(Parent, option.FlightSetId);
-        Assert.Equal(1840.25m, option.Fare);
+        Assert.Equal(1840.25m, option.AirfareAmount);
     }
 
 
@@ -256,7 +256,7 @@ public sealed class ResultEntitiesTests
             HtmlBody = "<p>Three rooms match.</p>",
             TextBody = "Three rooms match.",
             Status = DeliveryStatus.Failed,
-            Attempts = 2,
+            AttemptCount = 2,
             LastError = "The mailbox is full.",
             CreatedUtc = Instant,
             SentUtc = Instant.AddMinutes(3),
@@ -270,7 +270,7 @@ public sealed class ResultEntitiesTests
         Assert.Equal("<p>Three rooms match.</p>", delivery.HtmlBody);
         Assert.Equal("Three rooms match.", delivery.TextBody);
         Assert.Equal(DeliveryStatus.Failed, delivery.Status);
-        Assert.Equal(2, delivery.Attempts);
+        Assert.Equal(2, delivery.AttemptCount);
         Assert.Equal("The mailbox is full.", delivery.LastError);
         Assert.Equal(Instant, delivery.CreatedUtc);
         Assert.Equal(Instant.AddMinutes(3), delivery.SentUtc);
@@ -293,7 +293,7 @@ public sealed class ResultEntitiesTests
 
         Assert.Null(delivery.RecipientUserId);
         Assert.Equal(DeliveryStatus.Pending, delivery.Status);
-        Assert.Equal(0, delivery.Attempts);
+        Assert.Equal(0, delivery.AttemptCount);
         Assert.Null(delivery.LastError);
         Assert.Null(delivery.SentUtc);
     }

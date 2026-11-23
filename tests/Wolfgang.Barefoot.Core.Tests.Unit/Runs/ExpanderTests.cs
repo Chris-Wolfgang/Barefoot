@@ -82,12 +82,12 @@ public sealed class ExpanderTests
     [Fact]
     public void Expand_when_given_a_stay_sets_check_out_to_check_in_plus_the_nights()
     {
-        var expansion = Expander.Expand([Search(Mine) with { Nights = 5 }]);
+        var expansion = Expander.Expand([Search(Mine) with { NightCount = 5 }]);
 
         var key = Assert.Single(expansion.Requests).Key;
         Assert.Equal(March10, key.CheckIn);
         Assert.Equal(new DateOnly(2027, 3, 15), key.CheckOut);
-        Assert.Equal(2, key.Adults);
+        Assert.Equal(2, key.AdultCount);
     }
 
 
@@ -95,7 +95,7 @@ public sealed class ExpanderTests
     [Fact]
     public void Expand_when_the_stay_is_one_night_plans_a_check_out_the_next_day()
     {
-        var expansion = Expander.Expand([Search(Mine) with { Nights = 1 }]);
+        var expansion = Expander.Expand([Search(Mine) with { NightCount = 1 }]);
 
         Assert.Equal(March10.AddDays(1), Assert.Single(expansion.Requests).Key.CheckOut);
     }
@@ -148,10 +148,10 @@ public sealed class ExpanderTests
     {
         var other = Search(Theirs) with
         {
-            Nights = nights,
-            Adults = adults,
-            Children = children,
-            Infants = infants,
+            NightCount = nights,
+            AdultCount = adults,
+            ChildCount = children,
+            InfantCount = infants,
         };
 
         var expansion = Expander.Expand([Search(Mine), other]);
@@ -312,7 +312,7 @@ public sealed class ExpanderTests
     [Fact]
     public void Expand_when_the_travellers_differ_plans_separate_flight_sets()
     {
-        var family = WithFlights(Search(Theirs), Cabin.Economy, Philadelphia) with { Children = 2, Infants = 1 };
+        var family = WithFlights(Search(Theirs), Cabin.Economy, Philadelphia) with { ChildCount = 2, InfantCount = 1 };
 
         var expansion = Expander.Expand([WithFlights(Search(Mine), Cabin.Economy, Philadelphia), family]);
 
@@ -331,10 +331,10 @@ public sealed class ExpanderTests
     {
         var family = WithFlights(Search(Mine), Cabin.PremiumEconomy, Newark) with
         {
-            Nights = 4,
-            Adults = 2,
-            Children = 3,
-            Infants = 1,
+            NightCount = 4,
+            AdultCount = 2,
+            ChildCount = 3,
+            InfantCount = 1,
         };
 
         var expansion = Expander.Expand([family]);
@@ -343,9 +343,9 @@ public sealed class ExpanderTests
         Assert.Equal(MontegoBay, lookup.ResortId);
         Assert.Equal(March10, lookup.CheckIn);
         Assert.Equal(March10.AddDays(4), lookup.CheckOut);
-        Assert.Equal(2, lookup.Adults);
-        Assert.Equal(3, lookup.Children);
-        Assert.Equal(1, lookup.Infants);
+        Assert.Equal(2, lookup.AdultCount);
+        Assert.Equal(3, lookup.ChildCount);
+        Assert.Equal(1, lookup.InfantCount);
 
         var flights = Assert.Single(expansion.FlightSets);
         Assert.Equal(Newark, flights.OriginAirportId);
@@ -353,9 +353,9 @@ public sealed class ExpanderTests
         Assert.Equal(March10, flights.Depart);
         Assert.Equal(March10.AddDays(4), flights.Return);
         Assert.Equal(Cabin.PremiumEconomy, flights.Cabin);
-        Assert.Equal(2, flights.Adults);
-        Assert.Equal(3, flights.Children);
-        Assert.Equal(1, flights.Infants);
+        Assert.Equal(2, flights.AdultCount);
+        Assert.Equal(3, flights.ChildCount);
+        Assert.Equal(1, flights.InfantCount);
     }
 
 
@@ -373,7 +373,7 @@ public sealed class ExpanderTests
     [InlineData(-1)]
     public void Expand_when_a_search_has_no_nights_throws_naming_the_search(int nights)
     {
-        var exception = Assert.Throws<ArgumentException>(() => Expander.Expand([Search(Mine) with { Nights = nights }]));
+        var exception = Assert.Throws<ArgumentException>(() => Expander.Expand([Search(Mine) with { NightCount = nights }]));
 
         Assert.Equal("searches", exception.ParamName);
         Assert.Contains(Mine.ToString(), exception.Message, StringComparison.Ordinal);
@@ -416,8 +416,8 @@ public sealed class ExpanderTests
             SearchId = id,
             Resorts = [new ExpandResort(MontegoBay, JamaicaGateway)],
             Window = new ResolvedWindow(March10, March10.AddDays(days - 1)),
-            Nights = 7,
-            Adults = 2,
+            NightCount = 7,
+            AdultCount = 2,
             RunOrder = 50,
         };
     }

@@ -17,9 +17,9 @@ public sealed class RunMonitorRecordsTests
     {
         var progress = new WorkProgress(132, 212, 2);
 
-        Assert.Equal(132, progress.Done);
-        Assert.Equal(212, progress.Total);
-        Assert.Equal(2, progress.Failed);
+        Assert.Equal(132, progress.DoneCount);
+        Assert.Equal(212, progress.TotalCount);
+        Assert.Equal(2, progress.FailedCount);
     }
 
 
@@ -111,8 +111,8 @@ public sealed class RunMonitorRecordsTests
         Assert.Equal(40, run.DurationMinutes);
         Assert.Equal(lookups, run.Lookups);
         Assert.Equal(flightSets, run.FlightSets);
-        Assert.Equal(11, run.DigestsSent);
-        Assert.Equal(1, run.DigestsFailed);
+        Assert.Equal(11, run.SentDigestCount);
+        Assert.Equal(1, run.FailedDigestCount);
         Assert.Equal(9.8m, run.SecondsPerLookup);
         Assert.Equal("Five timeouts in a row on the room page.", run.Note);
     }

@@ -81,8 +81,8 @@ public static class DigestRenderer
     {
         var cheapest = digest
             .Resorts
-            .Where(resort => resort.FromPrice.HasValue)
-            .Select(resort => resort.FromPrice!.Value)
+            .Where(resort => resort.FromAmount.HasValue)
+            .Select(resort => resort.FromAmount!.Value)
             .DefaultIfEmpty(-1)
             .Min();
 
@@ -117,7 +117,7 @@ public static class DigestRenderer
     private static string StayLine(DigestRoom room)
     {
         var day = room.CheckIn.ToString("ddd MMM d", CultureInfo.InvariantCulture);
-        var nights = room.Nights == 1 ? "1 night" : string.Create(CultureInfo.InvariantCulture, $"{room.Nights} nights");
+        var nights = room.NightCount == 1 ? "1 night" : string.Create(CultureInfo.InvariantCulture, $"{room.NightCount} nights");
 
         return $"Check-in {day} · {nights}";
     }
@@ -230,13 +230,13 @@ public static class DigestRenderer
             return $"<span style=\"color:{Muted}\">offline</span>";
         }
 
-        if (resort.FromPrice is not { } price)
+        if (resort.FromAmount is not { } price)
         {
             return $"<span style=\"color:{Muted}\">no matches</span>";
         }
 
-        var change = Change(resort.PriceChange);
-        var colour = resort.PriceChange switch
+        var change = Change(resort.ChangeAmount);
+        var colour = resort.ChangeAmount switch
         {
             < 0 => Down,
             > 0 => Up,
@@ -254,13 +254,13 @@ public static class DigestRenderer
     {
         html.Append("<table role=\"presentation\" width=\"100%\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\" style=\"margin:24px 0 8px\"><tr>");
         html.Append(CultureInfo.InvariantCulture, $"<td style=\"font-size:17px;font-weight:700;border-bottom:2px solid {Ink};padding-bottom:4px\">{Encode(resort.Name)}</td>");
-        html.Append(CultureInfo.InvariantCulture, $"<td align=\"right\" style=\"font-size:15px;border-bottom:2px solid {Ink};padding-bottom:4px;white-space:nowrap\">from {Money(resort.Rooms[0].TotalPrice)}</td>");
+        html.Append(CultureInfo.InvariantCulture, $"<td align=\"right\" style=\"font-size:15px;border-bottom:2px solid {Ink};padding-bottom:4px;white-space:nowrap\">from {Money(resort.Rooms[0].TotalAmount)}</td>");
         html.Append("</tr></table>\n");
 
         foreach (var room in resort.Rooms)
         {
             html.Append(CultureInfo.InvariantCulture, $"<div style=\"border:1px solid {Line};border-radius:8px;padding:12px 14px;margin:0 0 10px\">\n");
-            html.Append(CultureInfo.InvariantCulture, $"<div style=\"font-size:24px;font-weight:700\">{Money(room.TotalPrice)}");
+            html.Append(CultureInfo.InvariantCulture, $"<div style=\"font-size:24px;font-weight:700\">{Money(room.TotalAmount)}");
 
             if (room.TotalNote is { } note)
             {
@@ -276,9 +276,9 @@ public static class DigestRenderer
             }
 
             html.Append(CultureInfo.InvariantCulture, $"<div style=\"display:inline-block;margin:8px 0;padding:3px 10px;border:1px solid {Line};border-radius:12px;font-size:13px\">{Encode(StayLine(room))}</div>\n");
-            html.Append(CultureInfo.InvariantCulture, $"<div style=\"font-size:14px\">Room <b>{Money(room.RoomPrice)}</b>");
+            html.Append(CultureInfo.InvariantCulture, $"<div style=\"font-size:14px\">Room <b>{Money(room.RoomAmount)}</b>");
 
-            if (room.RoomPriceBefore is { } before)
+            if (room.PreviousRoomAmount is { } before)
             {
                 html.Append(CultureInfo.InvariantCulture, $" <s style=\"color:{Muted}\">{Money(before)}</s>");
             }
@@ -291,7 +291,7 @@ public static class DigestRenderer
             if (room.Flights.Count > 0)
             {
                 html.Append("<br>Flights ");
-                html.AppendJoin(" · ", room.Flights.Select(flight => $"{Encode(flight.AirportCode)} <b>{Money(flight.Price)}</b>"));
+                html.AppendJoin(" · ", room.Flights.Select(flight => $"{Encode(flight.AirportCode)} <b>{Money(flight.AirfareAmount)}</b>"));
             }
 
             html.Append("</div>\n</div>\n");
@@ -348,7 +348,7 @@ public static class DigestRenderer
 
         foreach (var resort in digest.Resorts.Where(resort => resort.Rooms.Count > 0))
         {
-            text.Append(CultureInfo.InvariantCulture, $"\n{resort.Name.ToUpperInvariant()} (from {Money(resort.Rooms[0].TotalPrice)})\n");
+            text.Append(CultureInfo.InvariantCulture, $"\n{resort.Name.ToUpperInvariant()} (from {Money(resort.Rooms[0].TotalAmount)})\n");
 
             foreach (var room in resort.Rooms)
             {
@@ -375,12 +375,12 @@ public static class DigestRenderer
             return "offline";
         }
 
-        if (resort.FromPrice is not { } price)
+        if (resort.FromAmount is not { } price)
         {
             return "no matches";
         }
 
-        return Change(resort.PriceChange) is { } change
+        return Change(resort.ChangeAmount) is { } change
             ? $"{Money(price)} ({change})"
             : Money(price);
     }
@@ -389,7 +389,7 @@ public static class DigestRenderer
 
     private static void AppendRoomText(StringBuilder text, DigestRoom room)
     {
-        text.Append(CultureInfo.InvariantCulture, $"\n{Money(room.TotalPrice)}");
+        text.Append(CultureInfo.InvariantCulture, $"\n{Money(room.TotalAmount)}");
 
         if (room.TotalNote is { } note)
         {
@@ -403,9 +403,9 @@ public static class DigestRenderer
             text.Append(CultureInfo.InvariantCulture, $"  {string.Join(" · ", room.Amenities)}\n");
         }
 
-        text.Append(CultureInfo.InvariantCulture, $"  {StayLine(room)}\n  Room {Money(room.RoomPrice)}");
+        text.Append(CultureInfo.InvariantCulture, $"  {StayLine(room)}\n  Room {Money(room.RoomAmount)}");
 
-        if (room.RoomPriceBefore is { } before)
+        if (room.PreviousRoomAmount is { } before)
         {
             text.Append(CultureInfo.InvariantCulture, $" (was {Money(before)})");
         }
@@ -420,7 +420,7 @@ public static class DigestRenderer
         if (room.Flights.Count > 0)
         {
             text.Append("  Flights ");
-            text.AppendJoin(" · ", room.Flights.Select(flight => $"{flight.AirportCode} {Money(flight.Price)}"));
+            text.AppendJoin(" · ", room.Flights.Select(flight => $"{flight.AirportCode} {Money(flight.AirfareAmount)}"));
             text.Append('\n');
         }
     }

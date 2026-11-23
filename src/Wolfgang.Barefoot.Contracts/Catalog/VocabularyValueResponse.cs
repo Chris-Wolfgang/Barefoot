@@ -8,7 +8,7 @@ namespace Wolfgang.Barefoot.Contracts.Catalog;
 /// <param name="Kind">Which vocabulary the value belongs to.</param>
 /// <param name="Value">The value as the booking site words it.</param>
 /// <param name="LastSeenUtc">When a result last carried the value.</param>
-/// <param name="RunsSinceSeen">The number of runs since then: "not seen in N runs".</param>
+/// <param name="RunsSinceSeenCount">The number of runs since then: "not seen in N runs".</param>
 /// <param name="IsStale">
 /// Whether the value has gone unseen for the configured number of runs. A stale value is greyed in
 /// the editor and stays valid in a filter.
@@ -23,7 +23,7 @@ public sealed record VocabularyValueResponse
     VocabularyKind Kind,
     string Value,
     DateTimeOffset LastSeenUtc,
-    int RunsSinceSeen,
+    int RunsSinceSeenCount,
     bool IsStale,
     int? SearchCount
 );

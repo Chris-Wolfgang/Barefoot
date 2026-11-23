@@ -111,6 +111,21 @@ Error codes, permissions and setting keys are small key types in `Wolfgang.Baref
 | Entities are classes, because EF Core needs to construct and mutate them | review |
 | A type used as a test's expected value supports value equality (a `record`) | review |
 
+## Names
+
+A property, parameter, record member or column says what kind of value it holds by how its name
+ends. The same word means the same thing in every type.
+
+| Rule | Example | Enforced by |
+|---|---|---|
+| Money ends in `Amount`. The words "price", "fare" and "cost" are not part of the name | `RoomAmount`, `AirfareAmount`, `RegularAmount`, `ChangeAmount` | review |
+| A sum of amounts has `Total` before `Amount`; a part of that sum is a `SubTotal` | `TotalAmount`, `MaxTotalAmount`, `SubTotalAmount` | review |
+| The number of things ends in `Count`, after the thing in the singular | `AdultCount`, `ChildCount`, `NightCount`, `StopCount`, `AttemptCount`, `RemainingRoomCount` | review |
+| `Total` alone is never a count. How many there are in all is `TotalCount`, or the thing's own `Count` | `Page.TotalCount`, `WorkProgress.TotalCount` | review |
+| `Quantity` (or `Qty`) is allowed in place of `Count` only where the business itself uses the word, as for an ordered quantity | none yet | review |
+| A measure keeps its unit as the ending and is not a count | `DurationMinutes`, `DriveMinutes`, `StorageUsedBytes`, `ComputeUsedPercent` | review |
+| A position, a limit and a version are not counts and keep their own words | `RunOrder`, `Sequence`, `FirstItemIndex`, `ActiveSearchLimit`, `Version`, `Revision` | review |
+
 ## Range checks
 
 `IsInRange` and `IsBetween` come from `Wolfgang.Extensions.IComparable`. A range check says which

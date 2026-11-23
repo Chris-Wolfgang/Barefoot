@@ -27,9 +27,9 @@ public sealed class PeopleAndSettingsEntitiesTests
             DisclaimerVersionAccepted = 3,
             DisclaimerAcceptedUtc = Instant.AddDays(-30),
             TimeZoneId = "America/New_York",
-            DefaultAdults = 2,
-            DefaultChildren = 1,
-            DefaultInfants = 1,
+            DefaultAdultCount = 2,
+            DefaultChildCount = 1,
+            DefaultInfantCount = 1,
             SessionsValidAfterUtc = Instant.AddDays(-1),
             Version = 4,
         };
@@ -41,9 +41,9 @@ public sealed class PeopleAndSettingsEntitiesTests
         Assert.Equal(3, user.DisclaimerVersionAccepted);
         Assert.Equal(Instant.AddDays(-30), user.DisclaimerAcceptedUtc);
         Assert.Equal("America/New_York", user.TimeZoneId);
-        Assert.Equal(2, user.DefaultAdults);
-        Assert.Equal(1, user.DefaultChildren);
-        Assert.Equal(1, user.DefaultInfants);
+        Assert.Equal(2, user.DefaultAdultCount);
+        Assert.Equal(1, user.DefaultChildCount);
+        Assert.Equal(1, user.DefaultInfantCount);
         Assert.Equal(Instant.AddDays(-1), user.SessionsValidAfterUtc);
         Assert.Equal(4, user.Version);
     }
