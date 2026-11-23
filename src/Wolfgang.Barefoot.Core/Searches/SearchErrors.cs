@@ -84,6 +84,12 @@ public static class SearchErrors
     public static readonly ErrorCode MaxStopsNegative =
         new("search.max_stops_negative", Refused, "The most stops cannot be below 0; {0} was given.", ErrorSeverity.Warning);
 
+    /// <summary>A room level, view, type or feature is chosen more than once in one filter.</summary>
+    public static readonly ErrorCode FilterValueRepeated =
+        new("search.filter_value_repeated", Refused, "A value can be chosen once per filter; {0} is chosen more than once.", ErrorSeverity.Warning);
+
+
+
     /// <summary>A recipient is chosen more than once.</summary>
     public static readonly ErrorCode RecipientRepeated =
         new("search.recipient_repeated", Refused, "A recipient can be chosen once per search; {0} is chosen more than once.", ErrorSeverity.Warning);

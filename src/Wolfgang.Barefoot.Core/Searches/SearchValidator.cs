@@ -1,4 +1,5 @@
 using Wolfgang.Barefoot.Contracts.Searches;
+using Wolfgang.Barefoot.Core.Keys;
 using Wolfgang.Barefoot.Core.Validation;
 using Wolfgang.Extensions.IComparable;
 
@@ -327,18 +328,36 @@ public static class SearchValidator
         {
             failures.Add(ValidationFailure.Of(SearchErrors.MaxStopsNegative, nameof(definition.MaxStops), definition.MaxStops));
         }
+
+        RefuseRepeats(definition.RoomLevelIds, SearchErrors.FilterValueRepeated, nameof(definition.RoomLevelIds), failures);
+        RefuseRepeats(definition.RoomViewIds, SearchErrors.FilterValueRepeated, nameof(definition.RoomViewIds), failures);
+        RefuseRepeats(definition.RoomTypeIds, SearchErrors.FilterValueRepeated, nameof(definition.RoomTypeIds), failures);
+        RefuseRepeats(definition.MustHaveFeatureIds, SearchErrors.FilterValueRepeated, nameof(definition.MustHaveFeatureIds), failures);
     }
 
 
     private static void CheckRecipients(SearchDefinition definition, List<ValidationFailure> failures)
     {
+        RefuseRepeats(definition.RecipientIds, SearchErrors.RecipientRepeated, nameof(definition.RecipientIds), failures);
+    }
+
+
+
+    /// <summary>Reports each id that is in the list more than once, once however often it repeats.</summary>
+    private static void RefuseRepeats
+    (
+        IReadOnlyList<Guid> ids,
+        ErrorCode code,
+        string field,
+        List<ValidationFailure> failures
+    )
+    {
         failures.AddRange
         (
-            definition
-                .RecipientIds
+            ids
                 .GroupBy(id => id)
                 .Where(group => group.Skip(1).Any())
-                .Select(group => ValidationFailure.Of(SearchErrors.RecipientRepeated, nameof(definition.RecipientIds), group.Key))
+                .Select(group => ValidationFailure.Of(code, field, group.Key))
         );
     }
 }

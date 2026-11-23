@@ -584,6 +584,50 @@ public sealed class SearchValidatorTests
 
 
 
+    [Theory]
+    [InlineData("RoomLevelIds")]
+    [InlineData("RoomViewIds")]
+    [InlineData("RoomTypeIds")]
+    [InlineData("MustHaveFeatureIds")]
+    public void Validate_when_a_filter_value_is_chosen_more_than_once_reports_it_once_for_that_filter(string field)
+    {
+        var twice = Guid.Parse("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+        var once = Guid.Parse("5d0c6f0e-3a51-4c1d-8a43-1b2c3d4e5f60");
+        IReadOnlyList<Guid> chosen = [twice, once, twice, twice];
+        var definition = field switch
+        {
+            "RoomLevelIds" => Recurring() with { RoomLevelIds = chosen },
+            "RoomViewIds" => Recurring() with { RoomViewIds = chosen },
+            "RoomTypeIds" => Recurring() with { RoomTypeIds = chosen },
+            _ => Recurring() with { MustHaveFeatureIds = chosen },
+        };
+
+        var failure = Assert.Single(SearchValidator.Validate(definition));
+
+        Assert.Same(SearchErrors.FilterValueRepeated, failure.Code);
+        Assert.Equal(field, failure.Field);
+        Assert.Equal("A value can be chosen once per filter; 0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d is chosen more than once.", failure.Message);
+    }
+
+
+
+    [Fact]
+    public void Validate_when_one_value_is_chosen_in_every_filter_reports_nothing()
+    {
+        var value = Guid.Parse("0a1b2c3d-4e5f-4a6b-8c7d-9e0f1a2b3c4d");
+        var definition = Recurring() with
+        {
+            RoomLevelIds = [value],
+            RoomViewIds = [value],
+            RoomTypeIds = [value],
+            MustHaveFeatureIds = [value],
+        };
+
+        Assert.Empty(SearchValidator.Validate(definition));
+    }
+
+
+
     [Fact]
     public void Validate_when_one_adult_travels_alone_reports_nothing()
     {
@@ -613,7 +657,7 @@ public sealed class SearchValidatorTests
             .Select(field => (ErrorCode)field.GetValue(null)!)
             .ToList();
 
-        Assert.Equal(20, codes.Count);
+        Assert.Equal(21, codes.Count);
         Assert.Equal(codes.Count, codes.Select(code => code.Name).Distinct(StringComparer.Ordinal).Count());
         Assert.All
         (

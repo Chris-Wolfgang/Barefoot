@@ -24,6 +24,10 @@ public sealed class SearchDefinitionTests
         Assert.Empty(definition.ResortIds);
         Assert.Empty(definition.DepartureAirportIds);
         Assert.Empty(definition.RecipientIds);
+        Assert.Empty(definition.RoomLevelIds);
+        Assert.Empty(definition.RoomViewIds);
+        Assert.Empty(definition.RoomTypeIds);
+        Assert.Empty(definition.MustHaveFeatureIds);
         Assert.Equal(0, definition.Children);
         Assert.Equal(0, definition.Infants);
         Assert.False(definition.IncludeFlights);
@@ -68,6 +72,10 @@ public sealed class SearchDefinitionTests
             IncludeFlights = true,
             Cabin = Cabin.PremiumEconomy,
             DepartureAirportIds = [airport],
+            RoomLevelIds = [resort],
+            RoomViewIds = [airport],
+            RoomTypeIds = [resort, airport],
+            MustHaveFeatureIds = [airport, resort],
             MaxTotalPrice = 9000m,
             MaxDriveMinutes = 90,
             MaxFlightMinutes = 600,
@@ -95,6 +103,10 @@ public sealed class SearchDefinitionTests
         Assert.Equal(600, definition.MaxFlightMinutes);
         Assert.Equal(1, definition.MaxStops);
         Assert.Equal([airport], definition.RecipientIds);
+        Assert.Equal([resort], definition.RoomLevelIds);
+        Assert.Equal([airport], definition.RoomViewIds);
+        Assert.Equal([resort, airport], definition.RoomTypeIds);
+        Assert.Equal([airport, resort], definition.MustHaveFeatureIds);
         Assert.Equal(75, definition.RunOrder);
     }
 
