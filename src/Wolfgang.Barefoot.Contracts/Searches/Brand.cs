@@ -6,9 +6,12 @@ namespace Wolfgang.Barefoot.Contracts.Searches;
 /// </summary>
 public enum Brand
 {
+    /// <summary>No brand was chosen. It is what a value nobody set holds, and no search is valid with it.</summary>
+    NotSet = 0,
+
     /// <summary>Adults only: a search has no children and no infants.</summary>
-    Sandals = 0,
+    Sandals = 1,
 
     /// <summary>Families: a search may include children and infants.</summary>
-    Beaches = 1,
+    Beaches = 2,
 }
