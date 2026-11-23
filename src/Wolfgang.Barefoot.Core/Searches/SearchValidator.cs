@@ -88,7 +88,7 @@ public static class SearchValidator
             failures.Add(ValidationFailure.Of(SearchErrors.NameRequired, nameof(definition.Name)));
         }
 
-        if (!Enum.IsDefined(definition.Brand))
+        if (definition.Brand == Brand.NotSet || !Enum.IsDefined(definition.Brand))
         {
             failures.Add(ValidationFailure.Of(SearchErrors.BrandUnknown, nameof(definition.Brand), (int)definition.Brand));
         }
