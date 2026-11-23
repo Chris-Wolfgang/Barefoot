@@ -72,6 +72,36 @@ public sealed class SearchValidatorTests
 
 
     [Fact]
+    public void Validate_when_the_brand_is_not_set_reports_brand_unknown()
+    {
+        AssertOnly(Recurring() with { Brand = Brand.NotSet }, SearchErrors.BrandUnknown, "Brand", "'0' is not a brand.");
+    }
+
+
+
+    [Theory]
+    [InlineData(Brand.NotSet, 0)]
+    [InlineData(Brand.Sandals, 1)]
+    [InlineData(Brand.Beaches, 2)]
+    public void Brand_when_cast_to_a_number_keeps_its_declared_value(Brand brand, int expected)
+    {
+        Assert.Equal(expected, (int)brand);
+    }
+
+
+
+    [Theory]
+    [InlineData(WindowKind.NotSet, 0)]
+    [InlineData(WindowKind.Recurring, 1)]
+    [InlineData(WindowKind.OneTime, 2)]
+    public void WindowKind_when_cast_to_a_number_keeps_its_declared_value(WindowKind kind, int expected)
+    {
+        Assert.Equal(expected, (int)kind);
+    }
+
+
+
+    [Fact]
     public void Validate_when_no_resort_is_chosen_reports_resorts_required()
     {
         AssertOnly(Recurring() with { ResortIds = [] }, SearchErrors.ResortsRequired, "ResortIds", "Choose at least one resort.");
@@ -201,6 +231,20 @@ public sealed class SearchValidatorTests
             SearchErrors.WindowKindUnknown,
             "WindowKind",
             "'5' is not a kind of check-in window."
+        );
+    }
+
+
+
+    [Fact]
+    public void Validate_when_the_window_kind_is_not_set_reports_window_kind_unknown()
+    {
+        AssertOnly
+        (
+            Recurring() with { WindowKind = WindowKind.NotSet },
+            SearchErrors.WindowKindUnknown,
+            "WindowKind",
+            "'0' is not a kind of check-in window."
         );
     }
 
