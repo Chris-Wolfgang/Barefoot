@@ -192,7 +192,7 @@ public sealed class ResultRecordsTests
             "AAA",
             new TimeOnly(10, 5),
             "BBB",
-            Overnight: false,
+            IsOvernight: false,
             80
         );
         var last = first with
@@ -202,11 +202,11 @@ public sealed class ResultRecordsTests
             DepartureAirportCode = "BBB",
             ArrivalTime = new TimeOnly(14, 15),
             ArrivalAirportCode = "CCC",
-            Overnight = true,
+            IsOvernight = true,
             LayoverMinutes = null,
         };
-        var outbound = new FlightDirectionResponse([first, last], 1, 365, Overnight: true);
-        var back = new FlightDirectionResponse([last], 0, null, Overnight: false);
+        var outbound = new FlightDirectionResponse([first, last], 1, 365, IsOvernight: true);
+        var back = new FlightDirectionResponse([last], 0, null, IsOvernight: false);
         var option = new FlightOptionResponse(First, 612m, outbound, back);
 
         Assert.Equal(First, option.Id);
@@ -216,10 +216,10 @@ public sealed class ResultRecordsTests
         Assert.Equal([first, last], outbound.Legs);
         Assert.Equal(1, outbound.StopCount);
         Assert.Equal(365, outbound.DurationMinutes);
-        Assert.True(outbound.Overnight);
+        Assert.True(outbound.IsOvernight);
         Assert.Equal(0, back.StopCount);
         Assert.Null(back.DurationMinutes);
-        Assert.False(back.Overnight);
+        Assert.False(back.IsOvernight);
         Assert.Equal("AA", first.Carrier);
         Assert.Equal("1204", first.FlightNumber);
         Assert.Equal("American Airlines", first.OperatingCarrier);
@@ -229,9 +229,9 @@ public sealed class ResultRecordsTests
         Assert.Equal("AAA", first.DepartureAirportCode);
         Assert.Equal(new TimeOnly(10, 5), first.ArrivalTime);
         Assert.Equal("BBB", first.ArrivalAirportCode);
-        Assert.False(first.Overnight);
+        Assert.False(first.IsOvernight);
         Assert.Equal(80, first.LayoverMinutes);
-        Assert.True(last.Overnight);
+        Assert.True(last.IsOvernight);
         Assert.Null(last.LayoverMinutes);
     }
 }

@@ -10,11 +10,11 @@ namespace Wolfgang.Barefoot.Contracts.Results;
 /// <see langword="null"/> when an airport on the way has no time zone, because the times then cannot
 /// be compared (DESIGN §7).
 /// </param>
-/// <param name="Overnight">Whether the site marks the direction as overnight.</param>
+/// <param name="IsOvernight">Whether the site marks the direction as overnight.</param>
 public sealed record FlightDirectionResponse
 (
     IReadOnlyList<FlightLegResponse> Legs,
     int StopCount,
     int? DurationMinutes,
-    bool Overnight
+    bool IsOvernight
 );

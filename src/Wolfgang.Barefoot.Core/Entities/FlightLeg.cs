@@ -72,5 +72,5 @@ public sealed class FlightLeg
 
 
     /// <summary>Whether the site marks the flight as arriving the next day.</summary>
-    public bool Overnight { get; set; }
+    public bool IsOvernight { get; set; }
 }

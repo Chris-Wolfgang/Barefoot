@@ -123,6 +123,7 @@ ends. The same word means the same thing in every type.
 | The number of things ends in `Count`, after the thing in the singular | `AdultCount`, `ChildCount`, `NightCount`, `StopCount`, `AttemptCount`, `RemainingRoomCount` | review |
 | `Total` alone is never a count. How many there are in all is `TotalCount`, or the thing's own `Count` | `Page.TotalCount`, `WorkProgress.TotalCount` | review |
 | `Quantity` (or `Qty`) is allowed in place of `Count` only where the business itself uses the word, as for an ordered quantity | none yet | review |
+| A yes-or-no value that is an adjective starts with `Is`; one that already reads as a statement keeps its verb | `IsOvernight`, `IsSoldOut`, `IsOffline`; `IncludeFlights`, `RequiresRestart`, `MatchesFilters` | review |
 | A measure keeps its unit as the ending and is not a count | `DurationMinutes`, `DriveMinutes`, `StorageUsedBytes`, `ComputeUsedPercent` | review |
 | A position, a limit and a version are not counts and keep their own words | `RunOrder`, `Sequence`, `FirstItemIndex`, `ActiveSearchLimit`, `Version`, `Revision` | review |
 

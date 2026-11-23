@@ -9,7 +9,7 @@ namespace Wolfgang.Barefoot.Core.Digests;
 /// How the cheapest total moved since the run before: negative is cheaper, zero unchanged,
 /// <see langword="null"/> when there is nothing to compare with.
 /// </param>
-/// <param name="Offline">Whether the resort was offline on the booking site and skipped.</param>
+/// <param name="IsOffline">Whether the resort was offline on the booking site and skipped.</param>
 /// <param name="Rooms">The room cards, cheapest first.</param>
 /// <param name="MoreCount">How many further options matched and are not shown.</param>
 /// <param name="ResultsUrl">The link that opens this resort's results.</param>
@@ -18,7 +18,7 @@ public sealed record DigestResort
     string Name,
     decimal? FromAmount,
     decimal? ChangeAmount,
-    bool Offline,
+    bool IsOffline,
     IReadOnlyList<DigestRoom> Rooms,
     int MoreCount,
     Uri ResultsUrl

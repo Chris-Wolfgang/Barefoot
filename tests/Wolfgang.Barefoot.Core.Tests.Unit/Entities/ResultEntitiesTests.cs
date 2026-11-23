@@ -183,12 +183,12 @@ public sealed class ResultEntitiesTests
     [Fact]
     public void FlightDirection_when_it_is_an_overnight_return_keeps_each_value()
     {
-        var direction = new FlightDirection { Id = Id, FlightOptionId = Parent, IsReturn = true, Overnight = true };
+        var direction = new FlightDirection { Id = Id, FlightOptionId = Parent, IsReturn = true, IsOvernight = true };
 
         Assert.Equal(Id, direction.Id);
         Assert.Equal(Parent, direction.FlightOptionId);
         Assert.True(direction.IsReturn);
-        Assert.True(direction.Overnight);
+        Assert.True(direction.IsOvernight);
     }
 
 
@@ -199,7 +199,7 @@ public sealed class ResultEntitiesTests
         var direction = new FlightDirection { Id = Id, FlightOptionId = Parent, IsReturn = false };
 
         Assert.False(direction.IsReturn);
-        Assert.False(direction.Overnight);
+        Assert.False(direction.IsOvernight);
     }
 
 
@@ -222,7 +222,7 @@ public sealed class ResultEntitiesTests
             DepartureAirportCode = "AAA",
             ArrivalTime = new TimeOnly(1, 40),
             ArrivalAirportCode = "BBB",
-            Overnight = true,
+            IsOvernight = true,
         };
 
         Assert.Equal(Id, leg.Id);
@@ -238,7 +238,7 @@ public sealed class ResultEntitiesTests
         Assert.Equal("AAA", leg.DepartureAirportCode);
         Assert.Equal(new TimeOnly(1, 40), leg.ArrivalTime);
         Assert.Equal("BBB", leg.ArrivalAirportCode);
-        Assert.True(leg.Overnight);
+        Assert.True(leg.IsOvernight);
     }
 
 

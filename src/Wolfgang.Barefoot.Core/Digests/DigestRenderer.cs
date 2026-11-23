@@ -225,7 +225,7 @@ public static class DigestRenderer
 
     private static string SummaryPriceHtml(DigestResort resort)
     {
-        if (resort.Offline)
+        if (resort.IsOffline)
         {
             return $"<span style=\"color:{Muted}\">offline</span>";
         }
@@ -370,7 +370,7 @@ public static class DigestRenderer
 
     private static string SummaryPriceText(DigestResort resort)
     {
-        if (resort.Offline)
+        if (resort.IsOffline)
         {
             return "offline";
         }

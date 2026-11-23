@@ -51,7 +51,7 @@ public sealed class DigestRendererTests
         var free = Empty() with
         {
             MatchCount = 2,
-            Resorts = [new DigestResort("Free Resort", 0m, null, Offline: false, [], 0, Results)],
+            Resorts = [new DigestResort("Free Resort", 0m, null, IsOffline: false, [], 0, Results)],
         };
 
         Assert.Equal("Nothing yet: 2 matches from $0", DigestRenderer.Render(free).Subject);
@@ -194,9 +194,9 @@ public sealed class DigestRendererTests
                 "58 of 58 room lookups and 58 of 58 flight lookups completed.",
             ],
             [
-                new DigestResort("Grande St. Lucian", 6142m, -486m, Offline: false, [club, second], 38, GrandeResults),
-                new DigestResort("Regency La Toc", 6480m, 0m, Offline: false, [villa], 0, Results),
-                new DigestResort("Tom & Tina's \"offline\" resort", null, null, Offline: true, [], 0, Results),
+                new DigestResort("Grande St. Lucian", 6142m, -486m, IsOffline: false, [club, second], 38, GrandeResults),
+                new DigestResort("Regency La Toc", 6480m, 0m, IsOffline: false, [villa], 0, Results),
+                new DigestResort("Tom & Tina's \"offline\" resort", null, null, IsOffline: true, [], 0, Results),
             ],
             Results
         );
@@ -230,10 +230,10 @@ public sealed class DigestRendererTests
             [],
             ["Check-in Jan 1, 2027 · 1 night · 2 adults · no flights."],
             [
-                new DigestResort("Dearer Resort", 1706.66m, 120m, Offline: false, [plain], 1, Results),
-                new DigestResort("New Resort", 2000m, null, Offline: false, [], 0, Results),
-                new DigestResort("Unpriced Resort", null, null, Offline: false, [plain], 0, Results),
-                new DigestResort("Empty Resort", null, null, Offline: false, [], 0, Results),
+                new DigestResort("Dearer Resort", 1706.66m, 120m, IsOffline: false, [plain], 1, Results),
+                new DigestResort("New Resort", 2000m, null, IsOffline: false, [], 0, Results),
+                new DigestResort("Unpriced Resort", null, null, IsOffline: false, [plain], 0, Results),
+                new DigestResort("Empty Resort", null, null, IsOffline: false, [], 0, Results),
             ],
             Results
         );
@@ -247,7 +247,7 @@ public sealed class DigestRendererTests
         {
             SearchName = "Nothing yet",
             MatchCount = 0,
-            Resorts = [new DigestResort("Empty Resort", null, null, Offline: false, [], 0, Results)],
+            Resorts = [new DigestResort("Empty Resort", null, null, IsOffline: false, [], 0, Results)],
         };
     }
 

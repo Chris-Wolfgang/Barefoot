@@ -14,7 +14,7 @@ namespace Wolfgang.Barefoot.Contracts.Scraping;
 /// <param name="DepartureAirportCode">The three-letter code of the departure airport.</param>
 /// <param name="ArrivalTime">The local arrival time. The site shows no arrival date.</param>
 /// <param name="ArrivalAirportCode">The three-letter code of the arrival airport.</param>
-/// <param name="Overnight">Whether the leg is marked "Overnight Flight".</param>
+/// <param name="IsOvernight">Whether the leg is marked "Overnight Flight".</param>
 public sealed record ScrapedLeg
 (
     string Carrier,
@@ -27,5 +27,5 @@ public sealed record ScrapedLeg
     string DepartureAirportCode,
     TimeOnly ArrivalTime,
     string ArrivalAirportCode,
-    bool Overnight
+    bool IsOvernight
 );

@@ -11,7 +11,7 @@ namespace Wolfgang.Barefoot.Contracts.Scraping;
 /// The price of the whole stay for all guests, taxes included, in US dollars; <see langword="null"/>
 /// when the card shows no price, as a sold-out card does.
 /// </param>
-/// <param name="SoldOut">Whether the card says the room is sold out for the dates.</param>
+/// <param name="IsSoldOut">Whether the card says the room is sold out for the dates.</param>
 /// <param name="RemainingRoomCount">The number in "N ROOMS LEFT", or <see langword="null"/> when the card does not say.</param>
 /// <param name="View">The room view, or <see langword="null"/> when it was not read. It is not on the card.</param>
 /// <param name="Type">The room type, or <see langword="null"/> when it was not read. It is not on the card.</param>
@@ -22,7 +22,7 @@ public sealed record ScrapedRoom
     string Name,
     string Level,
     decimal? TotalAmount,
-    bool SoldOut,
+    bool IsSoldOut,
     int? RemainingRoomCount,
     string? View,
     string? Type,
