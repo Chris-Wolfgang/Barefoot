@@ -1,4 +1,4 @@
-namespace Wolfgang.Barefoot.Core.Searches;
+namespace Wolfgang.Barefoot.Contracts.Searches;
 
 /// <summary>
 /// The resort brand a search is for. A search is for one brand, because the brands differ in who may

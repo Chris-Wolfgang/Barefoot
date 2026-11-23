@@ -1,3 +1,4 @@
+using Wolfgang.Barefoot.Contracts.Searches;
 using Wolfgang.Barefoot.Core.Validation;
 using Wolfgang.Extensions.IComparable;
 
@@ -21,7 +22,7 @@ public static class SearchValidator
 
 
     /// <summary>The run order a new search starts with.</summary>
-    public const int NormalRunOrder = 50;
+    public const int NormalRunOrder = SearchDefinition.NormalRunOrder;
 
 
 
