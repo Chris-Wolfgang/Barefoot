@@ -52,6 +52,65 @@ public sealed class RunEntitiesTests
 
 
     [Fact]
+    public void Run_when_it_was_resumed_keeps_the_resume_and_the_work_done_before_it()
+    {
+        var run = new Run
+        {
+            Id = Id,
+            Trigger = "scheduled",
+            ResumedUtc = Instant.AddHours(3),
+            WorkedSecondsBeforeResume = 1080,
+        };
+
+        Assert.Equal(Instant.AddHours(3), run.ResumedUtc);
+        Assert.Equal(1080, run.WorkedSecondsBeforeResume);
+    }
+
+
+
+    [Fact]
+    public void Run_when_it_was_never_resumed_has_no_resume_and_no_earlier_work()
+    {
+        var run = new Run { Id = Id, Trigger = "manual" };
+
+        Assert.Null(run.ResumedUtc);
+        Assert.Equal(0, run.WorkedSecondsBeforeResume);
+    }
+
+
+
+    [Fact]
+    public void Run_when_a_worker_has_claimed_work_keeps_the_worker_and_the_last_claim()
+    {
+        var run = new Run
+        {
+            Id = Id,
+            Trigger = "scheduled",
+            WorkerName = "scraper-1",
+            WorkerBuildVersion = "0.4.0",
+            LastClaimUtc = Instant.AddMinutes(12),
+        };
+
+        Assert.Equal("scraper-1", run.WorkerName);
+        Assert.Equal("0.4.0", run.WorkerBuildVersion);
+        Assert.Equal(Instant.AddMinutes(12), run.LastClaimUtc);
+    }
+
+
+
+    [Fact]
+    public void Run_when_nothing_has_been_claimed_names_no_worker()
+    {
+        var run = new Run { Id = Id, Trigger = "manual" };
+
+        Assert.Null(run.WorkerName);
+        Assert.Null(run.WorkerBuildVersion);
+        Assert.Null(run.LastClaimUtc);
+    }
+
+
+
+    [Fact]
     public void MatrixRun_when_every_value_is_given_keeps_each_value()
     {
         var matrixRun = new MatrixRun
@@ -90,6 +149,26 @@ public sealed class RunEntitiesTests
         };
 
         Assert.Equal(RunStatus.InProgress, matrixRun.Outcome);
+        Assert.Null(matrixRun.SkipReason);
+    }
+
+
+
+    [Fact]
+    public void MatrixRun_when_the_run_left_the_search_out_keeps_the_reason()
+    {
+        var matrixRun = new MatrixRun
+        {
+            Id = Id,
+            RunId = Parent,
+            SearchMatrixId = Other,
+            FirstCheckIn = new DateOnly(2026, 10, 1),
+            LastCheckIn = new DateOnly(2026, 10, 21),
+            Stage = SearchRunStage.NotSet,
+            SkipReason = "The window has passed.",
+        };
+
+        Assert.Equal("The window has passed.", matrixRun.SkipReason);
     }
 
 
