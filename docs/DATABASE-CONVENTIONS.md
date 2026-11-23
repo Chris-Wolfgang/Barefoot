@@ -160,7 +160,8 @@ which keeps `InitialCreate` in step with the conventions (phase 2).
 - One query class per read, with an `AsNoTracking` projection.
 - No `IQueryable` crosses a Core interface.
 - No `Set<T>()` on the unit-of-work surface.
-- `ToEntity` lives in `Data`. `ToDto` lives in `Api`.
+- `ToEntity` lives in `Data`. `ToDto` lives in `Business`. A read may project straight to a `Contracts`
+  record.
 - Registration is explicit. There is no assembly scanning.
 - A lookup's results are written in one `SaveChanges`. No explicit transaction is wrapped by hand: every
   Data service inherits the retrying execution strategy from the context (ADR 0001 §1).
@@ -189,7 +190,7 @@ application is connected to Entra. `bf-maint assign-owner <oid>` moves those row
 7. No raw SQL and no provider-specific column type in the configuration.
 8. Add a migration with a working `Down`. (Until the first release there is only `InitialCreate`.)
 9. Reads: one query class per read, `AsNoTracking`, returning a projection. `ToEntity` in `Data`, `ToDto` in
-   `Api`.
+   `Business`.
 10. Run the model-convention test. It fails the build if a convention is broken.
 11. If the row is exposed for editing: `ETag` / `If-Match` on its endpoints
     ([API-CONVENTIONS.md](API-CONVENTIONS.md)).

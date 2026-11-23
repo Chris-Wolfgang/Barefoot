@@ -6,8 +6,9 @@ namespace Wolfgang.Barefoot.Tests.Architecture;
 /// <summary>
 /// DESIGN §2: <c>Scraper</c>, <c>Admin</c> and <c>Web</c> never reference <c>Data</c> or a data-access
 /// package; <c>Admin</c> never references <c>Obe</c>; <c>Maintenance</c> never references
-/// <c>ApiClient</c> or <c>Obe</c>; <c>Api</c> never references <c>Obe</c>; <c>Core</c> and
-/// <c>Presentation</c> reference no framework.
+/// <c>ApiClient</c> or <c>Obe</c>; <c>Api</c> never references <c>Obe</c>; <c>Core</c>,
+/// <c>Contracts</c> and <c>Presentation</c> reference no framework; <c>Contracts</c> references no
+/// project and <c>Core</c> only <c>Contracts</c>.
 /// </summary>
 public sealed class ProjectDependencyTests
 {
@@ -134,6 +135,49 @@ public sealed class ProjectDependencyTests
                 "Wolfgang.Barefoot.Core: framework reference Microsoft.AspNetCore.App",
                 "Wolfgang.Barefoot.Core: package Microsoft.Playwright",
                 "Wolfgang.Barefoot.Core: sdk Microsoft.NET.Sdk.Web",
+            ],
+            ProjectDependencyRules.ViolationsIn(projects)
+        );
+    }
+
+
+
+    [Fact]
+    public void ViolationsIn_when_Contracts_references_a_project_or_Core_another_than_Contracts_reports_each()
+    {
+        var projects = new[]
+        {
+            Project("Wolfgang.Barefoot.Contracts", projects: ["Wolfgang.Barefoot.Core"]),
+            Project("Wolfgang.Barefoot.Core", projects: ["Wolfgang.Barefoot.Contracts", "Wolfgang.Barefoot.Presentation"]),
+            Project("Wolfgang.Barefoot.Presentation"),
+        };
+
+        Assert.Equal
+        (
+            [
+                "Wolfgang.Barefoot.Contracts: project Wolfgang.Barefoot.Core",
+                "Wolfgang.Barefoot.Core: project Wolfgang.Barefoot.Presentation",
+            ],
+            ProjectDependencyRules.ViolationsIn(projects)
+        );
+    }
+
+
+
+    [Fact]
+    public void ViolationsIn_when_Contracts_has_a_framework_package_reports_it_for_everything_above()
+    {
+        var projects = new[]
+        {
+            Project("Wolfgang.Barefoot.Core", projects: ["Wolfgang.Barefoot.Contracts"]),
+            Project("Wolfgang.Barefoot.Contracts", packages: ["Microsoft.AspNetCore.Http.Abstractions"]),
+        };
+
+        Assert.Equal
+        (
+            [
+                "Wolfgang.Barefoot.Contracts: package Microsoft.AspNetCore.Http.Abstractions",
+                "Wolfgang.Barefoot.Core: package Microsoft.AspNetCore.Http.Abstractions",
             ],
             ProjectDependencyRules.ViolationsIn(projects)
         );
