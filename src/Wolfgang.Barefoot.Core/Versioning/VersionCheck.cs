@@ -75,13 +75,23 @@ public static class VersionCheck
     /// or <see langword="null"/> when there is nothing to say.
     /// </summary>
     /// <param name="compatibility">The outcome of the check.</param>
+    /// <exception cref="ArgumentOutOfRangeException">
+    /// <paramref name="compatibility"/> is <see cref="VersionCompatibility.NotSet"/> or not a defined value:
+    /// the check has not run, so there is no outcome to describe.
+    /// </exception>
     public static string? MessageFor(VersionCompatibility compatibility)
     {
         return compatibility switch
         {
+            VersionCompatibility.Compatible => null,
             VersionCompatibility.ApiTooOld => "The API is older than this tool. Deploy the API.",
             VersionCompatibility.ApiTooNew => "This tool is older than the API. Update it.",
-            _ => null,
+            _ => throw new ArgumentOutOfRangeException
+            (
+                nameof(compatibility),
+                compatibility,
+                "The version check has not run."
+            ),
         };
     }
 }
