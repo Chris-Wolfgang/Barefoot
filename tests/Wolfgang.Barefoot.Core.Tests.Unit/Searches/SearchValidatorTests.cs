@@ -585,6 +585,14 @@ public sealed class SearchValidatorTests
 
 
     [Fact]
+    public void Validate_when_one_adult_travels_alone_reports_nothing()
+    {
+        Assert.Empty(SearchValidator.Validate(Recurring() with { Adults = 1 }));
+    }
+
+
+
+    [Fact]
     public void Validate_when_each_recipient_is_chosen_once_reports_nothing()
     {
         var definition = Recurring() with
