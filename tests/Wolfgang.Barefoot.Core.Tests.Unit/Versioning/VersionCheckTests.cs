@@ -99,9 +99,30 @@ public sealed class VersionCheckTests
 
 
     [Theory]
-    [InlineData(VersionCompatibility.Compatible, 0)]
-    [InlineData(VersionCompatibility.ApiTooOld, 1)]
-    [InlineData(VersionCompatibility.ApiTooNew, 2)]
+    [InlineData(VersionCompatibility.NotSet)]
+    [InlineData((VersionCompatibility)99)]
+    public void MessageFor_when_the_check_has_not_run_throws(VersionCompatibility compatibility)
+    {
+        var ex = Assert.Throws<ArgumentOutOfRangeException>(() => VersionCheck.MessageFor(compatibility));
+
+        Assert.Equal("compatibility", ex.ParamName);
+    }
+
+
+
+    [Fact]
+    public void VersionCompatibility_when_nobody_set_it_is_NotSet()
+    {
+        Assert.Equal(VersionCompatibility.NotSet, default(VersionCompatibility));
+    }
+
+
+
+    [Theory]
+    [InlineData(VersionCompatibility.NotSet, 0)]
+    [InlineData(VersionCompatibility.Compatible, 1)]
+    [InlineData(VersionCompatibility.ApiTooOld, 2)]
+    [InlineData(VersionCompatibility.ApiTooNew, 3)]
     public void VersionCompatibility_when_cast_to_a_number_keeps_its_declared_value(VersionCompatibility value, int expected)
     {
         Assert.Equal(expected, (int)value);
