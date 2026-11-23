@@ -71,8 +71,8 @@ fail a violation; check before you push.
 - A changed rule changes its page: `docs/CODING-CONVENTIONS.md`, `API-CONVENTIONS.md`,
   `DATABASE-CONVENTIONS.md`, `MIGRATE.md` or `SETTINGS.md`. Each rule on those pages names what
   enforces it.
-- A decision with alternatives is an ADR under `docs/adr/`. A change to an accepted ADR is a dated
-  amendment in place.
+- A decision with alternatives is an ADR under `docs/adr/`. An accepted ADR is not
+  rewritten: a changed decision is a new ADR that supersedes it (ADR 0000).
 - A change to behaviour that DESIGN.md describes changes DESIGN.md.
 
 ## 5. Changelog fragment

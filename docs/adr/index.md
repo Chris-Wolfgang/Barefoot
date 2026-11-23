@@ -4,9 +4,9 @@ This folder records the design decisions behind this repository that the code ca
 [ADR 0000](0000-record-architecture-decisions.md) for the practice, and copy [`TEMPLATE.md`](TEMPLATE.md) to add a
 record.
 
-In this repository a change to an accepted record is a dated amendment in place, named in its **Status** line. A
-reversed decision gets a new record that supersedes the old one, and the old one stays with its status updated.
-Numbers never change and are never reused; a retired number keeps its row below.
+A record is not rewritten once **Accepted**. A reversed decision gets a new record that supersedes the old one, and
+the old one stays with its status updated. Numbers never change and are never reused; a retired number keeps its row
+below. The dated amendments in some records predate this rule and stay as they are.
 
 | # | Title | Status |
 |---|-------|--------|
