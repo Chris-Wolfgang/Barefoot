@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Barefoot is an application: its assemblies ship inside the hosts, never as NuGet packages. -->
+    <IsPackable>false</IsPackable>
+    <Description>Barefoot's domain: entities, typed keys, service interfaces and the pure services, with no framework under them.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Range checks read as what they mean: IsInRange (bounds included), IsBetween (bounds excluded). -->
+    <PackageReference Include="Wolfgang.Extensions.IComparable" Version="1.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Wolfgang.Barefoot.Core.Tests.Unit" />
+  </ItemGroup>
+
+</Project>
