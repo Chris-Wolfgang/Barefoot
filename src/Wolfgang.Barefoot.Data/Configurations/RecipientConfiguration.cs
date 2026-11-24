@@ -12,10 +12,7 @@ internal sealed class RecipientConfiguration : IEntityTypeConfiguration<Recipien
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Recipient> builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        builder.HasKey(recipient => recipient.Id);
-
+        // The key is Id, which EF finds by its name.
         builder
             .Property(recipient => recipient.Id)
             .ValueGeneratedNever();

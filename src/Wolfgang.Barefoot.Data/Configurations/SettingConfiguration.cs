@@ -12,8 +12,6 @@ internal sealed class SettingConfiguration : IEntityTypeConfiguration<Setting>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<Setting> builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-
         builder.HasKey(setting => setting.Key);
 
         builder

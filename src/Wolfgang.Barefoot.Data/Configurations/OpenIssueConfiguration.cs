@@ -12,10 +12,7 @@ internal sealed class OpenIssueConfiguration : IEntityTypeConfiguration<OpenIssu
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<OpenIssue> builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-
-        builder.HasKey(issue => issue.Id);
-
+        // The key is Id, which EF finds by its name.
         builder
             .Property(issue => issue.Id)
             .ValueGeneratedNever();

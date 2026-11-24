@@ -107,7 +107,9 @@ public sealed class SchemaNamesTests
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("DataSource=:memory:");
+            optionsBuilder
+                .UseSqlite("DataSource=:memory:")
+                .UseFreshModel();
         }
 
 

@@ -1,7 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using Wolfgang.Barefoot.Core.Entities;
-using Wolfgang.Barefoot.Data.Configurations;
-using Wolfgang.Barefoot.Data.Conventions;
 
 namespace Wolfgang.Barefoot.Data;
 
@@ -12,17 +10,6 @@ namespace Wolfgang.Barefoot.Data;
 /// <param name="options">The provider and the connection, chosen by the host.</param>
 public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> options) : DbContext(options)
 {
-    /// <summary>How many digits a money column holds in all (docs/DATABASE-CONVENTIONS.md, Types).</summary>
-    public const int AmountPrecision = 10;
-
-    /// <summary>How many of them follow the decimal point.</summary>
-    public const int AmountScale = 2;
-
-    /// <summary>How many digits of a second an instant keeps: milliseconds.</summary>
-    public const int InstantPrecision = 3;
-
-
-
     /// <summary>The people who have signed in, and the seeded "Unassigned" user.</summary>
     public DbSet<AppUser> AppUsers => Set<AppUser>();
 
@@ -46,16 +33,7 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        ArgumentNullException.ThrowIfNull(configurationBuilder);
-
-        configurationBuilder
-            .Properties<DateTimeOffset>()
-            .HaveConversion<UtcInstantConverter>()
-            .HavePrecision(InstantPrecision);
-
-        configurationBuilder
-            .Properties<decimal>()
-            .HavePrecision(AmountPrecision, AmountScale);
+        BarefootModel.ConfigureConventions(configurationBuilder);
     }
 
 
@@ -63,14 +41,6 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
     /// <inheritdoc />
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        ArgumentNullException.ThrowIfNull(modelBuilder);
-
-        // Every configuration is registered here by name. There is no assembly scanning (ADR 0002 §3).
-        modelBuilder.ApplyConfiguration(new AppUserConfiguration());
-        modelBuilder.ApplyConfiguration(new SettingConfiguration());
-        modelBuilder.ApplyConfiguration(new RecipientConfiguration());
-        modelBuilder.ApplyConfiguration(new OpenIssueConfiguration());
-
-        SchemaNames.Apply(modelBuilder);
+        BarefootModel.Configure(modelBuilder);
     }
 }

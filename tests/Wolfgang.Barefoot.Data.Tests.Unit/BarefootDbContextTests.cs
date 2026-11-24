@@ -95,7 +95,7 @@ public sealed class BarefootDbContextTests
             property =>
             {
                 Assert.IsType<UtcInstantConverter>(property.GetValueConverter());
-                Assert.Equal(BarefootDbContext.InstantPrecision, property.GetPrecision());
+                Assert.Equal(BarefootModel.InstantPrecision, property.GetPrecision());
             }
         );
     }

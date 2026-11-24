@@ -63,14 +63,14 @@ Decided 2026-11-23, closing the enum part of gap D-1, gap D-11 and the money par
 | Value | Stored as | Set by |
 |---|---|---|
 | an instant (`DateTimeOffset`) | a UTC date and time with no offset, to the millisecond: `datetime2(3)` on SQL Server | `UtcInstantConverter`, for every `DateTimeOffset` in the model |
-| money (`decimal`) | `decimal(10,2)`: up to 99,999,999.99 | one convention for every `decimal` in the model |
+| money (`decimal`) | `decimal(10,2)`: up to 99,999,999.99 | one convention for every `decimal` in the model, added with the first table that holds money |
 | an enum | its number (`int`) | EF's default; renaming a member needs no migration |
 | text | a length from `ColumnLengths`, one length per kind of text | each configuration |
 
 An instant is stored without its offset because SQLite cannot sort or compare a `DateTimeOffset` column in
 SQL, and paging and lease expiry do both. The offset is always zero.
 
-**Enforced by:** `BarefootDbContext.ConfigureConventions`, with `BarefootDbContextTests` (phase 2). String
+**Enforced by:** `BarefootModel.ConfigureConventions`, with `BarefootDbContextTests` and `BarefootModelTests` (phase 2). String
 lengths and the hash column are still open *(gap D-12)*.
 
 ## Referential integrity

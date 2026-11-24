@@ -12,8 +12,6 @@ internal sealed class AppUserConfiguration : IEntityTypeConfiguration<AppUser>
     /// <inheritdoc />
     public void Configure(EntityTypeBuilder<AppUser> builder)
     {
-        ArgumentNullException.ThrowIfNull(builder);
-
         builder.HasKey(user => user.Oid);
 
         builder

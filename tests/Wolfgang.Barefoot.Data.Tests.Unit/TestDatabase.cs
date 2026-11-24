@@ -20,6 +20,7 @@ internal sealed class TestDatabase : IAsyncDisposable
         _connection = connection;
         _options = new DbContextOptionsBuilder<BarefootDbContext>()
             .UseSqlite(connection)
+            .UseFreshModel()
             .Options;
     }
 
