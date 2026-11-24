@@ -118,7 +118,7 @@ ends. The same word means the same thing in every type.
 
 | Rule | Example | Enforced by |
 |---|---|---|
-| Money ends in `Amount`. The words "price", "fare" and "cost" are not part of the name | `RoomAmount`, `AirfareAmount`, `RegularAmount`, `ChangeAmount` | review |
+| Money ends in `Amount`, after the thing the money is for. The words "price" and "cost" are not part of the name | `RoomAmount`, `FareAmount`, `RegularAmount`, `ChangeAmount` | review |
 | A sum of amounts has `Total` before `Amount`; a part of that sum is a `SubTotal` | `TotalAmount`, `MaxTotalAmount`, `SubTotalAmount` | review |
 | The number of things ends in `Count`, after the thing in the singular | `AdultCount`, `ChildCount`, `NightCount`, `StopCount`, `AttemptCount`, `RemainingRoomCount` | review |
 | `Total` alone is never a count. How many there are in all is `TotalCount`, or the thing's own `Count` | `Page.TotalCount`, `WorkProgress.TotalCount` | review |
