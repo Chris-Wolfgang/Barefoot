@@ -37,6 +37,9 @@ internal sealed class ResortConfiguration : IEntityTypeConfiguration<Resort>
             .Property(resort => resort.Version)
             .IsConcurrencyToken();
 
+        // EF gives this foreign key its index, ix_resort_gateway_airport_id.
+        // Serves: finding the resorts reached through one airport, which planning a run's flight
+        // lookups asks for.
         builder
             .HasOne<Airport>()
             .WithMany()
@@ -48,9 +51,5 @@ internal sealed class ResortConfiguration : IEntityTypeConfiguration<Resort>
         builder
             .HasIndex(resort => resort.Code)
             .IsUnique();
-
-        // Serves: finding the resorts reached through one airport, which planning a run's flight
-        // lookups asks for. It is also the foreign key's index.
-        builder.HasIndex(resort => resort.GatewayAirportId);
     }
 }
