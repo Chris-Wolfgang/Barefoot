@@ -80,6 +80,26 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The runs: each one a pass over every active search.</summary>
+    public DbSet<Run> Runs => Set<Run>();
+
+
+
+    /// <summary>Each search's part in each run.</summary>
+    public DbSet<MatrixRun> MatrixRuns => Set<MatrixRun>();
+
+
+
+    /// <summary>The room lookups of each run.</summary>
+    public DbSet<SearchRequest> SearchRequests => Set<SearchRequest>();
+
+
+
+    /// <summary>The links that say which search wants which lookup.</summary>
+    public DbSet<SearchItem> SearchItems => Set<SearchItem>();
+
+
+
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
