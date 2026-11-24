@@ -28,7 +28,7 @@ public sealed class BarefootDbContextTests
 
         Assert.Equal
         (
-            ["app_user", "open_issue", "recipient", "setting"],
+            ["airport", "app_user", "open_issue", "recipient", "resort", "resort_span", "room_category", "setting", "vocabulary_value"],
             context.Model.GetEntityTypes().Select(entity => entity.GetTableName()).Order(StringComparer.Ordinal)
         );
     }
@@ -44,17 +44,42 @@ public sealed class BarefootDbContextTests
 
         Assert.Equal
         (
-            ["pk_app_user", "pk_open_issue", "pk_recipient", "pk_setting"],
+            [
+                "pk_airport",
+                "pk_app_user",
+                "pk_open_issue",
+                "pk_recipient",
+                "pk_resort",
+                "pk_resort_span",
+                "pk_room_category",
+                "pk_setting",
+                "pk_vocabulary_value",
+            ],
             entities.SelectMany(entity => entity.GetKeys()).Select(key => key.GetName()).Order(StringComparer.Ordinal)
         );
         Assert.Equal
         (
-            ["fk_open_issue_user_id", "fk_recipient_owner_id"],
+            [
+                "fk_open_issue_user_id",
+                "fk_recipient_owner_id",
+                "fk_resort_gateway_airport_id",
+                "fk_resort_span_resort_id",
+                "fk_room_category_resort_id",
+            ],
             entities.SelectMany(entity => entity.GetForeignKeys()).Select(key => key.GetConstraintName()).Order(StringComparer.Ordinal)
         );
         Assert.Equal
         (
-            ["ix_open_issue_user_id_resolved_utc", "ux_recipient_owner_id_address"],
+            [
+                "ix_open_issue_user_id_resolved_utc",
+                "ix_resort_gateway_airport_id",
+                "ix_resort_span_resort_id_eff_date",
+                "ux_airport_code",
+                "ux_recipient_owner_id_address",
+                "ux_resort_code",
+                "ux_room_category_resort_id_code",
+                "ux_vocabulary_value_kind_value",
+            ],
             entities.SelectMany(entity => entity.GetIndexes()).Select(index => index.GetDatabaseName()).Order(StringComparer.Ordinal)
         );
     }
@@ -88,7 +113,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(DateTimeOffset))
             .ToList();
 
-        Assert.Equal(7, instants.Count);
+        Assert.Equal(13, instants.Count);
         Assert.All
         (
             instants,
@@ -114,7 +139,7 @@ public sealed class BarefootDbContextTests
             .OfType<IProperty>()
             .ToList();
 
-        Assert.Equal(3, versions.Count);
+        Assert.Equal(5, versions.Count);
         Assert.All(versions, property => Assert.True(property.IsConcurrencyToken));
     }
 

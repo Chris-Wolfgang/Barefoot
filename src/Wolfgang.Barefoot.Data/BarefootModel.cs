@@ -46,6 +46,11 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new SettingConfiguration());
         modelBuilder.ApplyConfiguration(new RecipientConfiguration());
         modelBuilder.ApplyConfiguration(new OpenIssueConfiguration());
+        modelBuilder.ApplyConfiguration(new AirportConfiguration());
+        modelBuilder.ApplyConfiguration(new ResortConfiguration());
+        modelBuilder.ApplyConfiguration(new ResortSpanConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomCategoryConfiguration());
+        modelBuilder.ApplyConfiguration(new VocabularyValueConfiguration());
 
         SchemaNames.Apply(modelBuilder);
     }

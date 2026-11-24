@@ -125,6 +125,10 @@ race a retry against the original (phase 3); the API contract tests for `412` / 
 | `SearchItem` | `(MatrixRun, SearchRequest)` | one link per search wanting the request |
 | `Recipient` | `(OwnerId, Address)` | the owner's address book; `Address` is trimmed, lower-cased; a duplicate is `409` |
 | `SearchRecipient` | `(SearchMatrix, Recipient)` | which recipients a search mails |
+| `Airport` | `Code` | a code is one airport; a catalog snapshot finds each airport by it |
+| `Resort` | `Code` | a code is one resort; a catalog snapshot finds each resort by it |
+| `RoomCategory` | `(Resort, Code)` | a room's code is unique within its resort |
+| `VocabularyValue` | `(Kind, Value)` | a value is unique within its vocabulary |
 | `FlightSet` | per run: `(origin airport, gateway airport, depart date, return date, cabin, travellers)` | flight sets deduped across the run (DESIGN §6) |
 
 The `FlightSet` row is from DESIGN §6, which gives the key but does not mark it `UNIQUE` in the §8 sketch
