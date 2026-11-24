@@ -55,6 +55,31 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The stored searches.</summary>
+    public DbSet<SearchMatrix> SearchMatrices => Set<SearchMatrix>();
+
+
+
+    /// <summary>The resorts each search looks up.</summary>
+    public DbSet<SearchResort> SearchResorts => Set<SearchResort>();
+
+
+
+    /// <summary>The airports each search looks up flights from.</summary>
+    public DbSet<SearchDepartureAirport> SearchDepartureAirports => Set<SearchDepartureAirport>();
+
+
+
+    /// <summary>The vocabulary values each search filters rooms by.</summary>
+    public DbSet<SearchRoomFilter> SearchRoomFilters => Set<SearchRoomFilter>();
+
+
+
+    /// <summary>The recipients each search mails its digest to, besides its owner.</summary>
+    public DbSet<SearchRecipient> SearchRecipients => Set<SearchRecipient>();
+
+
+
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
