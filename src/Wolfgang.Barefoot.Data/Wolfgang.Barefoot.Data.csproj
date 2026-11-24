@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Barefoot is an application: its assemblies ship inside the hosts, never as NuGet packages. -->
+    <IsPackable>false</IsPackable>
+    <Description>Barefoot's data access: the EF Core model of the Core entities and the conventions every table follows.</Description>
+  </PropertyGroup>
+
+  <!-- Data maps the Core entities and nothing else (DESIGN §2). -->
+  <ItemGroup>
+    <ProjectReference Include="..\Wolfgang.Barefoot.Core\Wolfgang.Barefoot.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The model is provider-neutral: table, column and constraint names are relational, no provider is named here. -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="10.0.15" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Wolfgang.Barefoot.Data.Tests.Unit" />
+  </ItemGroup>
+
+</Project>
