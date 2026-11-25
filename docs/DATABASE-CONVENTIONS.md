@@ -128,6 +128,9 @@ race a retry against the original (phase 3); the API contract tests for `412` / 
 | `SearchItem` | `(MatrixRun, SearchRequest)` | one link per search wanting the request |
 | `MatrixRun` | `(Run, SearchMatrix)` | a search takes part in a run once |
 | `RoomResultFeature` | `(RoomResult, VocabularyValue)` | a result names a feature once |
+| `SearchItemFlightSet` | `(SearchItem, FlightSet)` | a search item links to a flight lookup once |
+| `FlightDirection` | `(FlightOption, IsReturn)` | an option has one direction each way |
+| `FlightLeg` | `(FlightDirection, Sequence)` | a place in a direction is taken once |
 | `Recipient` | `(OwnerId, Address)` | the owner's address book; `Address` is trimmed, lower-cased; a duplicate is `409` |
 | `SearchRecipient` | `(SearchMatrix, Recipient)` | which recipients a search mails |
 | `SearchResort` | `(SearchMatrix, Resort)` | a search names a resort once |

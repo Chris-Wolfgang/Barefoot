@@ -44,4 +44,7 @@ internal static class ColumnLengths
 
     /// <summary>A SHA-256 hash written as hexadecimal digits.</summary>
     public const int Sha256Hex = 64;
+
+    /// <summary>A flight number or a fare code, as an airline writes it.</summary>
+    public const int FlightCode = 16;
 }
