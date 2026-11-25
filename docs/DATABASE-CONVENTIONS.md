@@ -180,7 +180,10 @@ phase 3); the API contract tests for the `409`s (phase 4).
 
 ## Migrations
 
-- The model ships as **one** migration, `InitialCreate`. There is no earlier schema.
+- The model ships as **one** migration, `InitialCreate`. There is no earlier schema. It lives in
+  `src/Wolfgang.Barefoot.Data/Migrations/` and is written for SQL Server. Until the first release a change
+  to the model replaces it: `dotnet ef migrations remove`, then `dotnet ef migrations add InitialCreate`,
+  both run in the `Data` project.
 - Every later migration has a working `Down`.
 - CI applies up → down → up against SQL Server.
 - Raw SQL and provider-specific column types are allowed in a migration and nowhere else. Raw SQL in a
@@ -191,7 +194,9 @@ phase 3); the API contract tests for the `409`s (phase 4).
 
 **Enforced by:** the CI step that applies the migration up → down → up on SQL Server (arrives with phase 2);
 the migrate-tool tests, run in-process with injected writers (phase 2); the model-convention test on SQLite,
-which keeps `InitialCreate` in step with the conventions (phase 2).
+which keeps `InitialCreate` in step with the conventions (phase 2); `InitialCreateTests`, which fail when the
+model holds a change the migration does not, and which read the SQL the migration renders for SQL Server
+without opening a connection.
 
 ## Audit
 
