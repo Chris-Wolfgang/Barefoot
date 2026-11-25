@@ -102,6 +102,11 @@ sequential Guids" (pr-gate skill, phase 0).
 ## Concurrency: the portable `Version` column
 
 - `Version` is a `long` concurrency token, incremented by the context.
+- The context owns the number. `SaveChanges` stores a new row with `Version` 1 and a changed row with the
+  version it was read with plus one; whatever a caller put in the property is replaced. A deleted row's
+  version is only checked.
+- A save made from an older version writes nothing and throws `DbUpdateConcurrencyException`. A caller that
+  holds a version from elsewhere (an `If-Match` tag) states it by setting the property's original value.
 - SQL Server `rowversion` is **not** used. It is not available on the SQLite test provider, and the portable
   form keeps one code path.
 - There is no global row version and no sequence behind it.
@@ -115,7 +120,8 @@ sequential Guids" (pr-gate skill, phase 0).
 - If a collection ETag or a cache stamp is ever needed, it uses `max(UpdatedUtc)` + count, or a per-table
   generation row. The settings cache already works this way ([SETTINGS.md](SETTINGS.md)).
 
-**Enforced by:** `ModelConventions.Verify` (phase 2); the run-lifecycle checkpoint tests over SQLite, which
+**Enforced by:** `BarefootDbContextVersionTests`; `ModelConventions.Verify` (phase 2); the run-lifecycle
+checkpoint tests over SQLite, which
 race a retry against the original (phase 3); the API contract tests for `412` / `428` (phase 4).
 
 ## Uniqueness rules in the model

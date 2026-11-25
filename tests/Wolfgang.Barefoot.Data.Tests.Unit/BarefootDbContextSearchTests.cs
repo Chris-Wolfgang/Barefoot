@@ -52,7 +52,6 @@ public sealed class BarefootDbContextSearchTests
             search.MaxDriveMinutes = 45;
             search.MaxFlightMinutes = 300;
             search.MaxStopCount = 1;
-            search.Version = 5;
             context.SearchMatrices.Add(search);
             await context.SaveChangesAsync();
         }
@@ -85,7 +84,7 @@ public sealed class BarefootDbContextSearchTests
         Assert.Equal(300, read.MaxFlightMinutes);
         Assert.Equal(1, read.MaxStopCount);
         Assert.Equal(Instant, read.CreatedUtc);
-        Assert.Equal(5, read.Version);
+        Assert.Equal(1, read.Version);
     }
 
 
@@ -503,6 +502,6 @@ public sealed class BarefootDbContextSearchTests
 
     private static Recipient Recipient(Guid id)
     {
-        return new Recipient { Id = id, OwnerId = OwnerOid, Address = "sam@example.com", DisplayName = "Sam Example", Version = 1 };
+        return new Recipient { Id = id, OwnerId = OwnerOid, Address = "sam@example.com", DisplayName = "Sam Example" };
     }
 }

@@ -296,7 +296,6 @@ public sealed class BarefootDbContextTests
             user.DefaultChildCount = 1;
             user.DefaultInfantCount = 0;
             user.SessionsValidAfterUtc = Instant.AddDays(-1);
-            user.Version = 4;
             context.AppUsers.Add(user);
             await context.SaveChangesAsync();
         }
@@ -316,7 +315,7 @@ public sealed class BarefootDbContextTests
         Assert.Equal(1, read.DefaultChildCount);
         Assert.Equal(0, read.DefaultInfantCount);
         Assert.Equal(Instant.AddDays(-1), read.SessionsValidAfterUtc);
-        Assert.Equal(4, read.Version);
+        Assert.Equal(1, read.Version);
     }
 
 
@@ -328,7 +327,7 @@ public sealed class BarefootDbContextTests
 
         await using (var context = database.NewContext())
         {
-            context.Settings.Add(new Setting { Key = "digest.max_recipients_per_owner", Value = "5", UpdatedUtc = Instant, Version = 1 });
+            context.Settings.Add(new Setting { Key = "digest.max_recipients_per_owner", Value = "5", UpdatedUtc = Instant });
             await context.SaveChangesAsync();
         }
 
@@ -511,6 +510,6 @@ public sealed class BarefootDbContextTests
 
     private static Recipient Recipient(Guid id, Guid ownerId, string address)
     {
-        return new Recipient { Id = id, OwnerId = ownerId, Address = address, DisplayName = "Sam Example", Version = 1 };
+        return new Recipient { Id = id, OwnerId = ownerId, Address = address, DisplayName = "Sam Example" };
     }
 }

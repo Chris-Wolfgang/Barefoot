@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Wolfgang.Barefoot.Core.Entities;
+using Wolfgang.Barefoot.Data.Conventions;
 
 namespace Wolfgang.Barefoot.Data;
 
@@ -137,6 +138,36 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
     /// <summary>The digests, one for each recipient of each search's run.</summary>
     public DbSet<DigestDelivery> DigestDeliveries => Set<DigestDelivery>();
+
+
+
+    /// <summary>
+    /// Saves the tracked changes, after giving every new or changed versioned row its next
+    /// <c>Version</c> (ADR 0004 §10).
+    /// </summary>
+    /// <inheritdoc cref="DbContext.SaveChanges(bool)" path="/param"/>
+    /// <returns>The number of rows written.</returns>
+    public override int SaveChanges(bool acceptAllChangesOnSuccess)
+    {
+        VersionStamp.Apply(ChangeTracker);
+
+        return base.SaveChanges(acceptAllChangesOnSuccess);
+    }
+
+
+
+    /// <summary>
+    /// Saves the tracked changes, after giving every new or changed versioned row its next
+    /// <c>Version</c> (ADR 0004 §10).
+    /// </summary>
+    /// <inheritdoc cref="DbContext.SaveChangesAsync(bool, CancellationToken)" path="/param"/>
+    /// <returns>The number of rows written.</returns>
+    public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
+    {
+        VersionStamp.Apply(ChangeTracker);
+
+        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+    }
 
 
 
