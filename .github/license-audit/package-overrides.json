@@ -4,5 +4,17 @@
     "Id": "SQLitePCLRaw.lib.e_sqlite3",
     "Version": "3.53.3",
     "License": "Apache-2.0"
+  },
+  {
+    "_comment": "The native SQL Server network library that Microsoft.Data.SqlClient loads on Windows. Its LICENSE.txt is the MICROSOFT SOFTWARE LICENSE TERMS for the MICROSOFT.DATA.SQLCLIENT.SNI LIBRARY: proprietary, and section 3 makes the whole package Distributable Code that may be copied and distributed inside an application. Mapped to an identifier of its own, which allowed-licenses.json lists.",
+    "Id": "Microsoft.Data.SqlClient.SNI.runtime",
+    "Version": "6.0.3",
+    "License": "MS-SqlClient-SNI-Library"
+  },
+  {
+    "_comment": "The native sign-in broker (msalruntime) that Microsoft.Data.SqlClient brings in through Microsoft.Identity.Client.Broker. Its LICENSE is a generic MICROSOFT SOFTWARE LICENSE TERMS: proprietary, and clause 3(e) says the licensee will not share, publish or distribute the software. Accepted by the repository owner as an explicit exception; mapped to an identifier of its own, which allowed-licenses.json lists.",
+    "Id": "Microsoft.Identity.Client.NativeInterop",
+    "Version": "0.20.6",
+    "License": "MS-Identity-Client-NativeInterop"
   }
 ]
