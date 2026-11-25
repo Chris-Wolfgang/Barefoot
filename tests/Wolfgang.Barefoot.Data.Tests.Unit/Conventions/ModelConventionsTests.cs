@@ -237,6 +237,29 @@ public sealed class ModelConventionsTests
 
 
     [Fact]
+    public void Verify_when_a_foreign_key_of_two_columns_does_not_restrict_its_delete_names_both_columns()
+    {
+        var problems = Problems
+        (
+            model =>
+            {
+                model
+                    .Entity<Bin>()
+                    .HasOne<Shelf>()
+                    .WithMany()
+                    .HasForeignKey(bin => new { bin.AisleId, bin.BayId })
+                    .HasPrincipalKey(shelf => new { shelf.AisleId, shelf.BayId })
+                    .OnDelete(DeleteBehavior.Cascade);
+                SchemaNames.Apply(model);
+            }
+        );
+
+        Assert.Equal(["Bin: the foreign key on AisleId, BayId deletes with Cascade, not Restrict."], problems);
+    }
+
+
+
+    [Fact]
     public void Verify_when_a_Version_is_not_a_concurrency_token_reports_it()
     {
         var problems = Problems
@@ -395,6 +418,30 @@ public sealed class ModelConventionsTests
         public Guid Id { get; set; }
 
         public Guid WarehouseId { get; set; }
+    }
+
+
+
+    [ExcludeFromCodeCoverage(Justification = "A row shape for the sample model. EF reads its fields, so no test calls its accessors.")]
+    private sealed class Shelf
+    {
+        public Guid Id { get; set; }
+
+        public Guid AisleId { get; set; }
+
+        public Guid BayId { get; set; }
+    }
+
+
+
+    [ExcludeFromCodeCoverage(Justification = "A row shape for the sample model. EF reads its fields, so no test calls its accessors.")]
+    private sealed class Bin
+    {
+        public Guid Id { get; set; }
+
+        public Guid AisleId { get; set; }
+
+        public Guid BayId { get; set; }
     }
 
 
