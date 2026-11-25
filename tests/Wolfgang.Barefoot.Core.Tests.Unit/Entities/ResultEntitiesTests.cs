@@ -171,11 +171,11 @@ public sealed class ResultEntitiesTests
     [Fact]
     public void FlightOption_when_every_value_is_given_keeps_each_value()
     {
-        var option = new FlightOption { Id = Id, FlightSetId = Parent, AirfareAmount = 1840.25m };
+        var option = new FlightOption { Id = Id, FlightSetId = Parent, FareAmount = 1840.25m };
 
         Assert.Equal(Id, option.Id);
         Assert.Equal(Parent, option.FlightSetId);
-        Assert.Equal(1840.25m, option.AirfareAmount);
+        Assert.Equal(1840.25m, option.FareAmount);
     }
 
 
