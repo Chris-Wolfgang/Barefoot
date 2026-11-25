@@ -6,10 +6,12 @@ name: License Audit
 # not allowed (e.g. a copyleft or non-OSI license slipping in via a bump).
 #
 # Config lives in .github/license-audit/:
-#  - allowed-licenses.json     — the licenses we accept: OSI-permissive ones plus one
-#    explicit non-OSI exception, MS-.NET-Library (the Microsoft .NET Library license
+#  - allowed-licenses.json     — the licenses we accept: OSI-permissive ones plus three
+#    explicit non-OSI exceptions. MS-.NET-Library is the Microsoft .NET Library license
 #    some older System.* packages ship under - proprietary, but freely redistributable
-#    with the package, so it imposes nothing on consumers of ours).
+#    with the package, so it imposes nothing on consumers of ours. MS-SqlClient-SNI-Library
+#    and MS-Identity-Client-NativeInterop are each the licence of one native package that
+#    Microsoft.Data.SqlClient brings in; package-overrides.json says what each one is.
 #  - url-license-mappings.json — maps packages that expose a license URL (not an SPDX
 #    expression) to a license identifier: the dotnet/standard LICENSE.TXT is MIT, the
 #    go.microsoft.com LinkId=329770 URL is MS-.NET-Library.
