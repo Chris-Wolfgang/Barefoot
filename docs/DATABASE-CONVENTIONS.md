@@ -235,6 +235,10 @@ phase 0) *(open: gap D-8)*.
 application is connected to Entra. `bf-maint assign-owner <oid>` moves those rows to a real user once
 ([MIGRATE.md](MIGRATE.md)). Afterwards the row stays and owns nothing.
 
+The row is part of the model (`AppUserConfiguration`), so the migration creates it with the table. Its
+e-mail address is empty, it was last seen on 1900-01-01 (never), its `Version` is 1, and every other column
+has its default.
+
 ## Adding an entity
 
 1. Class in `Core` with a `Guid` key, `DateTimeOffset` instants and `Guid` foreign keys.
