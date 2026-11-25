@@ -83,6 +83,7 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new FlightOptionConfiguration());
         modelBuilder.ApplyConfiguration(new FlightDirectionConfiguration());
         modelBuilder.ApplyConfiguration(new FlightLegConfiguration());
+        modelBuilder.ApplyConfiguration(new DigestDeliveryConfiguration());
 
         SchemaNames.Apply(modelBuilder);
     }
