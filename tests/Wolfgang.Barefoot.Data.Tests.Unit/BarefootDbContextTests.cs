@@ -37,6 +37,8 @@ public sealed class BarefootDbContextTests
                 "resort",
                 "resort_span",
                 "room_category",
+                "room_result",
+                "room_result_feature",
                 "run",
                 "search_departure_airport",
                 "search_item",
@@ -72,6 +74,8 @@ public sealed class BarefootDbContextTests
                 "pk_resort",
                 "pk_resort_span",
                 "pk_room_category",
+                "pk_room_result",
+                "pk_room_result_feature",
                 "pk_run",
                 "pk_search_departure_airport",
                 "pk_search_item",
@@ -95,6 +99,13 @@ public sealed class BarefootDbContextTests
                 "fk_resort_gateway_airport_id",
                 "fk_resort_span_resort_id",
                 "fk_room_category_resort_id",
+                "fk_room_result_feature_room_result_id",
+                "fk_room_result_feature_vocabulary_value_id",
+                "fk_room_result_room_category_id",
+                "fk_room_result_room_level_id",
+                "fk_room_result_room_type_id",
+                "fk_room_result_room_view_id",
+                "fk_room_result_search_request_id",
                 "fk_search_departure_airport_airport_id",
                 "fk_search_departure_airport_search_matrix_id",
                 "fk_search_item_matrix_run_id",
@@ -118,6 +129,12 @@ public sealed class BarefootDbContextTests
                 "ix_open_issue_user_id_resolved_utc",
                 "ix_resort_gateway_airport_id",
                 "ix_resort_span_resort_id_eff_date",
+                "ix_room_result_feature_vocabulary_value_id",
+                "ix_room_result_room_category_id",
+                "ix_room_result_room_level_id",
+                "ix_room_result_room_type_id",
+                "ix_room_result_room_view_id",
+                "ix_room_result_search_request_id",
                 "ix_search_departure_airport_airport_id",
                 "ix_search_item_search_request_id",
                 "ix_search_recipient_recipient_id",
@@ -129,6 +146,7 @@ public sealed class BarefootDbContextTests
                 "ux_recipient_owner_id_address",
                 "ux_resort_code",
                 "ux_room_category_resort_id_code",
+                "ux_room_result_feature_room_result_id_vocabulary_value_id",
                 "ux_run_status",
                 "ux_search_departure_airport_search_matrix_id_airport_id",
                 "ux_search_item_matrix_run_id_search_request_id",
@@ -198,7 +216,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(decimal))
             .ToList();
 
-        Assert.Single(amounts);
+        Assert.Equal(3, amounts.Count);
         Assert.All
         (
             amounts,
