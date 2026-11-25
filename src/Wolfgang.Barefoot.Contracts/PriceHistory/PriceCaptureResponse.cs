@@ -12,7 +12,7 @@ namespace Wolfgang.Barefoot.Contracts.PriceHistory;
 /// The price of the room for the whole stay, or <see langword="null"/> when the lookup failed or the
 /// room was not offered.
 /// </param>
-/// <param name="CheapestAirfareAmount">
+/// <param name="CheapestFareAmount">
 /// The cheapest airfare from the departure airport asked for, or <see langword="null"/> when none
 /// was asked for or none was found.
 /// </param>
@@ -28,7 +28,7 @@ public sealed record PriceCaptureResponse
 (
     DateTimeOffset CapturedUtc,
     decimal? RoomAmount,
-    decimal? CheapestAirfareAmount,
+    decimal? CheapestFareAmount,
     decimal? TotalAmount,
     decimal? ChangeAmount
 );
