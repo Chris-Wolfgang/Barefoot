@@ -135,8 +135,8 @@ public sealed class ResultRecordsTests
 
         Assert.Equal(Second, airport.FlightSetId);
         Assert.Equal("AAA", airport.AirportCode);
-        Assert.Equal(612m, airport.CheapestAirfareAmount);
-        Assert.Equal(1048m, airport.DearestAirfareAmount);
+        Assert.Equal(612m, airport.CheapestFareAmount);
+        Assert.Equal(1048m, airport.DearestFareAmount);
         Assert.Equal(36, airport.OptionCount);
     }
 
@@ -210,7 +210,7 @@ public sealed class ResultRecordsTests
         var option = new FlightOptionResponse(First, 612m, outbound, back);
 
         Assert.Equal(First, option.Id);
-        Assert.Equal(612m, option.AirfareAmount);
+        Assert.Equal(612m, option.FareAmount);
         Assert.Same(outbound, option.Outbound);
         Assert.Same(back, option.Return);
         Assert.Equal([first, last], outbound.Legs);

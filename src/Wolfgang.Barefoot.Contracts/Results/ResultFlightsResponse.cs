@@ -7,14 +7,14 @@ namespace Wolfgang.Barefoot.Contracts.Results;
 /// </summary>
 /// <param name="FlightSetId">The flight set the options belong to.</param>
 /// <param name="AirportCode">The three-letter code of the departure airport.</param>
-/// <param name="CheapestAirfareAmount">The lowest airfare among the options.</param>
-/// <param name="DearestAirfareAmount">The highest airfare among the options.</param>
+/// <param name="CheapestFareAmount">The lowest airfare among the options.</param>
+/// <param name="DearestFareAmount">The highest airfare among the options.</param>
 /// <param name="OptionCount">The number of round trips found.</param>
 public sealed record ResultFlightsResponse
 (
     Guid FlightSetId,
     string AirportCode,
-    decimal CheapestAirfareAmount,
-    decimal DearestAirfareAmount,
+    decimal CheapestFareAmount,
+    decimal DearestFareAmount,
     int OptionCount
 );

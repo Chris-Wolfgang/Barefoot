@@ -91,11 +91,11 @@ public sealed class PriceHistoryRecordsTests
         Assert.Equal([priced, failed], history.Captures);
         Assert.Equal(Captured, priced.CapturedUtc);
         Assert.Equal(4918m, priced.RoomAmount);
-        Assert.Equal(1224m, priced.CheapestAirfareAmount);
+        Assert.Equal(1224m, priced.CheapestFareAmount);
         Assert.Equal(6142m, priced.TotalAmount);
         Assert.Equal(-486m, priced.ChangeAmount);
         Assert.Null(failed.RoomAmount);
-        Assert.Null(failed.CheapestAirfareAmount);
+        Assert.Null(failed.CheapestFareAmount);
         Assert.Null(failed.TotalAmount);
         Assert.Null(failed.ChangeAmount);
     }
