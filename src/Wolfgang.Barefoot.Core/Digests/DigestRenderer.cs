@@ -291,7 +291,7 @@ public static class DigestRenderer
             if (room.Flights.Count > 0)
             {
                 html.Append("<br>Flights ");
-                html.AppendJoin(" · ", room.Flights.Select(flight => $"{Encode(flight.AirportCode)} <b>{Money(flight.AirfareAmount)}</b>"));
+                html.AppendJoin(" · ", room.Flights.Select(flight => $"{Encode(flight.AirportCode)} <b>{Money(flight.FareAmount)}</b>"));
             }
 
             html.Append("</div>\n</div>\n");
@@ -420,7 +420,7 @@ public static class DigestRenderer
         if (room.Flights.Count > 0)
         {
             text.Append("  Flights ");
-            text.AppendJoin(" · ", room.Flights.Select(flight => $"{flight.AirportCode} {Money(flight.AirfareAmount)}"));
+            text.AppendJoin(" · ", room.Flights.Select(flight => $"{flight.AirportCode} {Money(flight.FareAmount)}"));
             text.Append('\n');
         }
     }
