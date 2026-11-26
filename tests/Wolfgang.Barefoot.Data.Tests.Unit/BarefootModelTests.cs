@@ -40,6 +40,8 @@ public sealed class BarefootModelTests
                 "resort: id",
                 "resort_span: id",
                 "room_category: id",
+                "room_result: id",
+                "room_result_feature: id",
                 "run: id",
                 "search_departure_airport: id",
                 "search_item: id",
@@ -72,7 +74,7 @@ public sealed class BarefootModelTests
             .SelectMany(entity => entity.FindPrimaryKey()!.Properties)
             .ToList();
 
-        Assert.Equal(18, keys.Count);
+        Assert.Equal(20, keys.Count);
         Assert.All(keys, property => Assert.Equal(ValueGenerated.Never, property.ValueGenerated));
     }
 
@@ -107,6 +109,7 @@ public sealed class BarefootModelTests
                 "resort.short_name: 200",
                 "room_category.code: 32",
                 "room_category.name: 200",
+                "room_result.promotion: 500",
                 "run.abort_reason: 500",
                 "run.trigger: 200",
                 "run.worker_build_version: 64",
@@ -148,6 +151,13 @@ public sealed class BarefootModelTests
                 "resort.gateway_airport_id -> airport",
                 "resort_span.resort_id -> resort",
                 "room_category.resort_id -> resort",
+                "room_result.room_category_id -> room_category",
+                "room_result.room_level_id -> vocabulary_value",
+                "room_result.room_type_id -> vocabulary_value",
+                "room_result.room_view_id -> vocabulary_value",
+                "room_result.search_request_id -> search_request",
+                "room_result_feature.room_result_id -> room_result",
+                "room_result_feature.vocabulary_value_id -> vocabulary_value",
                 "search_departure_airport.airport_id -> airport",
                 "search_departure_airport.search_matrix_id -> search_matrix",
                 "search_item.matrix_run_id -> matrix_run",
@@ -184,13 +194,13 @@ public sealed class BarefootModelTests
         await using var context = database.NewContext();
         var indexes = context.Model.GetEntityTypes().SelectMany(entity => entity.GetIndexes()).ToList();
 
-        Assert.Equal(24, indexes.Count);
+        Assert.Equal(31, indexes.Count);
         Assert.All
         (
             indexes,
             index => Assert.Equal(index.GetDatabaseName()!.StartsWith("ux_", StringComparison.Ordinal), index.IsUnique)
         );
-        Assert.Equal(14, indexes.Count(index => index.IsUnique));
+        Assert.Equal(15, indexes.Count(index => index.IsUnique));
     }
 
 

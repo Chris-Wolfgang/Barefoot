@@ -76,6 +76,8 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new MatrixRunConfiguration());
         modelBuilder.ApplyConfiguration(new SearchRequestConfiguration());
         modelBuilder.ApplyConfiguration(new SearchItemConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomResultConfiguration());
+        modelBuilder.ApplyConfiguration(new RoomResultFeatureConfiguration());
 
         SchemaNames.Apply(modelBuilder);
     }

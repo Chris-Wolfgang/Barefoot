@@ -100,6 +100,16 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The rooms the site offered for each lookup.</summary>
+    public DbSet<RoomResult> RoomResults => Set<RoomResult>();
+
+
+
+    /// <summary>The features each room result has.</summary>
+    public DbSet<RoomResultFeature> RoomResultFeatures => Set<RoomResultFeature>();
+
+
+
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
