@@ -57,7 +57,8 @@ The rest of the pattern (decided 2026-11-23, closing gap D-2; it is the `wms` sh
   [CODING-CONVENTIONS.md](CODING-CONVENTIONS.md).
 
 **Enforced by:** `SchemaNames.Apply`, with `SchemaNamesTests` and `BarefootDbContextTests` (phase 2);
-`ModelConventions.Verify`, asserted empty by a test on SQLite (arrives later in phase 2).
+`ModelConventions.Verify`, asserted empty by `ModelConventionsTests` on SQLite. It also fails a table outside
+the default schema and a name longer than 128 characters, the most SQL Server accepts.
 
 ## Types
 
@@ -82,7 +83,7 @@ lengths and the hash column are still open *(gap D-12)*.
 - A delete is an explicit business operation. It removes the dependent rows itself, in the same operation.
   Example (ADR 0006): deleting a search or a recipient removes its `SearchRecipient` link rows.
 
-**Enforced by:** `ModelConventions.Verify`, asserted empty by a test on SQLite (phase 2).
+**Enforced by:** `ModelConventions.Verify`, asserted empty by `ModelConventionsTests` on SQLite.
 
 ## Keys
 
@@ -96,7 +97,8 @@ lengths and the hash column are still open *(gap D-12)*.
 - `Guid.Empty` is the seeded "Unassigned" user (below). No real object id equals it, so no query treats it
   specially.
 
-**Enforced by:** `ModelConventions.Verify` (phase 2); review checklist line: "a new hot table uses
+**Enforced by:** `ModelConventions.Verify`, which fails a primary key that is not one `Guid` column on any
+table but `setting`; review checklist line: "a new hot table uses
 sequential Guids" (pr-gate skill, phase 0).
 
 ## Concurrency: the portable `Version` column
@@ -120,7 +122,8 @@ sequential Guids" (pr-gate skill, phase 0).
 - If a collection ETag or a cache stamp is ever needed, it uses `max(UpdatedUtc)` + count, or a per-table
   generation row. The settings cache already works this way ([SETTINGS.md](SETTINGS.md)).
 
-**Enforced by:** `BarefootDbContextVersionTests`; `ModelConventions.Verify` (phase 2); the run-lifecycle
+**Enforced by:** `BarefootDbContextVersionTests`; `ModelConventions.Verify`, which fails a `Version` that is
+not a `long` concurrency token; the run-lifecycle
 checkpoint tests over SQLite, which
 race a retry against the original (phase 3); the API contract tests for `412` / `428` (phase 4).
 
@@ -172,7 +175,8 @@ phase 3); the API contract tests for the `409`s (phase 4).
 - An airport's IANA zone is `Airport.TimeZoneId`, nullable.
 
 **Enforced by:** the architecture test "no `DateTime` on a public surface" (phase 0); the ban on
-`DateTimeOffset.Now` / `UtcNow` (phase 0) *(open: gap D-6)*; `ModelConventions.Verify` (phase 2).
+`DateTimeOffset.Now` / `UtcNow` (phase 0) *(open: gap D-6)*; `ModelConventions.Verify`, which fails a
+`DateTime` column and an instant not stored in UTC to the millisecond.
 
 ## Migrations
 
@@ -249,5 +253,5 @@ application is connected to Entra. `bf-maint assign-owner <oid>` moves those row
 11. If the row is exposed for editing: `ETag` / `If-Match` on its endpoints
     ([API-CONVENTIONS.md](API-CONVENTIONS.md)).
 
-**Enforced by:** `ModelConventions.Verify` asserted empty by a test on SQLite (phase 2); the pr-gate
+**Enforced by:** `ModelConventions.Verify`, asserted empty by `ModelConventionsTests` on SQLite; the pr-gate
 migration review (phase 0).
