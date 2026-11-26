@@ -35,4 +35,13 @@ internal static class ColumnLengths
 
     /// <summary>The name of a city, a state, a country or an island.</summary>
     public const int PlaceName = 100;
+
+    /// <summary>The version a build gives itself, such as <c>2.1.0+3f9c2ab</c>.</summary>
+    public const int BuildVersion = 64;
+
+    /// <summary>An error as a worker reports it. A longer one is cut before it is stored.</summary>
+    public const int ErrorText = 2000;
+
+    /// <summary>A SHA-256 hash written as hexadecimal digits.</summary>
+    public const int Sha256Hex = 64;
 }

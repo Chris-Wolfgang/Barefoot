@@ -14,6 +14,9 @@ and are marked here as *(open: gap D-n)*.
 - Production is Azure SQL Database (free offer, serverless). The test provider is SQLite. There is no
   second production provider.
 - The Data layer contains **no raw SQL** and **no provider-specific column types** outside the migration.
+  The one exception is the condition of the run lock's filtered index, `status = 0`
+  (`RunConfiguration.InProgressFilter`): EF takes an index filter only as SQL text. It names one column
+  that needs no quoting and one number, so SQL Server and SQLite both read it.
 - Only the API and `bf-maint` hold a connection string. Every other host is a client of the API.
 - The API's database identity is `db_datareader` + `db_datawriter`. It never changes the schema. Only
   `bf-maint` does ([MIGRATE.md](MIGRATE.md)).
@@ -123,6 +126,7 @@ race a retry against the original (phase 3); the API contract tests for `412` / 
 | `Run` | `Status`, filtered to `InProgress` | the run lock: at most one run in progress |
 | `SearchRequest` | `(Run, Resort, CheckIn, CheckOut, AdultCount, ChildCount, InfantCount)` | dedupe per run; `Cabin` is not in the key |
 | `SearchItem` | `(MatrixRun, SearchRequest)` | one link per search wanting the request |
+| `MatrixRun` | `(Run, SearchMatrix)` | a search takes part in a run once |
 | `Recipient` | `(OwnerId, Address)` | the owner's address book; `Address` is trimmed, lower-cased; a duplicate is `409` |
 | `SearchRecipient` | `(SearchMatrix, Recipient)` | which recipients a search mails |
 | `SearchResort` | `(SearchMatrix, Resort)` | a search names a resort once |

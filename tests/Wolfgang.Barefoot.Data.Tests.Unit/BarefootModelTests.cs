@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Wolfgang.Barefoot.Contracts.Runs;
 using Wolfgang.Barefoot.Core.Entities;
 
 namespace Wolfgang.Barefoot.Data.Tests.Unit;
@@ -33,14 +34,18 @@ public sealed class BarefootModelTests
             [
                 "airport: id",
                 "app_user: oid",
+                "matrix_run: id",
                 "open_issue: id",
                 "recipient: id",
                 "resort: id",
                 "resort_span: id",
                 "room_category: id",
+                "run: id",
                 "search_departure_airport: id",
+                "search_item: id",
                 "search_matrix: id",
                 "search_recipient: id",
+                "search_request: id",
                 "search_resort: id",
                 "search_room_filter: id",
                 "setting: key",
@@ -67,7 +72,7 @@ public sealed class BarefootModelTests
             .SelectMany(entity => entity.FindPrimaryKey()!.Properties)
             .ToList();
 
-        Assert.Equal(14, keys.Count);
+        Assert.Equal(18, keys.Count);
         Assert.All(keys, property => Assert.Equal(ValueGenerated.Never, property.ValueGenerated));
     }
 
@@ -91,6 +96,7 @@ public sealed class BarefootModelTests
                 "app_user.display_name: 200",
                 "app_user.email: 320",
                 "app_user.time_zone_id: 64",
+                "matrix_run.skip_reason: 500",
                 "open_issue.resolves_when: 500",
                 "open_issue.subject: 200",
                 "recipient.address: 320",
@@ -101,8 +107,15 @@ public sealed class BarefootModelTests
                 "resort.short_name: 200",
                 "room_category.code: 32",
                 "room_category.name: 200",
+                "run.abort_reason: 500",
+                "run.trigger: 200",
+                "run.worker_build_version: 64",
+                "run.worker_name: 200",
                 "search_matrix.name: 200",
                 "search_matrix.normalized_name: 200",
+                "search_request.last_error: 2000",
+                "search_request.leased_by: 200",
+                "search_request.result_sha256: 64",
                 "setting.key: 128",
                 "setting.value: 4000",
                 "vocabulary_value.value: 200",
@@ -128,6 +141,8 @@ public sealed class BarefootModelTests
         Assert.Equal
         (
             [
+                "matrix_run.run_id -> run",
+                "matrix_run.search_matrix_id -> search_matrix",
                 "open_issue.user_id -> app_user",
                 "recipient.owner_id -> app_user",
                 "resort.gateway_airport_id -> airport",
@@ -135,9 +150,13 @@ public sealed class BarefootModelTests
                 "room_category.resort_id -> resort",
                 "search_departure_airport.airport_id -> airport",
                 "search_departure_airport.search_matrix_id -> search_matrix",
+                "search_item.matrix_run_id -> matrix_run",
+                "search_item.search_request_id -> search_request",
                 "search_matrix.owner_id -> app_user",
                 "search_recipient.recipient_id -> recipient",
                 "search_recipient.search_matrix_id -> search_matrix",
+                "search_request.resort_id -> resort",
+                "search_request.run_id -> run",
                 "search_resort.resort_id -> resort",
                 "search_resort.search_matrix_id -> search_matrix",
                 "search_room_filter.search_matrix_id -> search_matrix",
@@ -165,12 +184,33 @@ public sealed class BarefootModelTests
         await using var context = database.NewContext();
         var indexes = context.Model.GetEntityTypes().SelectMany(entity => entity.GetIndexes()).ToList();
 
-        Assert.Equal(17, indexes.Count);
+        Assert.Equal(24, indexes.Count);
         Assert.All
         (
             indexes,
             index => Assert.Equal(index.GetDatabaseName()!.StartsWith("ux_", StringComparison.Ordinal), index.IsUnique)
         );
-        Assert.Equal(10, indexes.Count(index => index.IsUnique));
+        Assert.Equal(14, indexes.Count(index => index.IsUnique));
+    }
+
+
+
+    [Fact]
+    public async Task Configure_when_applied_filters_only_the_run_lock_to_runs_in_progress()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        await using var context = database.NewContext();
+
+        Assert.Equal
+        (
+            ["ux_run_status: status = 0"],
+            context
+                .Model
+                .GetEntityTypes()
+                .SelectMany(entity => entity.GetIndexes())
+                .Where(index => index.GetFilter() is not null)
+                .Select(index => $"{index.GetDatabaseName()}: {index.GetFilter()}")
+        );
+        Assert.Equal(0, (int)RunStatus.InProgress);
     }
 }

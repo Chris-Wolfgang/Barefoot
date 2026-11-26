@@ -31,14 +31,18 @@ public sealed class BarefootDbContextTests
             [
                 "airport",
                 "app_user",
+                "matrix_run",
                 "open_issue",
                 "recipient",
                 "resort",
                 "resort_span",
                 "room_category",
+                "run",
                 "search_departure_airport",
+                "search_item",
                 "search_matrix",
                 "search_recipient",
+                "search_request",
                 "search_resort",
                 "search_room_filter",
                 "setting",
@@ -62,14 +66,18 @@ public sealed class BarefootDbContextTests
             [
                 "pk_airport",
                 "pk_app_user",
+                "pk_matrix_run",
                 "pk_open_issue",
                 "pk_recipient",
                 "pk_resort",
                 "pk_resort_span",
                 "pk_room_category",
+                "pk_run",
                 "pk_search_departure_airport",
+                "pk_search_item",
                 "pk_search_matrix",
                 "pk_search_recipient",
+                "pk_search_request",
                 "pk_search_resort",
                 "pk_search_room_filter",
                 "pk_setting",
@@ -80,6 +88,8 @@ public sealed class BarefootDbContextTests
         Assert.Equal
         (
             [
+                "fk_matrix_run_run_id",
+                "fk_matrix_run_search_matrix_id",
                 "fk_open_issue_user_id",
                 "fk_recipient_owner_id",
                 "fk_resort_gateway_airport_id",
@@ -87,9 +97,13 @@ public sealed class BarefootDbContextTests
                 "fk_room_category_resort_id",
                 "fk_search_departure_airport_airport_id",
                 "fk_search_departure_airport_search_matrix_id",
+                "fk_search_item_matrix_run_id",
+                "fk_search_item_search_request_id",
                 "fk_search_matrix_owner_id",
                 "fk_search_recipient_recipient_id",
                 "fk_search_recipient_search_matrix_id",
+                "fk_search_request_resort_id",
+                "fk_search_request_run_id",
                 "fk_search_resort_resort_id",
                 "fk_search_resort_search_matrix_id",
                 "fk_search_room_filter_search_matrix_id",
@@ -100,20 +114,27 @@ public sealed class BarefootDbContextTests
         Assert.Equal
         (
             [
+                "ix_matrix_run_search_matrix_id",
                 "ix_open_issue_user_id_resolved_utc",
                 "ix_resort_gateway_airport_id",
                 "ix_resort_span_resort_id_eff_date",
                 "ix_search_departure_airport_airport_id",
+                "ix_search_item_search_request_id",
                 "ix_search_recipient_recipient_id",
+                "ix_search_request_resort_id",
                 "ix_search_resort_resort_id",
                 "ix_search_room_filter_vocabulary_value_id",
                 "ux_airport_code",
+                "ux_matrix_run_run_id_search_matrix_id",
                 "ux_recipient_owner_id_address",
                 "ux_resort_code",
                 "ux_room_category_resort_id_code",
+                "ux_run_status",
                 "ux_search_departure_airport_search_matrix_id_airport_id",
+                "ux_search_item_matrix_run_id_search_request_id",
                 "ux_search_matrix_owner_id_normalized_name",
                 "ux_search_recipient_search_matrix_id_recipient_id",
+                "ux_search_request_run_id_resort_id_check_in_check_out_adult_count_child_count_infant_count",
                 "ux_search_resort_search_matrix_id_resort_id",
                 "ux_search_room_filter_search_matrix_id_vocabulary_value_id",
                 "ux_vocabulary_value_kind_value",
@@ -151,7 +172,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(DateTimeOffset))
             .ToList();
 
-        Assert.Equal(14, instants.Count);
+        Assert.Equal(20, instants.Count);
         Assert.All
         (
             instants,
@@ -203,7 +224,7 @@ public sealed class BarefootDbContextTests
             .OfType<IProperty>()
             .ToList();
 
-        Assert.Equal(6, versions.Count);
+        Assert.Equal(7, versions.Count);
         Assert.All(versions, property => Assert.True(property.IsConcurrencyToken));
     }
 

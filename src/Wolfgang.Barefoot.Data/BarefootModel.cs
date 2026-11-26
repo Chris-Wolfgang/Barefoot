@@ -72,6 +72,10 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new SearchDepartureAirportConfiguration());
         modelBuilder.ApplyConfiguration(new SearchRoomFilterConfiguration());
         modelBuilder.ApplyConfiguration(new SearchRecipientConfiguration());
+        modelBuilder.ApplyConfiguration(new RunConfiguration());
+        modelBuilder.ApplyConfiguration(new MatrixRunConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchRequestConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchItemConfiguration());
 
         SchemaNames.Apply(modelBuilder);
     }
