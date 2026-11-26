@@ -25,8 +25,10 @@ script's header looks like. This record answers them. Gaps M-8, M-9 and M-10 sta
    length, a precision or a scale shrinks or goes from unlimited to limited; when the CLR type
    changes, in either direction; or when the column type text changes and no length or precision
    says which way it went. A change of nullability or of a default alone does not count.
-3. **`migrate` prints four lines on stdout**, the same for every move: `direction:` (`up`, `down`
-   or `none`), `applied:`, `reverted:` and `current:`.
+3. **`migrate` prints five lines on stdout**, the same for every move: `direction:` (`up`, `down`
+   or `none`), `applied:`, `reverted:`, `current:` and `roles:`. The last one is `granted`,
+   `skipped (<why>)`, or `not run` when the move does not end on the latest migration (decisions 8
+   and 9).
 4. **A history with a gap is refused with `Refused` (10).** A gap is a shipped migration that is
    not applied while a later shipped one is. The tool never leaves one, so it means the history was
    changed by hand. The tool names the missing migrations and changes nothing, with or without
