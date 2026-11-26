@@ -129,8 +129,8 @@ public sealed class MigrationPlanTests
     [Fact]
     public void Gaps_when_an_argument_is_null_throws_ArgumentNullException()
     {
-        Assert.Throws<ArgumentNullException>(() => MigrationPlan.Gaps(null!, []));
-        Assert.Throws<ArgumentNullException>(() => MigrationPlan.Gaps(Shipped, null!));
+        Assert.Equal("shipped", Assert.Throws<ArgumentNullException>(() => MigrationPlan.Gaps(null!, [])).ParamName);
+        Assert.Equal("applied", Assert.Throws<ArgumentNullException>(() => MigrationPlan.Gaps(Shipped, null!)).ParamName);
     }
 
 
