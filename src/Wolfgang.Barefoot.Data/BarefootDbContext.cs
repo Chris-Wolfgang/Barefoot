@@ -30,6 +30,31 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The airports the booking site knows.</summary>
+    public DbSet<Airport> Airports => Set<Airport>();
+
+
+
+    /// <summary>The resorts, each with its permanent identity.</summary>
+    public DbSet<Resort> Resorts => Set<Resort>();
+
+
+
+    /// <summary>The stretches of days during which a resort was online or offline.</summary>
+    public DbSet<ResortSpan> ResortSpans => Set<ResortSpan>();
+
+
+
+    /// <summary>The kinds of room each resort sells.</summary>
+    public DbSet<RoomCategory> RoomCategories => Set<RoomCategory>();
+
+
+
+    /// <summary>The values of the room vocabularies: levels, views, types and features.</summary>
+    public DbSet<VocabularyValue> VocabularyValues => Set<VocabularyValue>();
+
+
+
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

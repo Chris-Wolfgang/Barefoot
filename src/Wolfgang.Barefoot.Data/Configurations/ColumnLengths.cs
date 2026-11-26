@@ -26,4 +26,13 @@ internal static class ColumnLengths
 
     /// <summary>A sentence or two a person reads.</summary>
     public const int Sentence = 500;
+
+    /// <summary>An airport's three-letter code.</summary>
+    public const int AirportCode = 3;
+
+    /// <summary>The booking site's own code for a resort or a room.</summary>
+    public const int SiteCode = 32;
+
+    /// <summary>The name of a city, a state, a country or an island.</summary>
+    public const int PlaceName = 100;
 }
