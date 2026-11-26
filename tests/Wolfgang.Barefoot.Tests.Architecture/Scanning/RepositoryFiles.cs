@@ -96,10 +96,21 @@ internal static class RepositoryFiles
     /// <summary>
     /// Every C# file under <c>tests/</c>, as path and text, sorted by path.
     /// </summary>
-    public static async Task<IReadOnlyList<SourceFile>> TestSourcesAsync()
+    public static Task<IReadOnlyList<SourceFile>> TestSourcesAsync()
+    {
+        return SourcesUnderAsync("tests/");
+    }
+
+
+
+    /// <summary>
+    /// Every C# file under <paramref name="directory"/>, as path and text, sorted by path.
+    /// </summary>
+    /// <param name="directory">The repository-relative directory, with forward slashes and a trailing one.</param>
+    public static async Task<IReadOnlyList<SourceFile>> SourcesUnderAsync(string directory)
     {
         var sources = new List<SourceFile>();
-        foreach (var path in PathsEndingIn(".cs").Where(path => path.StartsWith("tests/", StringComparison.Ordinal)))
+        foreach (var path in PathsEndingIn(".cs").Where(path => path.StartsWith(directory, StringComparison.Ordinal)))
         {
             sources.Add(new SourceFile(path, await ReadAsync(path)));
         }

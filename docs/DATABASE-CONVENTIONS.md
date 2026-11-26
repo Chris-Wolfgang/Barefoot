@@ -23,7 +23,8 @@ and are marked here as *(open: gap D-n)*.
 
 **Enforced by:** the architecture tests "UI and worker projects reference no data packages" and the
 project-reference rules of DESIGN §2 (arrive with phase 0); the test suite running the same model on SQLite
-(phase 2); CI applying the migration to SQL Server (phase 2); review checklist line: "no raw SQL and no
+(phase 2); `ProviderPlacementTests`, which fail when code of the `Data` project outside `Migrations/` names
+the provider; CI applying the migration to SQL Server (phase 2); review checklist line: "no raw SQL and no
 provider-specific type outside `Migrations/`" (pr-gate skill, phase 0) *(open: gap D-1)*.
 
 ## Names
