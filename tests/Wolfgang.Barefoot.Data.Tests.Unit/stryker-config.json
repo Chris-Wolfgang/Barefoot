@@ -2,6 +2,9 @@
   "stryker-config": {
     "project": "Wolfgang.Barefoot.Data.csproj",
     "target-framework": "net10.0",
+    "ignore-methods": [
+      "ConfigureAwait"
+    ],
     "reporters": [
       "progress",
       "html",
