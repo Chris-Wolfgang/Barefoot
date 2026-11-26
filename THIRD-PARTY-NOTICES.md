@@ -8,9 +8,22 @@ Barefoot is distributed with the NuGet packages below: the full transitive closu
 every project under `src/`. Each package is distributed under its own license.
 Build-time-only packages (analyzers, SourceLink) are not distributed and are not listed.
 
-Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`.
+Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolfgang.Barefoot.Data`.
 
 | Package | Version(s) | License | Copyright | Project URL | Used by |
 |---|---|---|---|---|---|
-| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core |
-| Wolfgang.Extensions.IComparable | 1.1.2 | MIT | Copyright (c) Chris Wolfgang | <https://github.com/Chris-Wolfgang/IComparable-Extensions> | Wolfgang.Barefoot.Core |
+| Microsoft.EntityFrameworkCore.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://docs.microsoft.com/ef/core/> | Wolfgang.Barefoot.Data |
+| Microsoft.EntityFrameworkCore.Analyzers | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://docs.microsoft.com/ef/core/> | Wolfgang.Barefoot.Data |
+| Microsoft.EntityFrameworkCore.Relational | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://docs.microsoft.com/ef/core/> | Wolfgang.Barefoot.Data |
+| Microsoft.EntityFrameworkCore | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://docs.microsoft.com/ef/core/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Caching.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Caching.Memory | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Configuration.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.DependencyInjection | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Logging.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Logging | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Options | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| Microsoft.Extensions.Primitives | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
+| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data |
+| Wolfgang.Extensions.IComparable | 1.1.2 | MIT | Copyright (c) Chris Wolfgang | <https://github.com/Chris-Wolfgang/IComparable-Extensions> | Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data |

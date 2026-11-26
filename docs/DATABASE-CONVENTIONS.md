@@ -5,7 +5,7 @@ restates ADR 0004 (keys, concurrency, conventions, one migration), ADR 0001 (pro
 migration rules), ADR 0002 §3 (data-access rules), ADR 0005 (audit identity) and DESIGN §8 / §11. It adds no
 decision.
 
-Nothing described here is built yet. Each rule names what enforces it and the build phase (DESIGN §13,
+The `Data` project is being built in phase 2; a rule that is not enforced yet says which phase brings it. Each rule names what enforces it and the build phase (DESIGN §13,
 phases 0–7) that enforcement arrives with. Points the ADRs leave open are listed in [the gaps note](notes/2026-11-20-convention-gaps.md)
 and are marked here as *(open: gap D-n)*.
 
@@ -35,10 +35,43 @@ Every name is snake_case. Constraints and indexes carry a prefix:
 | index | `ix_` |
 | unique index | `ux_` |
 
-The rest of the name pattern (table singular or plural, key column names, schema) is not fixed by an ADR
-*(open: gap D-2)*.
+The rest of the pattern (decided 2026-11-23, closing gap D-2; it is the `wms` shape):
 
-**Enforced by:** `ModelConventions.Verify`, asserted empty by a test on SQLite (arrives with phase 2).
+| Object | Name | Example |
+|---|---|---|
+| table | the entity's name, singular | `search_matrix`, `app_user` |
+| column | the property's name | `owner_id`, `adult_count`, `total_amount` |
+| primary key | `pk_<table>` | `pk_recipient` |
+| alternate key | `ak_<table>_<columns>` | |
+| foreign key | `fk_<table>_<columns>` | `fk_recipient_owner_id` |
+| index | `ix_<table>_<columns>`; unique `ux_<table>_<columns>` | `ux_recipient_owner_id_address` |
+
+- A key column keeps its property's name, so `app_user.oid` and `setting.key` are not `id`. `key` is a
+  reserved word in SQL Server; EF quotes it, and hand-written SQL must write `[key]`.
+- Every table is in the default schema.
+- No configuration names a table, column or constraint by hand. `SchemaNames.Apply` names them all, last in
+  `OnModelCreating`. The property names themselves follow "Names" in
+  [CODING-CONVENTIONS.md](CODING-CONVENTIONS.md).
+
+**Enforced by:** `SchemaNames.Apply`, with `SchemaNamesTests` and `BarefootDbContextTests` (phase 2);
+`ModelConventions.Verify`, asserted empty by a test on SQLite (arrives later in phase 2).
+
+## Types
+
+Decided 2026-11-23, closing the enum part of gap D-1, gap D-11 and the money part of gap D-12.
+
+| Value | Stored as | Set by |
+|---|---|---|
+| an instant (`DateTimeOffset`) | a UTC date and time with no offset, to the millisecond: `datetime2(3)` on SQL Server | `UtcInstantConverter`, for every `DateTimeOffset` in the model |
+| money (`decimal`) | `decimal(10,2)`: up to 99,999,999.99 | one convention for every `decimal` in the model, added with the first table that holds money |
+| an enum | its number (`int`) | EF's default; renaming a member needs no migration |
+| text | a length from `ColumnLengths`, one length per kind of text | each configuration |
+
+An instant is stored without its offset because SQLite cannot sort or compare a `DateTimeOffset` column in
+SQL, and paging and lease expiry do both. The offset is always zero.
+
+**Enforced by:** `BarefootModel.ConfigureConventions`, with `BarefootDbContextTests` and `BarefootModelTests` (phase 2). String
+lengths and the hash column are still open *(gap D-12)*.
 
 ## Referential integrity
 
