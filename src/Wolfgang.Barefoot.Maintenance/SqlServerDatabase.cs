@@ -41,12 +41,12 @@ internal static class SqlServerDatabase
     /// <exception cref="ArgumentException"><paramref name="connectionString"/> is not a connection string.</exception>
     public static BarefootDbContext Open(string connectionString)
     {
-        var connection = new SqlConnectionStringBuilder(connectionString)
+        // The string is set first, so the two settings after it replace whatever it says.
+        var connection = new SqlConnectionStringBuilder
         {
+            ConnectionString = connectionString,
             ConnectTimeout = ConnectTimeoutSeconds,
-            // true is SqlConnectionEncryptOption.Mandatory. It is written as true because that is the form
-            // the CodeQL query cs/insecure-sql-connection recognises.
-            Encrypt = true,
+            Encrypt = SqlConnectionEncryptOption.Mandatory,
         };
 
         var options = new DbContextOptionsBuilder<BarefootDbContext>()
