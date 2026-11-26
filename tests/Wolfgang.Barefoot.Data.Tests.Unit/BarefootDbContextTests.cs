@@ -28,7 +28,22 @@ public sealed class BarefootDbContextTests
 
         Assert.Equal
         (
-            ["airport", "app_user", "open_issue", "recipient", "resort", "resort_span", "room_category", "setting", "vocabulary_value"],
+            [
+                "airport",
+                "app_user",
+                "open_issue",
+                "recipient",
+                "resort",
+                "resort_span",
+                "room_category",
+                "search_departure_airport",
+                "search_matrix",
+                "search_recipient",
+                "search_resort",
+                "search_room_filter",
+                "setting",
+                "vocabulary_value",
+            ],
             context.Model.GetEntityTypes().Select(entity => entity.GetTableName()).Order(StringComparer.Ordinal)
         );
     }
@@ -52,6 +67,11 @@ public sealed class BarefootDbContextTests
                 "pk_resort",
                 "pk_resort_span",
                 "pk_room_category",
+                "pk_search_departure_airport",
+                "pk_search_matrix",
+                "pk_search_recipient",
+                "pk_search_resort",
+                "pk_search_room_filter",
                 "pk_setting",
                 "pk_vocabulary_value",
             ],
@@ -65,6 +85,15 @@ public sealed class BarefootDbContextTests
                 "fk_resort_gateway_airport_id",
                 "fk_resort_span_resort_id",
                 "fk_room_category_resort_id",
+                "fk_search_departure_airport_airport_id",
+                "fk_search_departure_airport_search_matrix_id",
+                "fk_search_matrix_owner_id",
+                "fk_search_recipient_recipient_id",
+                "fk_search_recipient_search_matrix_id",
+                "fk_search_resort_resort_id",
+                "fk_search_resort_search_matrix_id",
+                "fk_search_room_filter_search_matrix_id",
+                "fk_search_room_filter_vocabulary_value_id",
             ],
             entities.SelectMany(entity => entity.GetForeignKeys()).Select(key => key.GetConstraintName()).Order(StringComparer.Ordinal)
         );
@@ -74,10 +103,19 @@ public sealed class BarefootDbContextTests
                 "ix_open_issue_user_id_resolved_utc",
                 "ix_resort_gateway_airport_id",
                 "ix_resort_span_resort_id_eff_date",
+                "ix_search_departure_airport_airport_id",
+                "ix_search_recipient_recipient_id",
+                "ix_search_resort_resort_id",
+                "ix_search_room_filter_vocabulary_value_id",
                 "ux_airport_code",
                 "ux_recipient_owner_id_address",
                 "ux_resort_code",
                 "ux_room_category_resort_id_code",
+                "ux_search_departure_airport_search_matrix_id_airport_id",
+                "ux_search_matrix_owner_id_normalized_name",
+                "ux_search_recipient_search_matrix_id_recipient_id",
+                "ux_search_resort_search_matrix_id_resort_id",
+                "ux_search_room_filter_search_matrix_id_vocabulary_value_id",
                 "ux_vocabulary_value_kind_value",
             ],
             entities.SelectMany(entity => entity.GetIndexes()).Select(index => index.GetDatabaseName()).Order(StringComparer.Ordinal)
@@ -113,7 +151,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(DateTimeOffset))
             .ToList();
 
-        Assert.Equal(13, instants.Count);
+        Assert.Equal(14, instants.Count);
         Assert.All
         (
             instants,
@@ -121,6 +159,32 @@ public sealed class BarefootDbContextTests
             {
                 Assert.IsType<UtcInstantConverter>(property.GetValueConverter());
                 Assert.Equal(BarefootModel.InstantPrecision, property.GetPrecision());
+            }
+        );
+    }
+
+
+
+    [Fact]
+    public async Task Model_when_built_stores_every_amount_of_money_as_ten_digits_with_two_after_the_point()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        await using var context = database.NewContext();
+        var amounts = context
+            .Model
+            .GetEntityTypes()
+            .SelectMany(entity => entity.GetProperties())
+            .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(decimal))
+            .ToList();
+
+        Assert.Single(amounts);
+        Assert.All
+        (
+            amounts,
+            property =>
+            {
+                Assert.Equal(10, property.GetPrecision());
+                Assert.Equal(2, property.GetScale());
             }
         );
     }
@@ -139,7 +203,7 @@ public sealed class BarefootDbContextTests
             .OfType<IProperty>()
             .ToList();
 
-        Assert.Equal(5, versions.Count);
+        Assert.Equal(6, versions.Count);
         Assert.All(versions, property => Assert.True(property.IsConcurrencyToken));
     }
 

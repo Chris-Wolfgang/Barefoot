@@ -63,7 +63,7 @@ Decided 2026-11-23, closing the enum part of gap D-1, gap D-11 and the money par
 | Value | Stored as | Set by |
 |---|---|---|
 | an instant (`DateTimeOffset`) | a UTC date and time with no offset, to the millisecond: `datetime2(3)` on SQL Server | `UtcInstantConverter`, for every `DateTimeOffset` in the model |
-| money (`decimal`) | `decimal(10,2)`: up to 99,999,999.99 | one convention for every `decimal` in the model, added with the first table that holds money |
+| money (`decimal`) | `decimal(10,2)`: up to 99,999,999.99 | `BarefootModel.ConfigureConventions`, for every `decimal` in the model |
 | an enum | its number (`int`) | EF's default; renaming a member needs no migration |
 | text | a length from `ColumnLengths`, one length per kind of text | each configuration |
 
@@ -125,6 +125,9 @@ race a retry against the original (phase 3); the API contract tests for `412` / 
 | `SearchItem` | `(MatrixRun, SearchRequest)` | one link per search wanting the request |
 | `Recipient` | `(OwnerId, Address)` | the owner's address book; `Address` is trimmed, lower-cased; a duplicate is `409` |
 | `SearchRecipient` | `(SearchMatrix, Recipient)` | which recipients a search mails |
+| `SearchResort` | `(SearchMatrix, Resort)` | a search names a resort once |
+| `SearchDepartureAirport` | `(SearchMatrix, Airport)` | a search names a departure airport once |
+| `SearchRoomFilter` | `(SearchMatrix, VocabularyValue)` | a search filters by a value once |
 | `Airport` | `Code` | a code is one airport; a catalog snapshot finds each airport by it |
 | `Resort` | `Code` | a code is one resort; a catalog snapshot finds each resort by it |
 | `RoomCategory` | `(Resort, Code)` | a room's code is unique within its resort |

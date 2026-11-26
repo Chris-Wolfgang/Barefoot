@@ -15,10 +15,21 @@ internal static class BarefootModel
     /// </summary>
     public const int InstantPrecision = 3;
 
+    /// <summary>
+    /// How many digits an amount of money keeps in all: up to 99,999,999.99 (docs/DATABASE-CONVENTIONS.md, Types).
+    /// </summary>
+    public const int MoneyPrecision = 10;
+
+    /// <summary>
+    /// How many of those digits follow the decimal point.
+    /// </summary>
+    public const int MoneyScale = 2;
+
 
 
     /// <summary>
-    /// Sets how every instant in the model is stored: in UTC, without an offset, to the millisecond.
+    /// Sets how every instant in the model is stored (in UTC, without an offset, to the millisecond)
+    /// and how every amount of money is.
     /// </summary>
     /// <param name="configurationBuilder">The model's conventions.</param>
     public static void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
@@ -29,6 +40,11 @@ internal static class BarefootModel
             .Properties<DateTimeOffset>()
             .HaveConversion<UtcInstantConverter>()
             .HavePrecision(InstantPrecision);
+
+        // Every decimal in the model is money.
+        configurationBuilder
+            .Properties<decimal>()
+            .HavePrecision(MoneyPrecision, MoneyScale);
     }
 
 
@@ -51,6 +67,11 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new ResortSpanConfiguration());
         modelBuilder.ApplyConfiguration(new RoomCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new VocabularyValueConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchMatrixConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchResortConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchDepartureAirportConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchRoomFilterConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchRecipientConfiguration());
 
         SchemaNames.Apply(modelBuilder);
     }
