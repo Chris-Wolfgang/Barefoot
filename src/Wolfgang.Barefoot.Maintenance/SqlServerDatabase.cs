@@ -34,13 +34,17 @@ internal static class SqlServerDatabase
     /// Makes a context on the database <paramref name="connectionString"/> names. It opens no
     /// connection.
     /// </summary>
-    /// <param name="connectionString">A SQL Server connection string. Its connect timeout is replaced.</param>
+    /// <param name="connectionString">
+    /// A SQL Server connection string. Its connect timeout is replaced, and the connection is always
+    /// encrypted, whatever the string says.
+    /// </param>
     /// <exception cref="ArgumentException"><paramref name="connectionString"/> is not a connection string.</exception>
     public static BarefootDbContext Open(string connectionString)
     {
         var connection = new SqlConnectionStringBuilder(connectionString)
         {
             ConnectTimeout = ConnectTimeoutSeconds,
+            Encrypt = SqlConnectionEncryptOption.Mandatory,
         };
 
         var options = new DbContextOptionsBuilder<BarefootDbContext>()

@@ -36,6 +36,21 @@ public sealed class SqlServerDatabaseTests
 
 
 
+    [Theory]
+    [InlineData("")]
+    [InlineData(";Encrypt=False")]
+    [InlineData(";Encrypt=Optional")]
+    public void Open_when_given_a_connection_string_always_encrypts_the_connection(string encryption)
+    {
+        using var context = SqlServerDatabase.Open(ConnectionString + encryption);
+
+        var connection = new SqlConnectionStringBuilder(context.Database.GetConnectionString());
+
+        Assert.Equal(SqlConnectionEncryptOption.Mandatory, connection.Encrypt);
+    }
+
+
+
     [Fact]
     public void Open_when_given_a_connection_string_gives_commands_60_seconds()
     {
