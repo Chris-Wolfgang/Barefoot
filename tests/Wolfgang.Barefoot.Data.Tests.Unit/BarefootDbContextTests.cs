@@ -31,6 +31,7 @@ public sealed class BarefootDbContextTests
             [
                 "airport",
                 "app_user",
+                "digest_delivery",
                 "flight_direction",
                 "flight_leg",
                 "flight_option",
@@ -73,6 +74,7 @@ public sealed class BarefootDbContextTests
             [
                 "pk_airport",
                 "pk_app_user",
+                "pk_digest_delivery",
                 "pk_flight_direction",
                 "pk_flight_leg",
                 "pk_flight_option",
@@ -102,6 +104,8 @@ public sealed class BarefootDbContextTests
         Assert.Equal
         (
             [
+                "fk_digest_delivery_matrix_run_id",
+                "fk_digest_delivery_recipient_user_id",
                 "fk_flight_direction_flight_option_id",
                 "fk_flight_leg_flight_direction_id",
                 "fk_flight_option_flight_set_id",
@@ -143,6 +147,9 @@ public sealed class BarefootDbContextTests
         Assert.Equal
         (
             [
+                "ix_digest_delivery_matrix_run_id",
+                "ix_digest_delivery_recipient_user_id",
+                "ix_digest_delivery_status_created_utc",
                 "ix_flight_option_flight_set_id",
                 "ix_flight_set_gateway_airport_id",
                 "ix_flight_set_origin_airport_id",
@@ -216,7 +223,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(DateTimeOffset))
             .ToList();
 
-        Assert.Equal(22, instants.Count);
+        Assert.Equal(24, instants.Count);
         Assert.All
         (
             instants,

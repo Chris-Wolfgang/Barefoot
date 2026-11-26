@@ -135,6 +135,11 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The digests, one for each recipient of each search's run.</summary>
+    public DbSet<DigestDelivery> DigestDeliveries => Set<DigestDelivery>();
+
+
+
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
