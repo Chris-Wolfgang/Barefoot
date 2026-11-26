@@ -1,7 +1,8 @@
 # ADR 0007 — Three small hosts: scraper, admin, maintenance
 
 - **Status:** Accepted, 2026-11-06 (amended 2026-11-20: logging and stdout rule for the three
-  hosts; one `ExitCode` enum with a single numbering; `bf`'s two identities; the version check)
+  hosts; one `ExitCode` enum with a single numbering; `bf`'s two identities; the version check).
+  Amended by [0014](0014-exit-code-for-a-schema-behind-the-build.md): exit code 11
 - **Scope:** `Wolfgang.Barefoot.Scraper`, `.Admin`, `.Maintenance`
 
 ## Context

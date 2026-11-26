@@ -20,13 +20,14 @@ are.
 | [0004](0004-shared-requests-and-matrix-ownership.md) | Shared search requests, owner on the search, visibility by join | Accepted |
 | [0005](0005-identity-entra-invite-only.md) | Identity: Entra ID, invite-only guests, app roles, no stored passwords | Accepted |
 | [0006](0006-email-stored-digests-separate-send.md) | E-mail: store the digest on completion, send in a separate step, owner-only recipients | Accepted |
-| [0007](0007-three-hosts-scraper-admin-maintenance.md) | Three small hosts: scraper, admin, maintenance | Accepted |
+| [0007](0007-three-hosts-scraper-admin-maintenance.md) | Three small hosts: scraper, admin, maintenance | Accepted, amended by [0014](0014-exit-code-for-a-schema-behind-the-build.md) |
 | [0008](0008-web-ui-fluent-components-own-state.md) | Web UI: Blazor Web App on Fluent UI Blazor; components own their state; role-scoped IA | Accepted |
 | [0009](0009-naming-wolfgang-barefoot.md) | Naming: `Wolfgang.Barefoot` is the code name; the product name is a display string | Accepted |
 | [0010](0010-api-client-hand-written-over-a-frozen-openapi-contract.md) | API client: hand-written over a committed, frozen OpenAPI contract | Accepted |
 | [0011](0011-settings-registry.md) | Settings: a typed registry stored in the database; `appsettings` holds bootstrap keys only | Accepted |
 | [0012](0012-api-conventions-errors-concurrency-idempotency-paging.md) | API conventions: typed error codes in problem details, ETag concurrency, idempotency by state, keyset paging | Accepted |
 | [0013](0013-documentation-site-docfx-for-operator-pages.md) | Documentation site: keep DocFX and Pages, for operator pages | Proposed |
+| [0014](0014-exit-code-for-a-schema-behind-the-build.md) | `migrate --status` exits 11 when the schema is behind the build | Accepted |
 
 ## Status legend
 

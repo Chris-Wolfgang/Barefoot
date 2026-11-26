@@ -2,8 +2,8 @@
 
 This document is the operator contract for `bf-maint` (`Wolfgang.Barefoot.Maintenance`): the verbs `migrate`,
 `verify-schema`, `grant-roles` and `assign-owner`. It restates ADR 0001 §4–§5 (the migrate rules, the
-firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0004 §8
-(`assign-owner`) and ADR 0005 (database identities). It adds no decision.
+firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0014 (exit code
+11), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Nothing described here is built yet. `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
@@ -38,7 +38,7 @@ with phase 0).
 |---|---|
 | `bf-maint migrate` | applies every pending migration, up to the latest; runs `grant-roles` as part of the same verb |
 | `bf-maint migrate --to <target>` | moves up **or** down to `<target>` and states the direction it took |
-| `bf-maint migrate --status` | reports the current schema version against the one this build expects |
+| `bf-maint migrate --status` | reports the current schema version against the one this build expects; its exit code says which way they differ (below) |
 | `bf-maint migrate --script [--from <m>] [--to <m>] --output <file>` | renders the SQL offline, for review |
 | `bf-maint verify-schema` | *(open: gap M-1 — the ADRs name the verb and do not describe it)* |
 | `bf-maint grant-roles` | creates the contained database users and roles; idempotent; also runs as part of `migrate` |
@@ -90,8 +90,20 @@ Exit codes come from the one `ExitCode` enum in `Core`, compiled into all three 
 | 8 | `DatabaseUnavailable` | the database could not be reached within the retry budget | all |
 | 9 | `QuotaExhausted` | the monthly free allowance is used up (ADR 0001 §3) | all |
 | 10 | `Refused` | the tool will not act (a schema newer than the build, ADR 0001 §4) | `bf-maint` |
+| 11 | `MissingMigration` | `migrate --status` found the database behind this build (ADR 0014) | `bf-maint` |
 
-`bf-maint` uses 0, 1, 4, 6, 8, 9 and 10.
+`bf-maint` uses 0, 1, 4, 6, 8, 9, 10 and 11.
+
+### What `migrate --status` exits with
+
+| The database is | Exit code |
+|---|---|
+| at the version this build expects | `Ok` (0) |
+| behind this build: a migration is pending | `MissingMigration` (11) |
+| newer than this build | `Refused` (10) |
+
+`--status` changes nothing in any of the three. Only `--status` exits 11: `bf-maint migrate` on a database
+that is behind applies the pending migrations and exits 0 (ADR 0014).
 
 `docs/EXIT-CODES.md` is generated from the enum.
 

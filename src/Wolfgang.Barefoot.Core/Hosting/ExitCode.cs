@@ -45,4 +45,10 @@ public enum ExitCode
 
     /// <summary>The tool will not act, for example on a schema newer than the build.</summary>
     Refused = 10,
+
+    /// <summary>
+    /// <c>migrate --status</c> found the database behind this build: a migration is not applied
+    /// (ADR 0014).
+    /// </summary>
+    MissingMigration = 11,
 }
