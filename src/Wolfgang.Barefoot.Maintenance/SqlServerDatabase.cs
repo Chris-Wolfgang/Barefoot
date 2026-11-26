@@ -44,7 +44,9 @@ internal static class SqlServerDatabase
         var connection = new SqlConnectionStringBuilder(connectionString)
         {
             ConnectTimeout = ConnectTimeoutSeconds,
-            Encrypt = SqlConnectionEncryptOption.Mandatory,
+            // true is SqlConnectionEncryptOption.Mandatory. It is written as true because that is the form
+            // the CodeQL query cs/insecure-sql-connection recognises.
+            Encrypt = true,
         };
 
         var options = new DbContextOptionsBuilder<BarefootDbContext>()
