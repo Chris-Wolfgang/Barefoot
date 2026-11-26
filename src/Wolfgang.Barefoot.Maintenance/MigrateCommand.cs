@@ -281,10 +281,13 @@ internal static class MigrateCommand
 
         IReadOnlyList<string> shipped = [.. context.Database.GetMigrations()];
 
-        var applied = await context
-            .Database
-            .GetAppliedMigrationsAsync(cancellationToken)
-            .ConfigureAwait(false);
+        IReadOnlyList<string> applied =
+        [
+            .. await context
+                .Database
+                .GetAppliedMigrationsAsync(cancellationToken)
+                .ConfigureAwait(false),
+        ];
 
         var unfit = HistoryProblem(before, MigrationPlan.Gaps(shipped, applied));
         if (unfit is not null)
