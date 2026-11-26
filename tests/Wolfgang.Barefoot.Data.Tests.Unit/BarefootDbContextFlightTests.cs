@@ -73,7 +73,6 @@ public sealed class BarefootDbContextFlightTests
             flightSet.LeaseExpiresUtc = Instant.AddMinutes(10);
             flightSet.Attempt = AttemptToken;
             flightSet.ResultSha256 = new string('b', 64);
-            flightSet.Version = 6;
             context.FlightSets.Add(flightSet);
             await context.SaveChangesAsync();
         }
@@ -98,7 +97,7 @@ public sealed class BarefootDbContextFlightTests
         Assert.Equal(Instant.AddMinutes(10), read.LeaseExpiresUtc);
         Assert.Equal(AttemptToken, read.Attempt);
         Assert.Equal(new string('b', 64), read.ResultSha256);
-        Assert.Equal(6, read.Version);
+        Assert.Equal(1, read.Version);
     }
 
 

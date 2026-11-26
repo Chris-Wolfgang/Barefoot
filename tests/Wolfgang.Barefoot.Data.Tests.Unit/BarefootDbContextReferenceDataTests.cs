@@ -37,7 +37,6 @@ public sealed class BarefootDbContextReferenceDataTests
             airport.TimeZoneId = "America/New_York";
             airport.IsDeparture = true;
             airport.IsGateway = true;
-            airport.Version = 3;
             context.Airports.Add(airport);
             await context.SaveChangesAsync();
         }
@@ -55,7 +54,7 @@ public sealed class BarefootDbContextReferenceDataTests
         Assert.True(read.IsDeparture);
         Assert.True(read.IsGateway);
         Assert.Equal(Instant, read.FirstSeenUtc);
-        Assert.Equal(3, read.Version);
+        Assert.Equal(1, read.Version);
     }
 
 
@@ -72,7 +71,6 @@ public sealed class BarefootDbContextReferenceDataTests
             resort.ShortName = "Example Bay";
             resort.GatewayAirportId = AirportId;
             resort.DriveMinutes = 25;
-            resort.Version = 2;
             context.Resorts.Add(resort);
             await context.SaveChangesAsync();
         }
@@ -89,7 +87,7 @@ public sealed class BarefootDbContextReferenceDataTests
         Assert.Equal(AirportId, read.GatewayAirportId);
         Assert.Equal(25, read.DriveMinutes);
         Assert.Equal(Instant, read.FirstSeenUtc);
-        Assert.Equal(2, read.Version);
+        Assert.Equal(1, read.Version);
     }
 
 

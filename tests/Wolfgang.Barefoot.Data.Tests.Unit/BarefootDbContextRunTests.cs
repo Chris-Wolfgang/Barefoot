@@ -223,7 +223,6 @@ public sealed class BarefootDbContextRunTests
             request.LeaseExpiresUtc = Instant.AddMinutes(10);
             request.Attempt = AttemptToken;
             request.ResultSha256 = new string('a', 64);
-            request.Version = 4;
             context.SearchRequests.Add(request);
             await context.SaveChangesAsync();
         }
@@ -248,7 +247,7 @@ public sealed class BarefootDbContextRunTests
         Assert.Equal(Instant.AddMinutes(10), read.LeaseExpiresUtc);
         Assert.Equal(AttemptToken, read.Attempt);
         Assert.Equal(new string('a', 64), read.ResultSha256);
-        Assert.Equal(4, read.Version);
+        Assert.Equal(1, read.Version);
     }
 
 
