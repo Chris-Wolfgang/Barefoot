@@ -3,11 +3,12 @@
 This document is the operator contract for `bf-maint` (`Wolfgang.Barefoot.Maintenance`): the verbs `migrate`,
 `verify-schema`, `grant-roles` and `assign-owner`. It restates ADR 0001 §4–§5 (the migrate rules, the
 firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0014 (exit code
-11), ADR 0015 (the connection, a missing database, `--script`), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
+11), ADR 0015 (the connection, a missing database, `--script`), ADR 0016 (the other points of `migrate`, the
+other three verbs, logging), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
-and `--script` with `--from`, `--to` and `--output`. `migrate` does not run `grant-roles` yet. The
-rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
+and `--script` with `--from`, `--to` and `--output`. `migrate` does not run `grant-roles` yet, and the file
+log is not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 
@@ -47,7 +48,7 @@ with phase 0).
 | `bf-maint migrate --to <target>` | moves up **or** down to `<target>` and states the direction it took |
 | `bf-maint migrate --status` | reports the current schema version against the one this build expects; its exit code says which way they differ (below) |
 | `bf-maint migrate --script [--from <m>] [--to <m>] --output <file>` | renders the SQL offline, for review |
-| `bf-maint verify-schema` | *(open: gap M-1 — the ADRs name the verb and do not describe it)* |
+| `bf-maint verify-schema` | compares the live schema with the one this build expects and reports each difference; changes nothing |
 | `bf-maint grant-roles` | creates the contained database users and roles; idempotent; also runs as part of `migrate` |
 | `bf-maint assign-owner <oid>` | moves every row owned by the "Unassigned" user to the user `<oid>`; run once |
 
@@ -68,16 +69,35 @@ The tool is **declarative**. You name a target, never a direction.
 
 - Creates the contained users and roles the application needs: the API's managed identity gets
   `db_datareader` + `db_datawriter`.
+- The user's name is fixed: `barefoot-api`, the name of the API's user-assigned managed identity. There is
+  no setting for it (ADR 0016).
 - Idempotent: running it again changes nothing.
-- Runs as part of `migrate`, so a fresh database is usable by the API after one command.
+- Runs as part of `migrate` when the run ends on the latest migration, so a fresh database is usable by the
+  API after one command. Not with `--status`, `--script`, or a move to an older migration.
+- On a server that is not Azure SQL Database (a local SQL Server) the grant is skipped: the tool says so and
+  exits `Ok` (0).
 
 ### `assign-owner <oid>`
 
 - Before the application is connected to Entra there is one developer and no real object id. Local runs act
   as the seeded "Unassigned" user (`Guid.Empty`), who owns everything created in that time.
 - Once sign-in works, `bf-maint assign-owner <oid>` moves every row that user owns to the user `<oid>`.
-- `<oid>` must be a user who has signed in once (their `AppUser` row exists).
-- It is run once. Afterwards the "Unassigned" row stays seeded and owns nothing.
+- `<oid>` must be a user who has signed in once (their `AppUser` row exists). Otherwise the tool exits
+  `Refused` (10); an `<oid>` that is not a GUID exits `Usage` (4).
+- The rows are the searches and recipients the user owns, the open issues raised for them, and the digest
+  deliveries addressed to them. All move in one transaction, and each moved row gets a new `Version`.
+- When `<oid>` already has a search of the same name, or a recipient of the same address, nothing moves:
+  the tool names each collision and exits `Refused` (10).
+- It is run once. Afterwards the "Unassigned" row stays seeded and owns nothing. A second run moves
+  nothing and exits `Ok` (0). stdout carries one line per table with the number of rows moved.
+
+### `verify-schema`
+
+- Reads the live catalog and compares it with the model: tables, columns, indexes and foreign keys. It
+  reports what is missing, what differs and what is extra, one line each on stderr, and changes nothing.
+- No difference exits `Ok` (0); a difference exits `Failed` (1). A database behind or ahead of the build
+  exits as `migrate --status` does and is not compared.
+- It is built after CI has a SQL Server step (ADR 0016).
 
 ## Exit codes
 
@@ -248,7 +268,11 @@ the only trigger. An open session holds the database awake and spends the monthl
 ## Output and logging
 
 - **stdout** carries only the verb's own output, culture-invariant, so it stays parseable.
-- Logs go to **stderr and a rolling file** under the user's local application data.
+- Logs go to **stderr and a rolling file** under the user's local application data:
+  `Barefoot/logs/bf-maint-yyyyMMdd.log`, one file a day in UTC, the newest 90 kept. The file takes
+  Information and above, stderr Warning and above (ADR 0016).
+- When the log folder cannot be written the tool says so once on stderr and carries on; the exit code
+  does not change.
 - An unhandled exception is one line on stderr, the stack trace in the file only, and exit code `Failed` (1).
 
 **Enforced by:** the migrate-tool tests, which capture the injected stdout and stderr writers (phase 2);
