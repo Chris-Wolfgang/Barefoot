@@ -52,7 +52,7 @@ public sealed class MigrateScriptTests : IDisposable
         var run = await RunAsync("migrate", "--script", "--output", _output);
 
         Assert.Equal(ExitCode.Ok, run.ExitCode);
-        Assert.Equal($"script: {_output}\nmigrations: {TestSchema.Shipped}{Environment.NewLine}", run.Output);
+        Assert.Equal($"script: {_output}\ndirection: up\nmigrations: {TestSchema.Shipped}{Environment.NewLine}", run.Output);
         Assert.Empty(run.Error);
     }
 
@@ -167,6 +167,8 @@ public sealed class MigrateScriptTests : IDisposable
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Contains("--script", run.Output, StringComparison.Ordinal);
         Assert.Contains("Opens no connection.", run.Output, StringComparison.Ordinal);
+        Assert.Contains("--from", run.Output, StringComparison.Ordinal);
+        Assert.Contains("Default: 0, an empty schema.", run.Output, StringComparison.Ordinal);
         Assert.Contains("--output", run.Output, StringComparison.Ordinal);
         Assert.Contains("An existing file is replaced.", run.Output, StringComparison.Ordinal);
     }

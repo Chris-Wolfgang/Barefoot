@@ -14,8 +14,8 @@ namespace Wolfgang.Barefoot.Maintenance;
 /// The verb <c>bf-maint migrate</c> (docs/MIGRATE.md). Alone it applies every pending migration;
 /// with <c>--to</c> it moves up or down to the migration named.
 /// With <c>--status</c> it reads the schema version of the database against the one this build
-/// expects and changes nothing. With <c>--script</c> it writes the SQL of the migrations to a file
-/// and opens no connection.
+/// expects and changes nothing. With <c>--script</c> it writes the SQL of a move to a file, by default
+/// from an empty schema to the latest migration, and opens no connection.
 /// </summary>
 internal static class MigrateCommand
 {
@@ -49,6 +49,7 @@ internal static class MigrateCommand
             options.Status,
             options.Script,
             options.Output,
+            options.From,
             options.To,
             options.ConfirmDataLoss,
         };
@@ -66,19 +67,21 @@ internal static class MigrateCommand
         (
             (parsed, cancellationToken) =>
             {
-                if (parsed.GetValue(options.Script))
-                {
-                    return ScriptAsync
-                    (
-                        parsed.InvocationConfiguration,
-                        offlineContext,
-                        parsed.GetRequiredValue(options.Output),
-                        cancellationToken
-                    );
-                }
-
                 var target = parsed.GetValue(options.To);
                 var confirmed = parsed.GetValue(options.ConfirmDataLoss);
+
+                if (parsed.GetValue(options.Script))
+                {
+                    var request = new ScriptRequest
+                    (
+                        parsed.GetRequiredValue(options.Output),
+                        parsed.GetValue(options.From),
+                        target,
+                        confirmed
+                    );
+
+                    return ScriptAsync(parsed.InvocationConfiguration, offlineContext, request, cancellationToken);
+                }
 
                 return OnDatabaseAsync
                 (
@@ -124,59 +127,136 @@ internal static class MigrateCommand
     private static void ValidateMove(CommandResult result, Options options)
     {
         var reportsOnly = result.GetValue(options.Status);
-        var scripted = result.GetValue(options.Script);
-        var hasTarget = result.GetValue(options.To) is not null;
 
-        if (hasTarget && reportsOnly)
+        if (reportsOnly && result.GetValue(options.To) is not null)
         {
             result.AddError("--to is not used with --status.");
         }
 
-        if (hasTarget && scripted)
+        if (reportsOnly && result.GetValue(options.ConfirmDataLoss))
         {
-            result.AddError("--script does not take --to yet: it always writes every migration.");
+            result.AddError("--confirm-data-loss is not used with --status.");
         }
 
-        if (result.GetValue(options.ConfirmDataLoss) && (reportsOnly || scripted))
+        if (!result.GetValue(options.Script) && result.GetValue(options.From) is not null)
         {
-            result.AddError("--confirm-data-loss is only used when migrations are applied or rolled back.");
+            result.AddError("--from is only used with --script.");
         }
     }
 
 
 
+    /// <summary>
+    /// Writes the SQL that moves a database from one migration to another to a file. It opens no
+    /// connection: the range is taken from the request, not from a database.
+    /// </summary>
     private static async Task<int> ScriptAsync
     (
         InvocationConfiguration streams,
         Func<BarefootDbContext> offlineContext,
-        string output,
+        ScriptRequest request,
         CancellationToken cancellationToken
     )
     {
-        IReadOnlyList<string> migrations;
+        MigrationPlan plan;
         string sql;
 
         var context = offlineContext();
         await using (context.ConfigureAwait(false))
         {
-            migrations = [.. context.Database.GetMigrations()];
+            IReadOnlyList<string> shipped = [.. context.Database.GetMigrations()];
+            var latest = shipped
+                .DefaultIfEmpty(MigrationTarget.EmptySchema)
+                .Last();
+
+            var from = MigrationTarget.Resolve(shipped, request.From ?? MigrationTarget.EmptySchema);
+            if (from.Id is null)
+            {
+                return await RefuseAsync(streams, TargetProblem(request.From, from, shipped), ExitCode.Usage).ConfigureAwait(false);
+            }
+
+            var to = MigrationTarget.Resolve(shipped, request.To ?? latest);
+            if (to.Id is null)
+            {
+                return await RefuseAsync(streams, TargetProblem(request.To, to, shipped), ExitCode.Usage).ConfigureAwait(false);
+            }
+
+            // What a database at `from` holds is every migration a move from nothing to `from` applies.
+            plan = MigrationPlan.Make(shipped, MigrationPlan.Make(shipped, [], from.Id).Apply, to.Id);
+
+            var losses = Losses(context, plan.Revert);
+            if (losses.Count > 0 && !request.Confirmed)
+            {
+                return await RefuseAsync
+                (
+                    streams,
+                    DataLossRefusal(to.Id, losses, "Nothing was written."),
+                    ExitCode.DataLossNotConfirmed
+                ).ConfigureAwait(false);
+            }
+
             sql = context
                 .GetService<IMigrator>()
-                .GenerateScript();
+                .GenerateScript(from.Id, to.Id);
+
+            if (plan.Revert.Count > 0)
+            {
+                sql = DowngradeHeader(from.Id, to.Id, losses) + sql;
+            }
         }
 
+        return await WriteScriptAsync(streams, request.Output, sql, plan, cancellationToken).ConfigureAwait(false);
+    }
+
+
+
+    private static async Task<int> WriteScriptAsync
+    (
+        InvocationConfiguration streams,
+        string output,
+        string sql,
+        MigrationPlan plan,
+        CancellationToken cancellationToken
+    )
+    {
         var path = Path.GetFullPath(output);
 
         await File
             .WriteAllTextAsync(path, sql, cancellationToken)
             .ConfigureAwait(false);
 
+        var migrations = plan.Revert.Count > 0 ? plan.Revert : plan.Apply;
+
         await streams
             .Output
-            .WriteLineAsync($"script: {path}\nmigrations: {Listed(migrations)}")
+            .WriteLineAsync($"script: {path}\ndirection: {plan.Direction}\nmigrations: {Listed(migrations)}")
             .ConfigureAwait(false);
 
         return (int)ExitCode.Ok;
+    }
+
+
+
+    /// <summary>
+    /// The comment a downgrade script starts with: the range, and each step that loses data
+    /// (ADR 0001 §4).
+    /// </summary>
+    private static string DowngradeHeader(string fromId, string toId, List<DataLossStep> losses)
+    {
+        IEnumerable<string> steps = losses.Count == 0
+            ? ["-- No step loses data."]
+            : ["-- Steps that lose data:", .. losses.Select(step => $"--   {step.MigrationId}: {step.Description}")];
+
+        return string.Join
+        (
+            '\n',
+            [
+                $"-- Downgrade from {fromId} to {toId}.",
+                .. steps,
+                string.Empty,
+                string.Empty,
+            ]
+        );
     }
 
 
@@ -298,11 +378,7 @@ internal static class MigrateCommand
         var target = MigrationTarget.Resolve(shipped, to ?? before.Expected ?? MigrationTarget.EmptySchema);
         if (target.Id is null)
         {
-            var problem = target.Kind == MigrationTargetKind.Ambiguous
-                ? $"'{to}' matches more than one migration: {Listed(target.Candidates)}. Give more of the id or the name."
-                : $"No migration matches '{to}'. This build ships: {Listed(shipped)}.";
-
-            return await RefuseAsync(streams, problem, ExitCode.Usage).ConfigureAwait(false);
+            return await RefuseAsync(streams, TargetProblem(to, target, shipped), ExitCode.Usage).ConfigureAwait(false);
         }
 
         var plan = MigrationPlan.Make(shipped, applied, target.Id);
@@ -310,7 +386,12 @@ internal static class MigrateCommand
         var losses = confirmed ? [] : Losses(context, plan.Revert);
         if (losses.Count > 0)
         {
-            return await RefuseAsync(streams, DataLossRefusal(target.Id, losses), ExitCode.DataLossNotConfirmed).ConfigureAwait(false);
+            return await RefuseAsync
+            (
+                streams,
+                DataLossRefusal(target.Id, losses, "Nothing was changed."),
+                ExitCode.DataLossNotConfirmed
+            ).ConfigureAwait(false);
         }
 
         return await CarryOutAsync(context, streams, plan, target.Id, cancellationToken).ConfigureAwait(false);
@@ -396,7 +477,17 @@ internal static class MigrateCommand
 
 
 
-    private static string DataLossRefusal(string targetId, List<DataLossStep> losses)
+    /// <summary>Why <paramref name="text"/> does not name one migration.</summary>
+    private static string TargetProblem(string? text, MigrationTarget target, IReadOnlyList<string> shipped)
+    {
+        return target.Kind == MigrationTargetKind.Ambiguous
+            ? $"'{text}' matches more than one migration: {Listed(target.Candidates)}. Give more of the id or the name."
+            : $"No migration matches '{text}'. This build ships: {Listed(shipped)}.";
+    }
+
+
+
+    private static string DataLossRefusal(string targetId, List<DataLossStep> losses, string outcome)
     {
         return string.Join
         (
@@ -404,7 +495,7 @@ internal static class MigrateCommand
             [
                 $"Moving down to {targetId} would lose data:",
                 .. losses.Select(step => $"  {step.MigrationId}: {step.Description}"),
-                "Nothing was changed. Give --confirm-data-loss to go ahead.",
+                $"{outcome} Give --confirm-data-loss to go ahead.",
             ]
         );
     }
@@ -480,12 +571,17 @@ internal static class MigrateCommand
 
         public Option<bool> Script { get; } = new("--script")
         {
-            Description = "Write the SQL of every migration this build ships to --output instead of applying it. Opens no connection.",
+            Description = "Write the SQL of the move from --from to --to into --output instead of applying it. Opens no connection.",
         };
 
         public Option<string> Output { get; } = new("--output")
         {
             Description = "With --script: the file the SQL is written to. An existing file is replaced.",
+        };
+
+        public Option<string> From { get; } = new("--from")
+        {
+            Description = "With --script: the migration the script starts from, given as --to is. Default: 0, an empty schema.",
         };
 
         public Option<string> To { get; } = new("--to")
@@ -498,4 +594,13 @@ internal static class MigrateCommand
             Description = "Go ahead with a move down that would lose data.",
         };
     }
+
+
+
+    /// <summary>What <c>--script</c> was asked to write.</summary>
+    /// <param name="Output">The file the SQL goes to.</param>
+    /// <param name="From">The text of <c>--from</c>, or <see langword="null"/> for an empty schema.</param>
+    /// <param name="To">The text of <c>--to</c>, or <see langword="null"/> for the latest migration.</param>
+    /// <param name="Confirmed">Whether <c>--confirm-data-loss</c> was given.</param>
+    private sealed record ScriptRequest(string Output, string? From, string? To, bool Confirmed);
 }
