@@ -97,4 +97,15 @@ public sealed class SqlServerDatabaseTests
         Assert.Equal(8, SqlServerDatabase.MaxRetryCount);
         Assert.Equal(20, SqlServerDatabase.MaxRetryDelaySeconds);
     }
+
+
+
+    [Fact]
+    public void Offline_when_called_gives_a_context_on_SQL_Server_that_names_no_database()
+    {
+        using var context = SqlServerDatabase.Offline();
+
+        Assert.Equal("Microsoft.EntityFrameworkCore.SqlServer", context.Database.ProviderName);
+        Assert.Null(context.Database.GetConnectionString());
+    }
 }

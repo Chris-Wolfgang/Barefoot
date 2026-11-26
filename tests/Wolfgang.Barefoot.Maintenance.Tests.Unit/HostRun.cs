@@ -18,13 +18,23 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
         string[] args,
         IConfiguration configuration,
         Func<string, BarefootDbContext> openContext,
-        CancellationToken cancellationToken = default
+        CancellationToken cancellationToken = default,
+        Func<BarefootDbContext>? offlineContext = null
     )
     {
         using var output = new StringWriter(CultureInfo.InvariantCulture);
         using var error = new StringWriter(CultureInfo.InvariantCulture);
 
-        var exitCode = await MaintenanceHost.RunAsync(args, output, error, configuration, openContext, cancellationToken);
+        var exitCode = await MaintenanceHost.RunAsync
+        (
+            args,
+            output,
+            error,
+            configuration,
+            openContext,
+            offlineContext ?? SqlServerDatabase.Offline,
+            cancellationToken
+        );
 
         return new HostRun((ExitCode)exitCode, output.ToString(), error.ToString());
     }

@@ -61,4 +61,19 @@ internal static class SqlServerDatabase
 
         return new BarefootDbContext(options);
     }
+
+
+
+    /// <summary>
+    /// Makes a context on SQL Server that names no database. It can render the SQL of the migrations
+    /// and cannot open a connection.
+    /// </summary>
+    public static BarefootDbContext Offline()
+    {
+        var options = new DbContextOptionsBuilder<BarefootDbContext>()
+            .UseSqlServer()
+            .Options;
+
+        return new BarefootDbContext(options);
+    }
 }
