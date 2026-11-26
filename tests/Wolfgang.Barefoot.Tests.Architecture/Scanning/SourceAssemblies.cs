@@ -17,19 +17,20 @@ internal static class SourceAssemblies
         typeof(Contracts.ContractVersion).Assembly,
         typeof(Core.Keys.ErrorCode).Assembly,
         typeof(Data.BarefootDbContext).Assembly,
+        typeof(Maintenance.MaintenanceHost).Assembly,
     ];
 
 
 
     /// <summary>
-    /// The names of the projects under <c>src/</c> that have no assembly in <paramref name="assemblies"/>,
-    /// and of the assemblies that have no project, sorted.
+    /// The assembly names of the projects under <c>src/</c> that have no assembly in
+    /// <paramref name="assemblies"/>, and of the assemblies that have no project, sorted.
     /// </summary>
     public static IReadOnlyList<string> MismatchesWith(IEnumerable<ProjectFile> projects, IEnumerable<Assembly> assemblies)
     {
         var projectNames = projects
             .Where(project => string.Equals(project.Area, "src", StringComparison.Ordinal))
-            .Select(project => project.Name)
+            .Select(project => project.AssemblyName)
             .ToList();
 
         var assemblyNames = assemblies

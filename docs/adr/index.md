@@ -28,6 +28,7 @@ are.
 | [0012](0012-api-conventions-errors-concurrency-idempotency-paging.md) | API conventions: typed error codes in problem details, ETag concurrency, idempotency by state, keyset paging | Accepted |
 | [0013](0013-documentation-site-docfx-for-operator-pages.md) | Documentation site: keep DocFX and Pages, for operator pages | Proposed |
 | [0014](0014-exit-code-for-a-schema-behind-the-build.md) | `migrate --status` exits 11 when the schema is behind the build | Accepted |
+| [0015](0015-bf-maint-connection-missing-database-and-script.md) | `bf-maint`: where the connection comes from, a missing database, and `--script` | Accepted |
 
 ## Status legend
 

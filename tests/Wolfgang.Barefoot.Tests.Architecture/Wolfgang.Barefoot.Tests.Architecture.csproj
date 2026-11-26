@@ -37,6 +37,7 @@
     <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Contracts\Wolfgang.Barefoot.Contracts.csproj" />
     <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Core\Wolfgang.Barefoot.Core.csproj" />
     <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Data\Wolfgang.Barefoot.Data.csproj" />
+    <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Maintenance\Wolfgang.Barefoot.Maintenance.csproj" />
   </ItemGroup>
 
 </Project>

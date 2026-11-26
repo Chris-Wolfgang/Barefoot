@@ -3,11 +3,13 @@
     <Project Path="src/Wolfgang.Barefoot.Contracts/Wolfgang.Barefoot.Contracts.csproj" />
     <Project Path="src/Wolfgang.Barefoot.Core/Wolfgang.Barefoot.Core.csproj" />
     <Project Path="src/Wolfgang.Barefoot.Data/Wolfgang.Barefoot.Data.csproj" />
+    <Project Path="src/Wolfgang.Barefoot.Maintenance/Wolfgang.Barefoot.Maintenance.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/Wolfgang.Barefoot.Contracts.Tests.Unit/Wolfgang.Barefoot.Contracts.Tests.Unit.csproj" />
     <Project Path="tests/Wolfgang.Barefoot.Core.Tests.Unit/Wolfgang.Barefoot.Core.Tests.Unit.csproj" />
     <Project Path="tests/Wolfgang.Barefoot.Data.Tests.Unit/Wolfgang.Barefoot.Data.Tests.Unit.csproj" />
+    <Project Path="tests/Wolfgang.Barefoot.Maintenance.Tests.Unit/Wolfgang.Barefoot.Maintenance.Tests.Unit.csproj" />
     <Project Path="tests/Wolfgang.Barefoot.TestKit.Tests.Unit/Wolfgang.Barefoot.TestKit.Tests.Unit.csproj" />
     <Project Path="tests/Wolfgang.Barefoot.TestKit/Wolfgang.Barefoot.TestKit.csproj" />
     <Project Path="tests/Wolfgang.Barefoot.Tests.Architecture/Wolfgang.Barefoot.Tests.Architecture.csproj" />

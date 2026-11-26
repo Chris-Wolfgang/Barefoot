@@ -3,9 +3,10 @@
 This document is the operator contract for `bf-maint` (`Wolfgang.Barefoot.Maintenance`): the verbs `migrate`,
 `verify-schema`, `grant-roles` and `assign-owner`. It restates ADR 0001 §4–§5 (the migrate rules, the
 firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0014 (exit code
-11), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
+11), ADR 0015 (the connection, a missing database, `--script`), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
-Nothing described here is built yet. `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
+Of the verbs, `bf-maint migrate --status` is built. The rest of `bf-maint` arrives with build phase 2
+(DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 
@@ -31,6 +32,11 @@ with phase 0).
   against a sleeping database. It uses the same connection options as the API (`Connect Timeout` 90 s, the
   retrying execution strategy; ADR 0001 §1).
 - It connects, works and disconnects.
+- The connection string is the configuration key `ConnectionStrings:Barefoot`: the environment variable
+  `ConnectionStrings__Barefoot`, or a user secret on a developer's machine. There is no command-line flag
+  for it. Without it the tool exits `Usage` (4) and opens nothing (ADR 0015).
+
+**Enforced by:** the migrate-tool tests (`MigrateStatusTests`, `SqlServerDatabaseTests`).
 
 ## Verbs
 
@@ -50,10 +56,10 @@ with phase 0).
 |---|---|
 | `--to <id\|name\|prefix\|0>` | the target migration: its id, its name, a prefix, or `0` for an empty schema. Default: latest |
 | `--status` | report only; changes nothing |
-| `--script` | write SQL instead of applying it |
+| `--script` | write SQL instead of applying it; needs `--output` and opens no connection (ADR 0015) |
 | `--from <m>` | with `--script`: start of the range |
 | `--output <file>` | with `--script`: where the SQL is written |
-| `--confirm-data-loss` | required for a downgrade that would lose data |
+| `--confirm-data-loss` | required for a downgrade that would lose data, applied or scripted (ADR 0015) |
 
 The tool is **declarative**. You name a target, never a direction.
 
@@ -116,9 +122,10 @@ in-process with injected writers, one per exit code (phase 2).
 ### The database must exist
 
 The tool never creates a database. A mistyped name must not create a stray database. The operator creates
-the database (Azure, phase 6) and `bf-maint` fills it.
+the database (Azure, phase 6) and `bf-maint` fills it. When the database does not exist the tool exits
+`DatabaseUnavailable` (8), as it does for one it cannot reach (ADR 0015).
 
-**Enforced by:** the migrate-tool tests (phase 2) *(open: gap M-4 — which exit code)*.
+**Enforced by:** the migrate-tool tests (`MigrateStatusTests`).
 
 ### A schema newer than the build is never touched
 

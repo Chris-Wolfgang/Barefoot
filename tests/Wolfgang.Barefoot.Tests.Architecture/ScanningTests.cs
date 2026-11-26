@@ -94,6 +94,7 @@ public sealed class ScanningTests
         Assert.Equal("Wolfgang.Barefoot.Api", project.Name);
         Assert.Equal("src", project.Area);
         Assert.Equal("Microsoft.NET.Sdk.Web", project.Sdk);
+        Assert.Equal("Wolfgang.Barefoot.Api", project.AssemblyName);
         Assert.Equal("net10.0", project.TargetFramework);
         Assert.Equal(["Wolfgang.Barefoot.Business", "Wolfgang.Barefoot.Data"], project.ProjectReferences);
         Assert.Equal(["Alpha", "Zeta"], project.PackageReferences);
@@ -158,11 +159,22 @@ public sealed class ScanningTests
             ProjectFile.Parse("src/Wolfgang.Barefoot.Core/Wolfgang.Barefoot.Core.csproj", "<Project />"),
             ProjectFile.Parse("src/Wolfgang.Barefoot.Data/Wolfgang.Barefoot.Data.csproj", "<Project />"),
             ProjectFile.Parse("tests/Wolfgang.Barefoot.TestKit/Wolfgang.Barefoot.TestKit.csproj", "<Project />"),
+            ProjectFile.Parse
+            (
+                "src/Wolfgang.Barefoot.Maintenance/Wolfgang.Barefoot.Maintenance.csproj",
+                "<Project><PropertyGroup><AssemblyName>bf-maint</AssemblyName></PropertyGroup></Project>"
+            ),
+            ProjectFile.Parse
+            (
+                "src/Wolfgang.Barefoot.Admin/Wolfgang.Barefoot.Admin.csproj",
+                "<Project><PropertyGroup><AssemblyName>bf</AssemblyName></PropertyGroup></Project>"
+            ),
         };
         var assemblies = new[]
         {
             FixtureCompiler.Compile("Wolfgang.Barefoot.Data", "namespace Fixture;"),
             FixtureCompiler.Compile("Wolfgang.Barefoot.Api", "namespace Fixture;"),
+            FixtureCompiler.Compile("bf-maint", "namespace Fixture;"),
         };
 
         Assert.Equal
@@ -170,6 +182,7 @@ public sealed class ScanningTests
             [
                 "Wolfgang.Barefoot.Api: is in SourceAssemblies but not under src/",
                 "Wolfgang.Barefoot.Core: is under src/ but not in SourceAssemblies",
+                "bf: is under src/ but not in SourceAssemblies",
             ],
             SourceAssemblies.MismatchesWith(projects, assemblies)
         );

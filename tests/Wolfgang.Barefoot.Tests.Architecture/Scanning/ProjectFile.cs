@@ -11,6 +11,7 @@ internal sealed class ProjectFile
     (
         string path,
         string sdk,
+        string assemblyName,
         string targetFramework,
         IReadOnlyList<string> projectReferences,
         IReadOnlyList<string> packageReferences,
@@ -19,6 +20,7 @@ internal sealed class ProjectFile
     {
         Path = path;
         Sdk = sdk;
+        AssemblyName = assemblyName;
         TargetFramework = targetFramework;
         ProjectReferences = projectReferences;
         PackageReferences = packageReferences;
@@ -44,6 +46,14 @@ internal sealed class ProjectFile
 
     /// <summary>The <c>Sdk</c> attribute of the project element.</summary>
     public string Sdk { get; }
+
+
+
+    /// <summary>
+    /// The name of the assembly the project builds: the text of its <c>AssemblyName</c> element, or
+    /// <see cref="Name"/> when it sets none. A host names its binary this way (<c>bf-maint</c>).
+    /// </summary>
+    public string AssemblyName { get; }
 
 
 
@@ -83,6 +93,7 @@ internal sealed class ProjectFile
         (
             path,
             (string?)document.Root?.Attribute("Sdk") ?? string.Empty,
+            ElementText(document, "AssemblyName") ?? System.IO.Path.GetFileNameWithoutExtension(path),
             ElementText(document, "TargetFramework") ?? ElementText(document, "TargetFrameworks") ?? string.Empty,
             Includes(document, "ProjectReference")
                 .Select(include => System.IO.Path.GetFileNameWithoutExtension(include.Replace('\\', '/')))
