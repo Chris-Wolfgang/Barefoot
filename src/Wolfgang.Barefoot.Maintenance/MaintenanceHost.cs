@@ -22,6 +22,7 @@ internal static class MaintenanceHost
     /// <param name="configuration">Holds the connection string <see cref="MigrateCommand.ConnectionStringName"/>.</param>
     /// <param name="openContext">Makes a context on the database a connection string names.</param>
     /// <param name="offlineContext">Makes a context that names no database.</param>
+    /// <param name="roles">The SQL that makes the API's database user and adds it to its roles.</param>
     /// <param name="cancellationToken">Cancels the verb.</param>
     public static async Task<int> RunAsync
     (
@@ -31,12 +32,14 @@ internal static class MaintenanceHost
         IConfiguration configuration,
         Func<string, BarefootDbContext> openContext,
         Func<BarefootDbContext> offlineContext,
+        RoleScript roles,
         CancellationToken cancellationToken = default
     )
     {
         var root = new RootCommand("Changes and reports the schema of Barefoot's database.")
         {
             MigrateCommand.Create(configuration, openContext, offlineContext),
+            GrantRolesCommand.Create(configuration, openContext, roles),
         };
 
         var parsed = root.Parse(args);

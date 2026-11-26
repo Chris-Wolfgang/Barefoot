@@ -28,6 +28,27 @@ internal static class SqlServerDatabase
     /// </summary>
     public static readonly IReadOnlyList<int> AdditionalTransientErrorNumbers = [4060];
 
+    /// <summary>
+    /// The name of the API's database user: the name of its user-assigned managed identity (ADR 0016).
+    /// </summary>
+    public const string ApiUserName = "barefoot-api";
+
+    /// <summary>
+    /// The SQL that makes <see cref="ApiUserName"/> from the identity of the same name and adds it to
+    /// <c>db_datareader</c> and <c>db_datawriter</c> (ADR 0005). Only Azure SQL Database, engine
+    /// edition 5, can make a user from Entra.
+    /// </summary>
+    public static readonly RoleScript Roles = new
+    (
+        "SELECT CASE WHEN CAST(SERVERPROPERTY('EngineEdition') AS int) = 5 THEN 1 ELSE 0 END AS [Value]",
+        [
+            $"IF NOT EXISTS (SELECT 1 FROM sys.database_principals WHERE name = N'{ApiUserName}') CREATE USER [{ApiUserName}] FROM EXTERNAL PROVIDER;",
+            $"IF IS_ROLEMEMBER(N'db_datareader', N'{ApiUserName}') = 0 ALTER ROLE [db_datareader] ADD MEMBER [{ApiUserName}];",
+            $"IF IS_ROLEMEMBER(N'db_datawriter', N'{ApiUserName}') = 0 ALTER ROLE [db_datawriter] ADD MEMBER [{ApiUserName}];",
+        ],
+        "not Azure SQL Database"
+    );
+
 
 
     /// <summary>

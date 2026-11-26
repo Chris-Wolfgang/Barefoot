@@ -21,6 +21,8 @@ public sealed class MaintenanceHostTests
         Assert.Contains("Changes and reports the schema of Barefoot's database.", run.Output, StringComparison.Ordinal);
         Assert.Contains("migrate", run.Output, StringComparison.Ordinal);
         Assert.Contains("Moves the schema to a migration: by default up to the latest this build ships.", run.Output, StringComparison.Ordinal);
+        Assert.Contains("grant-roles", run.Output, StringComparison.Ordinal);
+        Assert.Contains("Makes the API's database user and adds it to its roles. Running it again changes nothing.", run.Output, StringComparison.Ordinal);
         Assert.Empty(run.Error);
     }
 
