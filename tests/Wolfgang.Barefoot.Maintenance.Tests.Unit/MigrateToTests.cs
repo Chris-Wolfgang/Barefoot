@@ -29,7 +29,7 @@ public sealed class MigrateToTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: up\napplied: {TestMigrations.First}\nreverted: none\ncurrent: {TestMigrations.First}{Environment.NewLine}",
+            $"direction: up\napplied: {TestMigrations.First}\nreverted: none\ncurrent: {TestMigrations.First}\nroles: not run{Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -49,7 +49,7 @@ public sealed class MigrateToTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: down\napplied: none\nreverted: {TestMigrations.Second}\ncurrent: {TestMigrations.First}{Environment.NewLine}",
+            $"direction: down\napplied: none\nreverted: {TestMigrations.Second}\ncurrent: {TestMigrations.First}\nroles: not run{Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -91,7 +91,7 @@ public sealed class MigrateToTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: down\napplied: none\nreverted: {TestMigrations.Second}, {TestMigrations.First}\ncurrent: none{Environment.NewLine}",
+            $"direction: down\napplied: none\nreverted: {TestMigrations.Second}, {TestMigrations.First}\ncurrent: none\nroles: not run{Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -126,7 +126,7 @@ public sealed class MigrateToTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: none\napplied: none\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            $"direction: none\napplied: none\nreverted: none\ncurrent: {TestMigrations.Second}\nroles: skipped (not this kind of server){Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -142,7 +142,7 @@ public sealed class MigrateToTests
         var run = await RunAsync(schema, "migrate", "--to", "0");
 
         Assert.Equal(ExitCode.Ok, run.ExitCode);
-        Assert.Equal($"direction: none\napplied: none\nreverted: none\ncurrent: none{Environment.NewLine}", run.Output);
+        Assert.Equal($"direction: none\napplied: none\nreverted: none\ncurrent: none\nroles: not run{Environment.NewLine}", run.Output);
         Assert.Empty(run.Error);
     }
 

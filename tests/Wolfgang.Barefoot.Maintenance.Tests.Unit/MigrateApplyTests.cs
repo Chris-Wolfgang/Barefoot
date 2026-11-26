@@ -31,7 +31,7 @@ public sealed class MigrateApplyTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: up\napplied: {TestMigrations.First}, {TestMigrations.Second}\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            $"direction: up\napplied: {TestMigrations.First}, {TestMigrations.Second}\nreverted: none\ncurrent: {TestMigrations.Second}\nroles: skipped (not this kind of server){Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -63,7 +63,7 @@ public sealed class MigrateApplyTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: up\napplied: {TestMigrations.Second}\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            $"direction: up\napplied: {TestMigrations.Second}\nreverted: none\ncurrent: {TestMigrations.Second}\nroles: skipped (not this kind of server){Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -82,7 +82,7 @@ public sealed class MigrateApplyTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"direction: none\napplied: none\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            $"direction: none\napplied: none\nreverted: none\ncurrent: {TestMigrations.Second}\nroles: skipped (not this kind of server){Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
