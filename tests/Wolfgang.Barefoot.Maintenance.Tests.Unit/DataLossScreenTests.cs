@@ -29,6 +29,20 @@ public sealed class DataLossScreenTests
 
 
     [Fact]
+    public void Find_when_seeded_rows_are_deleted_names_the_table()
+    {
+        var steps = DataLossScreen.Find
+        (
+            Migration,
+            [new DeleteDataOperation { Table = "run_status", KeyColumns = ["id"], KeyValues = new object[,] { { 1 } } }]
+        );
+
+        Assert.Equal([new DataLossStep(Migration, "deletes seeded rows from run_status")], steps);
+    }
+
+
+
+    [Fact]
     public void Find_when_raw_SQL_is_run_counts_it_without_reading_it()
     {
         var steps = DataLossScreen.Find(Migration, [new SqlOperation { Sql = "SELECT 1" }]);

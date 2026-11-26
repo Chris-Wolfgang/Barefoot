@@ -4,8 +4,9 @@ namespace Wolfgang.Barefoot.Maintenance;
 
 /// <summary>
 /// Screens the operations of a migration's rollback for data loss (ADR 0001 §4, docs/MIGRATE.md).
-/// These count: a dropped table, a dropped column, a narrowing column change, and raw SQL. It reads
-/// no database, so it says what a rollback would do, not whether the table holds rows.
+/// These count: a dropped table, a dropped column, a narrowing column change, deleted seeded rows,
+/// and raw SQL. It reads no database, so it says what a rollback would do, not whether the table
+/// holds rows.
 /// </summary>
 internal static class DataLossScreen
 {
@@ -37,6 +38,7 @@ internal static class DataLossScreen
             DropTableOperation table => $"drops table {table.Name}",
             DropColumnOperation column => $"drops column {column.Table}.{column.Name}",
             AlterColumnOperation column when Narrows(column) => $"narrows column {column.Table}.{column.Name}",
+            DeleteDataOperation rows => $"deletes seeded rows from {rows.Table}",
             // The tool does not inspect raw SQL, so it treats it as data-losing.
             SqlOperation => "runs raw SQL",
             _ => null,
