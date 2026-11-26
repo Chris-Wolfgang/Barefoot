@@ -8,7 +8,7 @@ Barefoot is distributed with the NuGet packages below: the full transitive closu
 every project under `src/`. Each package is distributed under its own license.
 Build-time-only packages (analyzers, SourceLink) are not distributed and are not listed.
 
-Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolfgang.Barefoot.Data`, `Wolfgang.Barefoot.Maintenance`.
+Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolfgang.Barefoot.Data`, `Wolfgang.Barefoot.Hosting`, `Wolfgang.Barefoot.Maintenance`.
 
 | Package | Version(s) | License | Copyright | Project URL | Used by |
 |---|---|---|---|---|---|
@@ -38,16 +38,16 @@ Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolf
 | Microsoft.Extensions.Configuration.Json | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Maintenance |
 | Microsoft.Extensions.Configuration.UserSecrets | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Maintenance |
 | Microsoft.Extensions.Configuration | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Maintenance |
-| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| Microsoft.Extensions.DependencyInjection | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
+| Microsoft.Extensions.DependencyInjection.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| Microsoft.Extensions.DependencyInjection | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
 | Microsoft.Extensions.DependencyModel | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
 | Microsoft.Extensions.FileProviders.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Maintenance |
 | Microsoft.Extensions.FileProviders.Physical | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Maintenance |
 | Microsoft.Extensions.FileSystemGlobbing | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Maintenance |
-| Microsoft.Extensions.Logging.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| Microsoft.Extensions.Logging | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| Microsoft.Extensions.Options | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| Microsoft.Extensions.Primitives | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
+| Microsoft.Extensions.Logging.Abstractions | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| Microsoft.Extensions.Logging | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| Microsoft.Extensions.Options | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| Microsoft.Extensions.Primitives | 10.0.15 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
 | Microsoft.Identity.Client.Broker | 4.84.2 | MIT | © Microsoft Corporation. All rights reserved. | <https://go.microsoft.com/fwlink/?linkid=844761> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | Microsoft.Identity.Client.Extensions.Msal | 4.78.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://go.microsoft.com/fwlink/?linkid=844761> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | Microsoft.Identity.Client.NativeInterop | 0.20.6 | MS-Identity-Client-NativeInterop | © Microsoft Corporation. All rights reserved. | <https://office.visualstudio.com/_git/OneAuth> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
@@ -62,6 +62,9 @@ Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolf
 | Microsoft.VisualStudio.SolutionPersistence | 1.0.52 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/microsoft/vs-solutionpersistence> | Wolfgang.Barefoot.Data |
 | Mono.TextTemplating | 3.0.0 | MIT |  | <https://github.com/mono/t4> | Wolfgang.Barefoot.Data |
 | Newtonsoft.Json | 13.0.4 | MIT | Copyright © James Newton-King 2008 | <https://www.newtonsoft.com/json> | Wolfgang.Barefoot.Data |
+| Serilog.Extensions.Logging | 10.0.0 | Apache-2.0 |  | <https://github.com/serilog/serilog-extensions-logging> | Wolfgang.Barefoot.Hosting |
+| Serilog.Sinks.File | 7.0.0 | Apache-2.0 |  | <https://github.com/serilog/serilog-sinks-file> | Wolfgang.Barefoot.Hosting |
+| Serilog | 4.2.0 | Apache-2.0 | Copyright © Serilog Contributors | <https://serilog.net/> | Wolfgang.Barefoot.Hosting |
 | System.ClientModel | 1.8.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/Azure/azure-sdk-for-net/blob/System.ClientModel_1.8.0/sdk/core/System.ClientModel/README.md> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.CodeDom | 6.0.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
 | System.CommandLine | 3.0.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/dotnet/command-line-api> | Wolfgang.Barefoot.Maintenance |
@@ -74,7 +77,7 @@ Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolf
 | System.Configuration.ConfigurationManager | 9.0.11 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.Diagnostics.EventLog | 9.0.11 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.IdentityModel.Tokens.Jwt | 7.7.1 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
+| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
 | System.Memory.Data | 8.0.1 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.Security.Cryptography.Pkcs | 10.0.13 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.Security.Cryptography.ProtectedData | 9.0.11 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |

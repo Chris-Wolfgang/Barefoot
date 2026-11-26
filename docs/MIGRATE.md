@@ -7,8 +7,8 @@ firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` en
 other three verbs, logging), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
-and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. `bf-maint assign-owner` is built. The file log is
-not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
+and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. `bf-maint assign-owner` is built. The file log
+exists in `Wolfgang.Barefoot.Hosting`; `bf-maint` does not write to it yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 

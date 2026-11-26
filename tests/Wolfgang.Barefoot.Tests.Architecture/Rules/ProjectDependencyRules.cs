@@ -21,9 +21,9 @@ internal static class ProjectDependencyRules
         {
             [Prefix + "Scraper"] = [Prefix + "Data"],
             [Prefix + "Admin"] = [Prefix + "Data", Prefix + "Obe"],
-            [Prefix + "Web"] = [Prefix + "Data"],
+            [Prefix + "Web"] = [Prefix + "Data", Prefix + "Hosting"],
             [Prefix + "Maintenance"] = [Prefix + "ApiClient", Prefix + "Obe"],
-            [Prefix + "Api"] = [Prefix + "Obe"],
+            [Prefix + "Api"] = [Prefix + "Obe", Prefix + "Hosting"],
         };
 
 

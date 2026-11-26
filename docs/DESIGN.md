@@ -57,13 +57,14 @@ schema and connects directly with a DDL identity (ADR 0002, ADR 0007).
 | `Wolfgang.Barefoot.Obe` | adapter | Playwright booking, flight and catalog clients, selectors, parsers ("online booking engine"; informed by the earlier tool's `docs/API-NOTES.md`, redacted) |
 | `Wolfgang.Barefoot.Scraper` (`bf-scraper`) | host | `Obe` + `ApiClient`; the only process with a browser and a home IP |
 | `Wolfgang.Barefoot.Admin` (`bf`) | host | `ApiClient` only; scriptable "API, do X" steps; runs anywhere the API is reachable |
+| `Wolfgang.Barefoot.Hosting` | host support | what the command-line hosts share: the log to stderr and to a daily file (ADR 0016); references no project |
 | `Wolfgang.Barefoot.Maintenance` (`bf-maint`) | host | `Data` only; `migrate`, `verify-schema`, `grant-roles`, `assign-owner`; the one direct-DB client |
 | `Wolfgang.Barefoot.Presentation` | UI logic | framework-free screen logic (`SearchDraft`, pickers, chart scaling, paging), unit-tested without a UI framework |
 | `Wolfgang.Barefoot.Web` | host | Blazor Web App (Fluent UI Blazor) over `Presentation` + `ApiClient`; user sign-in |
 
 **Dependency rules**, enforced by project references *and* by architecture tests (§14):
 `Scraper`, `Admin` and `Web` never reference `Data` or any EF package; `Admin` never references
-`Obe`; `Maintenance` never references `ApiClient` or `Obe`; `Api` never references `Obe`;
+`Obe`; `Maintenance` never references `ApiClient` or `Obe`; `Api` never references `Obe`; `Api` and `Web` never reference `Hosting`;
 `Core`, `Contracts` and `Presentation` reference no framework; `Contracts` references no project
 and `Core` references only `Contracts`. The Core interfaces are the API surface and take and
 return the `Contracts` records (ADR 0002 §4):

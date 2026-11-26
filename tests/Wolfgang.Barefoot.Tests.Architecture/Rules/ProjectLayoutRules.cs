@@ -48,6 +48,7 @@ internal static class ProjectLayoutRules
         Prefix + "Contracts",
         Prefix + "Core",
         Prefix + "Data",
+        Prefix + "Hosting",
         Prefix + "Maintenance",
         Prefix + "Obe",
         Prefix + "Presentation",
