@@ -2,13 +2,16 @@ using System.Globalization;
 using Microsoft.Extensions.Configuration;
 using Wolfgang.Barefoot.Core.Hosting;
 using Wolfgang.Barefoot.Data;
+using Wolfgang.Barefoot.Hosting;
+using Wolfgang.Barefoot.TestKit;
 
 namespace Wolfgang.Barefoot.Maintenance.Tests.Unit;
 
 /// <summary>
-/// One run of <c>bf-maint</c> in this process: its exit code and what it wrote to each stream.
+/// One run of <c>bf-maint</c> in this process: its exit code, what it wrote to each stream, and what
+/// it wrote to its log file.
 /// </summary>
-internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
+internal sealed record HostRun(ExitCode ExitCode, string Output, string Error, string Log)
 {
     /// <summary>
     /// A role script for a server that cannot make the user: it asks, is told no, and runs nothing.
@@ -19,7 +22,8 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
 
 
     /// <summary>
-    /// Runs <see cref="MaintenanceHost"/> with <paramref name="args"/> and captures both streams.
+    /// Runs <see cref="MaintenanceHost"/> with <paramref name="args"/> and captures both streams. The
+    /// log file goes in a folder of its own under the temporary directory, which is removed afterwards.
     /// </summary>
     public static async Task<HostRun> StartAsync
     (
@@ -34,18 +38,41 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
         using var output = new StringWriter(CultureInfo.InvariantCulture);
         using var error = new StringWriter(CultureInfo.InvariantCulture);
 
-        var exitCode = await MaintenanceHost.RunAsync
-        (
-            args,
-            output,
-            error,
-            configuration,
-            openContext,
-            offlineContext ?? SqlServerDatabase.Offline,
-            roles ?? NoRoles,
-            cancellationToken
-        );
+        var folder = Path.Combine(Path.GetTempPath(), $"barefoot-{Guid.NewGuid():N}");
+        try
+        {
+            int exitCode;
+            string logFile;
+            using (var log = HostLog.Start(new HostLogOptions(Program.HostName, folder, error, TestClock.Create())))
+            {
+                logFile = log.FilePath!;
+                exitCode = await MaintenanceHost.RunAsync
+                (
+                    args,
+                    output,
+                    error,
+                    log
+                        .Factory
+                        .CreateLogger(Program.HostName),
+                    configuration,
+                    openContext,
+                    offlineContext ?? SqlServerDatabase.Offline,
+                    roles ?? NoRoles,
+                    cancellationToken
+                );
+            }
 
-        return new HostRun((ExitCode)exitCode, output.ToString(), error.ToString());
+            return new HostRun
+            (
+                (ExitCode)exitCode,
+                output.ToString(),
+                error.ToString(),
+                await File.ReadAllTextAsync(logFile, CancellationToken.None)
+            );
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
     }
 }

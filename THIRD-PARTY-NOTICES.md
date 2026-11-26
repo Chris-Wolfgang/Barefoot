@@ -62,9 +62,9 @@ Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolf
 | Microsoft.VisualStudio.SolutionPersistence | 1.0.52 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/microsoft/vs-solutionpersistence> | Wolfgang.Barefoot.Data |
 | Mono.TextTemplating | 3.0.0 | MIT |  | <https://github.com/mono/t4> | Wolfgang.Barefoot.Data |
 | Newtonsoft.Json | 13.0.4 | MIT | Copyright © James Newton-King 2008 | <https://www.newtonsoft.com/json> | Wolfgang.Barefoot.Data |
-| Serilog.Extensions.Logging | 10.0.0 | Apache-2.0 |  | <https://github.com/serilog/serilog-extensions-logging> | Wolfgang.Barefoot.Hosting |
-| Serilog.Sinks.File | 7.0.0 | Apache-2.0 |  | <https://github.com/serilog/serilog-sinks-file> | Wolfgang.Barefoot.Hosting |
-| Serilog | 4.2.0 | Apache-2.0 | Copyright © Serilog Contributors | <https://serilog.net/> | Wolfgang.Barefoot.Hosting |
+| Serilog.Extensions.Logging | 10.0.0 | Apache-2.0 |  | <https://github.com/serilog/serilog-extensions-logging> | Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| Serilog.Sinks.File | 7.0.0 | Apache-2.0 |  | <https://github.com/serilog/serilog-sinks-file> | Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| Serilog | 4.2.0 | Apache-2.0 | Copyright © Serilog Contributors | <https://serilog.net/> | Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
 | System.ClientModel | 1.8.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/Azure/azure-sdk-for-net/blob/System.ClientModel_1.8.0/sdk/core/System.ClientModel/README.md> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.CodeDom | 6.0.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data |
 | System.CommandLine | 3.0.0 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/dotnet/command-line-api> | Wolfgang.Barefoot.Maintenance |
