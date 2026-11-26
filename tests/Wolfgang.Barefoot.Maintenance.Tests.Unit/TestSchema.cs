@@ -116,6 +116,27 @@ internal sealed class TestSchema : IAsyncDisposable
 
 
 
+    /// <summary>
+    /// Opens a database that holds every table of the model, made from the model and not by a
+    /// migration, and whose history says the shipped migration was applied. So the tool finds it up
+    /// to date, and rows can be stored in it.
+    /// </summary>
+    public static async Task<TestSchema> CreateModelAsync()
+    {
+        var schema = await CreateAsync(runnable: false, []);
+
+        await using var context = schema.NewContext();
+        await context.Database.EnsureCreatedAsync();
+
+        var history = context.GetService<IHistoryRepository>();
+        await context.Database.ExecuteSqlRawAsync(history.GetCreateScript());
+        await context.Database.ExecuteSqlRawAsync(history.GetInsertScript(new HistoryRow(Shipped, "10.0.15")));
+
+        return schema;
+    }
+
+
+
     private static async Task<TestSchema> CreateAsync(bool runnable, string[] applied)
     {
         var connection = new SqliteConnection("DataSource=:memory:");
@@ -146,6 +167,14 @@ internal sealed class TestSchema : IAsyncDisposable
     {
         _connectionStrings.Add(connectionString);
 
+        return new BarefootDbContext(_options);
+    }
+
+
+
+    /// <summary>A context of its own on this database, with nothing tracked.</summary>
+    public BarefootDbContext NewContext()
+    {
         return new BarefootDbContext(_options);
     }
 
