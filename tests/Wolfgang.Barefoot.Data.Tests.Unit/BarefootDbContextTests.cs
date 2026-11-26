@@ -282,6 +282,70 @@ public sealed class BarefootDbContextTests
 
 
     [Fact]
+    public async Task EnsureCreatedAsync_when_the_database_is_new_seeds_the_Unassigned_user_and_nobody_else()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        await using var context = database.NewContext();
+
+        var read = await context.AppUsers.SingleAsync();
+
+        Assert.Equal(Guid.Empty, read.Oid);
+        Assert.Equal("Unassigned", read.DisplayName);
+        Assert.Equal(string.Empty, read.Email);
+        Assert.Equal(new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero), read.LastSeenUtc);
+        Assert.Null(read.DisclaimerVersionAccepted);
+        Assert.Null(read.DisclaimerAcceptedUtc);
+        Assert.Null(read.TimeZoneId);
+        Assert.Equal(0, read.DefaultAdultCount);
+        Assert.Equal(0, read.DefaultChildCount);
+        Assert.Equal(0, read.DefaultInfantCount);
+        Assert.Null(read.SessionsValidAfterUtc);
+        Assert.Equal(1, read.Version);
+    }
+
+
+
+    [Fact]
+    public async Task SaveChangesAsync_when_a_row_is_owned_by_the_Unassigned_user_saves_it()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+
+        await using (var context = database.NewContext())
+        {
+            context.Recipients.Add(Recipient(RowId, AppUser.UnassignedOid, "sam@example.com"));
+            await context.SaveChangesAsync();
+        }
+
+        await using var reader = database.NewContext();
+        var read = await reader.Recipients.SingleAsync();
+
+        Assert.Equal(Guid.Empty, read.OwnerId);
+    }
+
+
+
+    [Fact]
+    public async Task SaveChangesAsync_when_the_Unassigned_user_is_changed_stores_version_2()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+
+        await using (var context = database.NewContext())
+        {
+            var unassigned = await context.AppUsers.SingleAsync();
+            unassigned.TimeZoneId = "America/New_York";
+            await context.SaveChangesAsync();
+        }
+
+        await using var reader = database.NewContext();
+        var read = await reader.AppUsers.SingleAsync();
+
+        Assert.Equal("America/New_York", read.TimeZoneId);
+        Assert.Equal(2, read.Version);
+    }
+
+
+
+    [Fact]
     public async Task SaveChangesAsync_when_an_app_user_is_added_reads_back_every_value()
     {
         await using var database = await TestDatabase.CreateAsync();
@@ -301,7 +365,7 @@ public sealed class BarefootDbContextTests
         }
 
         await using var reader = database.NewContext();
-        var read = await reader.AppUsers.SingleAsync();
+        var read = await reader.AppUsers.SingleAsync(user => user.Oid == UserOid);
 
         Assert.Equal(UserOid, read.Oid);
         Assert.Equal("Pat Example", read.DisplayName);
@@ -464,7 +528,7 @@ public sealed class BarefootDbContextTests
         }
 
         await using var deleter = database.NewContext();
-        deleter.AppUsers.Remove(await deleter.AppUsers.SingleAsync());
+        deleter.AppUsers.Remove(await deleter.AppUsers.SingleAsync(user => user.Oid == UserOid));
 
         await Assert.ThrowsAsync<DbUpdateException>(() => deleter.SaveChangesAsync());
     }
