@@ -85,6 +85,22 @@ internal sealed class TestSchema : IAsyncDisposable
 
 
 
+    /// <summary>
+    /// Opens a database on which the migrations of <see cref="Migrations.TestMigrations"/> were really
+    /// run, up to and including <paramref name="upTo"/>.
+    /// </summary>
+    public static async Task<TestSchema> CreateMigratedAsync(string upTo)
+    {
+        var schema = await CreateAsync(runnable: true, []);
+
+        await using var context = new BarefootDbContext(schema._options);
+        await context.GetService<IMigrator>().MigrateAsync(upTo);
+
+        return schema;
+    }
+
+
+
     private static async Task<TestSchema> CreateAsync(bool runnable, string[] applied)
     {
         var connection = new SqliteConnection("DataSource=:memory:");
@@ -130,23 +146,16 @@ internal sealed class TestSchema : IAsyncDisposable
 
 
 
-    /// <summary>Runs <paramref name="sql"/> on this database.</summary>
-    public async Task ExecuteAsync(string sql)
-    {
-        await using var context = new BarefootDbContext(_options);
-
-        await context.Database.ExecuteSqlRawAsync(sql);
-    }
-
-
-
-    /// <summary>How many rows <paramref name="table"/> holds.</summary>
-    public async Task<long> CountAsync(string table)
+    /// <summary>
+    /// Whether this database holds a table or an index called <paramref name="name"/>.
+    /// </summary>
+    public async Task<bool> HasAsync(string name)
     {
         await using var command = _connection.CreateCommand();
-        command.CommandText = $"SELECT COUNT(*) FROM \"{table}\"";
+        command.CommandText = "SELECT COUNT(*) FROM sqlite_master WHERE name = $name";
+        command.Parameters.AddWithValue("$name", name);
 
-        return (long)(await command.ExecuteScalarAsync())!;
+        return (long)(await command.ExecuteScalarAsync())! == 1;
     }
 
 
