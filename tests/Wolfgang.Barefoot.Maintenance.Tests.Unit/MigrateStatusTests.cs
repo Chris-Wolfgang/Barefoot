@@ -154,25 +154,6 @@ public sealed class MigrateStatusTests
 
 
 
-    [Fact]
-    public async Task RunAsync_when_migrate_is_given_without_status_exits_Usage_and_opens_nothing()
-    {
-        await using var schema = await TestSchema.CreateAsync();
-
-        var run = await RunAsync(["migrate"], schema.Open);
-
-        Assert.Equal(ExitCode.Usage, run.ExitCode);
-        Assert.Empty(run.Output);
-        Assert.Equal
-        (
-            $"bf-maint migrate does not apply migrations yet. Only `bf-maint migrate --status` is built.{Environment.NewLine}",
-            run.Error
-        );
-        Assert.Empty(schema.ConnectionStrings);
-    }
-
-
-
     private static BarefootDbContext NotAConnectionString(string connectionString)
     {
         throw new ArgumentException($"Not a connection string: '{connectionString}'.", nameof(connectionString));

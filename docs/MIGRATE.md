@@ -5,8 +5,9 @@ This document is the operator contract for `bf-maint` (`Wolfgang.Barefoot.Mainte
 firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0014 (exit code
 11), ADR 0015 (the connection, a missing database, `--script`), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
-Of the verbs, `bf-maint migrate --status` is built. The rest of `bf-maint` arrives with build phase 2
-(DESIGN §13); the Azure database,
+Of the verbs, `bf-maint migrate` (to the latest migration only) and `bf-maint migrate --status` are built.
+`migrate` does not run `grant-roles` yet, and `--to`, `--script` and the data-loss screen are not built. The
+rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 
@@ -111,6 +112,17 @@ Exit codes come from the one `ExitCode` enum in `Core`, compiled into all three 
 `--status` changes nothing in any of the three. Only `--status` exits 11: `bf-maint migrate` on a database
 that is behind applies the pending migrations and exits 0 (ADR 0014).
 
+### What `migrate` writes and exits with
+
+| The database is | The tool | Exit code |
+|---|---|---|
+| behind this build | applies the pending migrations, oldest first | `Ok` (0) |
+| at the version this build expects | applies nothing | `Ok` (0) |
+| newer than this build | applies nothing and names the migrations it does not ship | `Refused` (10) |
+
+On exit 0 stdout carries two lines: `applied:` with the ids it applied (or `none`), and `current:` with the
+id the database is at afterwards. When a migration fails the tool exits `Failed` (1) with one line on stderr.
+
 `docs/EXIT-CODES.md` is generated from the enum.
 
 **Enforced by:** the generated-file test that fails when the committed `docs/EXIT-CODES.md` differs from the
@@ -135,7 +147,8 @@ and exits `Refused` (10). Deploy the matching build, or restore a backup.
 The API does not refuse to start on a newer schema. It reports the readiness state `NewerSchema` and answers
 its data endpoints with `503 database.newer_schema`. It reads and writes nothing.
 
-**Enforced by:** the migrate-tool tests (phase 2); the readiness state-machine tests (phase 2).
+**Enforced by:** the migrate-tool tests (`MigrateApplyTests`, `MigrateStatusTests`); the readiness
+state-machine tests (phase 2).
 
 ### A downgrade that would lose data needs confirmation
 

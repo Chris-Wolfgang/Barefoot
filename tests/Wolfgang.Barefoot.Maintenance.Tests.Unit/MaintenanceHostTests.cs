@@ -20,7 +20,7 @@ public sealed class MaintenanceHostTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Contains("Changes and reports the schema of Barefoot's database.", run.Output, StringComparison.Ordinal);
         Assert.Contains("migrate", run.Output, StringComparison.Ordinal);
-        Assert.Contains("Reports the schema's version. Applying and scripting migrations are not built yet.", run.Output, StringComparison.Ordinal);
+        Assert.Contains("Applies every pending migration, up to the latest this build ships.", run.Output, StringComparison.Ordinal);
         Assert.Empty(run.Error);
     }
 
