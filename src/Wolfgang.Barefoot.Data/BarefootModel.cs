@@ -78,6 +78,11 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new SearchItemConfiguration());
         modelBuilder.ApplyConfiguration(new RoomResultConfiguration());
         modelBuilder.ApplyConfiguration(new RoomResultFeatureConfiguration());
+        modelBuilder.ApplyConfiguration(new FlightSetConfiguration());
+        modelBuilder.ApplyConfiguration(new SearchItemFlightSetConfiguration());
+        modelBuilder.ApplyConfiguration(new FlightOptionConfiguration());
+        modelBuilder.ApplyConfiguration(new FlightDirectionConfiguration());
+        modelBuilder.ApplyConfiguration(new FlightLegConfiguration());
 
         SchemaNames.Apply(modelBuilder);
     }

@@ -110,6 +110,31 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The flight lookups of each run.</summary>
+    public DbSet<FlightSet> FlightSets => Set<FlightSet>();
+
+
+
+    /// <summary>The links that say which flight lookup serves which search item.</summary>
+    public DbSet<SearchItemFlightSet> SearchItemFlightSets => Set<SearchItemFlightSet>();
+
+
+
+    /// <summary>The ways to fly there and back that the site offered for each flight lookup.</summary>
+    public DbSet<FlightOption> FlightOptions => Set<FlightOption>();
+
+
+
+    /// <summary>The way out and the way back of each flight option.</summary>
+    public DbSet<FlightDirection> FlightDirections => Set<FlightDirection>();
+
+
+
+    /// <summary>The flights of each direction.</summary>
+    public DbSet<FlightLeg> FlightLegs => Set<FlightLeg>();
+
+
+
     /// <inheritdoc />
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {

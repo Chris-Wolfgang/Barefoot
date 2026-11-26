@@ -34,6 +34,10 @@ public sealed class BarefootModelTests
             [
                 "airport: id",
                 "app_user: oid",
+                "flight_direction: id",
+                "flight_leg: id",
+                "flight_option: id",
+                "flight_set: id",
                 "matrix_run: id",
                 "open_issue: id",
                 "recipient: id",
@@ -45,6 +49,7 @@ public sealed class BarefootModelTests
                 "run: id",
                 "search_departure_airport: id",
                 "search_item: id",
+                "search_item_flight_set: id",
                 "search_matrix: id",
                 "search_recipient: id",
                 "search_request: id",
@@ -74,7 +79,7 @@ public sealed class BarefootModelTests
             .SelectMany(entity => entity.FindPrimaryKey()!.Properties)
             .ToList();
 
-        Assert.Equal(20, keys.Count);
+        Assert.Equal(25, keys.Count);
         Assert.All(keys, property => Assert.Equal(ValueGenerated.Never, property.ValueGenerated));
     }
 
@@ -98,6 +103,16 @@ public sealed class BarefootModelTests
                 "app_user.display_name: 200",
                 "app_user.email: 320",
                 "app_user.time_zone_id: 64",
+                "flight_leg.arrival_airport_code: 3",
+                "flight_leg.cabin_name: 200",
+                "flight_leg.carrier: 200",
+                "flight_leg.departure_airport_code: 3",
+                "flight_leg.fare_code: 16",
+                "flight_leg.flight_number: 16",
+                "flight_leg.operating_carrier: 200",
+                "flight_set.last_error: 2000",
+                "flight_set.leased_by: 200",
+                "flight_set.result_sha256: 64",
                 "matrix_run.skip_reason: 500",
                 "open_issue.resolves_when: 500",
                 "open_issue.subject: 200",
@@ -144,6 +159,12 @@ public sealed class BarefootModelTests
         Assert.Equal
         (
             [
+                "flight_direction.flight_option_id -> flight_option",
+                "flight_leg.flight_direction_id -> flight_direction",
+                "flight_option.flight_set_id -> flight_set",
+                "flight_set.gateway_airport_id -> airport",
+                "flight_set.origin_airport_id -> airport",
+                "flight_set.run_id -> run",
                 "matrix_run.run_id -> run",
                 "matrix_run.search_matrix_id -> search_matrix",
                 "open_issue.user_id -> app_user",
@@ -162,6 +183,8 @@ public sealed class BarefootModelTests
                 "search_departure_airport.search_matrix_id -> search_matrix",
                 "search_item.matrix_run_id -> matrix_run",
                 "search_item.search_request_id -> search_request",
+                "search_item_flight_set.flight_set_id -> flight_set",
+                "search_item_flight_set.search_item_id -> search_item",
                 "search_matrix.owner_id -> app_user",
                 "search_recipient.recipient_id -> recipient",
                 "search_recipient.search_matrix_id -> search_matrix",
@@ -194,13 +217,13 @@ public sealed class BarefootModelTests
         await using var context = database.NewContext();
         var indexes = context.Model.GetEntityTypes().SelectMany(entity => entity.GetIndexes()).ToList();
 
-        Assert.Equal(31, indexes.Count);
+        Assert.Equal(39, indexes.Count);
         Assert.All
         (
             indexes,
             index => Assert.Equal(index.GetDatabaseName()!.StartsWith("ux_", StringComparison.Ordinal), index.IsUnique)
         );
-        Assert.Equal(15, indexes.Count(index => index.IsUnique));
+        Assert.Equal(19, indexes.Count(index => index.IsUnique));
     }
 
 
@@ -222,5 +245,24 @@ public sealed class BarefootModelTests
                 .Select(index => $"{index.GetDatabaseName()}: {index.GetFilter()}")
         );
         Assert.Equal(0, (int)RunStatus.InProgress);
+    }
+
+
+
+    [Fact]
+    public async Task Configure_when_applied_gives_no_key_or_index_a_name_longer_than_sql_server_allows()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        await using var context = database.NewContext();
+        var entities = context.Model.GetEntityTypes().ToList();
+        var names = entities
+            .SelectMany(entity => entity.GetIndexes())
+            .Select(index => index.GetDatabaseName()!)
+            .Concat(entities.SelectMany(entity => entity.GetForeignKeys()).Select(key => key.GetConstraintName()!))
+            .Concat(entities.SelectMany(entity => entity.GetKeys()).Select(key => key.GetName()!))
+            .ToList();
+
+        Assert.Equal(99, names.Count);
+        Assert.All(names, name => Assert.InRange(name.Length, 1, 128));
     }
 }

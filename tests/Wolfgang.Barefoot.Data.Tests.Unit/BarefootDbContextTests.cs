@@ -31,6 +31,10 @@ public sealed class BarefootDbContextTests
             [
                 "airport",
                 "app_user",
+                "flight_direction",
+                "flight_leg",
+                "flight_option",
+                "flight_set",
                 "matrix_run",
                 "open_issue",
                 "recipient",
@@ -42,6 +46,7 @@ public sealed class BarefootDbContextTests
                 "run",
                 "search_departure_airport",
                 "search_item",
+                "search_item_flight_set",
                 "search_matrix",
                 "search_recipient",
                 "search_request",
@@ -68,6 +73,10 @@ public sealed class BarefootDbContextTests
             [
                 "pk_airport",
                 "pk_app_user",
+                "pk_flight_direction",
+                "pk_flight_leg",
+                "pk_flight_option",
+                "pk_flight_set",
                 "pk_matrix_run",
                 "pk_open_issue",
                 "pk_recipient",
@@ -79,6 +88,7 @@ public sealed class BarefootDbContextTests
                 "pk_run",
                 "pk_search_departure_airport",
                 "pk_search_item",
+                "pk_search_item_flight_set",
                 "pk_search_matrix",
                 "pk_search_recipient",
                 "pk_search_request",
@@ -92,6 +102,12 @@ public sealed class BarefootDbContextTests
         Assert.Equal
         (
             [
+                "fk_flight_direction_flight_option_id",
+                "fk_flight_leg_flight_direction_id",
+                "fk_flight_option_flight_set_id",
+                "fk_flight_set_gateway_airport_id",
+                "fk_flight_set_origin_airport_id",
+                "fk_flight_set_run_id",
                 "fk_matrix_run_run_id",
                 "fk_matrix_run_search_matrix_id",
                 "fk_open_issue_user_id",
@@ -108,6 +124,8 @@ public sealed class BarefootDbContextTests
                 "fk_room_result_search_request_id",
                 "fk_search_departure_airport_airport_id",
                 "fk_search_departure_airport_search_matrix_id",
+                "fk_search_item_flight_set_flight_set_id",
+                "fk_search_item_flight_set_search_item_id",
                 "fk_search_item_matrix_run_id",
                 "fk_search_item_search_request_id",
                 "fk_search_matrix_owner_id",
@@ -125,6 +143,9 @@ public sealed class BarefootDbContextTests
         Assert.Equal
         (
             [
+                "ix_flight_option_flight_set_id",
+                "ix_flight_set_gateway_airport_id",
+                "ix_flight_set_origin_airport_id",
                 "ix_matrix_run_search_matrix_id",
                 "ix_open_issue_user_id_resolved_utc",
                 "ix_resort_gateway_airport_id",
@@ -136,12 +157,16 @@ public sealed class BarefootDbContextTests
                 "ix_room_result_room_view_id",
                 "ix_room_result_search_request_id",
                 "ix_search_departure_airport_airport_id",
+                "ix_search_item_flight_set_flight_set_id",
                 "ix_search_item_search_request_id",
                 "ix_search_recipient_recipient_id",
                 "ix_search_request_resort_id",
                 "ix_search_resort_resort_id",
                 "ix_search_room_filter_vocabulary_value_id",
                 "ux_airport_code",
+                "ux_flight_direction_flight_option_id_is_return",
+                "ux_flight_leg_flight_direction_id_sequence",
+                "ux_flight_set_run_id_origin_airport_id_gateway_airport_id_depart_date_return_date_cabin_adult_count_child_count_infant_count",
                 "ux_matrix_run_run_id_search_matrix_id",
                 "ux_recipient_owner_id_address",
                 "ux_resort_code",
@@ -149,6 +174,7 @@ public sealed class BarefootDbContextTests
                 "ux_room_result_feature_room_result_id_vocabulary_value_id",
                 "ux_run_status",
                 "ux_search_departure_airport_search_matrix_id_airport_id",
+                "ux_search_item_flight_set_search_item_id_flight_set_id",
                 "ux_search_item_matrix_run_id_search_request_id",
                 "ux_search_matrix_owner_id_normalized_name",
                 "ux_search_recipient_search_matrix_id_recipient_id",
@@ -190,7 +216,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(DateTimeOffset))
             .ToList();
 
-        Assert.Equal(20, instants.Count);
+        Assert.Equal(22, instants.Count);
         Assert.All
         (
             instants,
@@ -216,7 +242,7 @@ public sealed class BarefootDbContextTests
             .Where(property => (Nullable.GetUnderlyingType(property.ClrType) ?? property.ClrType) == typeof(decimal))
             .ToList();
 
-        Assert.Equal(3, amounts.Count);
+        Assert.Equal(4, amounts.Count);
         Assert.All
         (
             amounts,
@@ -242,7 +268,7 @@ public sealed class BarefootDbContextTests
             .OfType<IProperty>()
             .ToList();
 
-        Assert.Equal(7, versions.Count);
+        Assert.Equal(8, versions.Count);
         Assert.All(versions, property => Assert.True(property.IsConcurrencyToken));
     }
 
