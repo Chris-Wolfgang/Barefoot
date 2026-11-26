@@ -279,17 +279,18 @@ internal static class MigrateCommand
             .ReadAsync(context, cancellationToken)
             .ConfigureAwait(false);
 
-        if (before.State == SchemaState.NewerSchema)
-        {
-            return await RefuseAsync
-            (
-                streams,
-                $"The database is newer than this build: it holds {Listed(before.Unknown)}. Nothing was applied. Deploy the matching build.",
-                ExitCode.Refused
-            ).ConfigureAwait(false);
-        }
-
         IReadOnlyList<string> shipped = [.. context.Database.GetMigrations()];
+
+        var applied = await context
+            .Database
+            .GetAppliedMigrationsAsync(cancellationToken)
+            .ConfigureAwait(false);
+
+        var unfit = HistoryProblem(before, MigrationPlan.Gaps(shipped, applied));
+        if (unfit is not null)
+        {
+            return await RefuseAsync(streams, unfit, ExitCode.Refused).ConfigureAwait(false);
+        }
 
         var target = MigrationTarget.Resolve(shipped, to ?? before.Expected ?? MigrationTarget.EmptySchema);
         if (target.Id is null)
@@ -301,11 +302,6 @@ internal static class MigrateCommand
             return await RefuseAsync(streams, problem, ExitCode.Usage).ConfigureAwait(false);
         }
 
-        var applied = await context
-            .Database
-            .GetAppliedMigrationsAsync(cancellationToken)
-            .ConfigureAwait(false);
-
         var plan = MigrationPlan.Make(shipped, applied, target.Id);
 
         var losses = confirmed ? [] : Losses(context, plan.Revert);
@@ -315,6 +311,24 @@ internal static class MigrateCommand
         }
 
         return await CarryOutAsync(context, streams, plan, target.Id, cancellationToken).ConfigureAwait(false);
+    }
+
+
+
+    /// <summary>
+    /// Why the tool will not move this database, whatever the target: it is newer than this build, or
+    /// its history has a gap. Null when it can be moved.
+    /// </summary>
+    private static string? HistoryProblem(SchemaStatus before, IReadOnlyList<string> gaps)
+    {
+        if (before.State == SchemaState.NewerSchema)
+        {
+            return $"The database is newer than this build: it holds {Listed(before.Unknown)}. Nothing was applied. Deploy the matching build.";
+        }
+
+        return gaps.Count == 0
+            ? null
+            : $"The migration history has a gap: {Listed(gaps)} is not applied and a later migration is. Nothing was applied.";
     }
 
 

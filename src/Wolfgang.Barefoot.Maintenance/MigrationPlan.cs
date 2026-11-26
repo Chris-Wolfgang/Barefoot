@@ -55,6 +55,36 @@ internal sealed class MigrationPlan
 
 
     /// <summary>
+    /// Finds the gaps in a history: the shipped migrations that are not applied although a later
+    /// shipped one is. The tool never leaves one, so a gap means the history was changed by hand.
+    /// Case is ignored.
+    /// </summary>
+    /// <param name="shipped">The ids of the migrations this build ships.</param>
+    /// <param name="applied">The ids of the migrations the database holds. Ids this build does not ship are ignored.</param>
+    /// <returns>The ids that are missing, oldest first; none when the history has no gap.</returns>
+    public static IReadOnlyList<string> Gaps(IEnumerable<string> shipped, IEnumerable<string> applied)
+    {
+        ArgumentNullException.ThrowIfNull(shipped);
+        ArgumentNullException.ThrowIfNull(applied);
+
+        var ids = shipped
+            .Order(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+
+        var held = applied.ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var newest = ids.FindLastIndex(held.Contains);
+
+        return
+        [
+            .. ids
+                .Take(newest + 1)
+                .Where(id => !held.Contains(id)),
+        ];
+    }
+
+
+
+    /// <summary>
     /// Plans the move of a database that holds <paramref name="applied"/> to <paramref name="targetId"/>.
     /// Every shipped migration up to the target that is not applied is applied; every applied one
     /// after the target is rolled back. Case is ignored.

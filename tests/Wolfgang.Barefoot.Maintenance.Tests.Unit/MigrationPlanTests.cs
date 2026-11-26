@@ -97,6 +97,45 @@ public sealed class MigrationPlanTests
 
 
     [Fact]
+    public void Gaps_when_an_older_migration_is_missing_and_a_newer_one_is_applied_names_the_missing_ones()
+    {
+        Assert.Equal([A, B], MigrationPlan.Gaps(Shipped, [C]));
+        Assert.Equal([B], MigrationPlan.Gaps(Shipped, [A, C]));
+    }
+
+
+
+    [Theory]
+    [InlineData]
+    [InlineData(A)]
+    [InlineData(A, B)]
+    [InlineData(A, B, C)]
+    public void Gaps_when_the_applied_migrations_are_the_oldest_ones_finds_none(params string[] applied)
+    {
+        Assert.Empty(MigrationPlan.Gaps(Shipped, applied));
+    }
+
+
+
+    [Fact]
+    public void Gaps_when_ids_differ_in_case_or_are_not_shipped_ignores_the_difference()
+    {
+        Assert.Empty(MigrationPlan.Gaps(Shipped, [A.ToUpperInvariant(), "20991231000000_Later"]));
+        Assert.Equal([A], MigrationPlan.Gaps(Shipped, [B.ToUpperInvariant()]));
+    }
+
+
+
+    [Fact]
+    public void Gaps_when_an_argument_is_null_throws_ArgumentNullException()
+    {
+        Assert.Throws<ArgumentNullException>(() => MigrationPlan.Gaps(null!, []));
+        Assert.Throws<ArgumentNullException>(() => MigrationPlan.Gaps(Shipped, null!));
+    }
+
+
+
+    [Fact]
     public void Make_when_ids_differ_in_case_treats_them_as_the_same()
     {
         var plan = MigrationPlan.Make(Shipped, [A.ToUpperInvariant(), B.ToLowerInvariant()], A.ToLowerInvariant());

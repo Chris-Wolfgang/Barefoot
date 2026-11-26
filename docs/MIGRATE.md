@@ -124,6 +124,7 @@ Without `--to` the target is the latest migration this build ships.
 | ahead of the target, and rolling back loses no data | rolls back the migrations after it, newest first | `Ok` (0) |
 | ahead of the target, and rolling back would lose data | names each such step and changes nothing, unless `--confirm-data-loss` is given | `DataLossNotConfirmed` (6) |
 | newer than this build | changes nothing and names the migrations it does not ship, whatever the target | `Refused` (10) |
+| holding a gap: a migration is not applied and a later one is | changes nothing and names the missing migrations, whatever the target | `Refused` (10) |
 
 On exit 0 stdout carries four lines: `direction:` (`up`, `down` or `none`), `applied:` with the ids it
 applied, `reverted:` with the ids it rolled back, newest first, and `current:` with the id the database is

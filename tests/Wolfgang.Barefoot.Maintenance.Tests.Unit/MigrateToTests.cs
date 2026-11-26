@@ -206,6 +206,28 @@ public sealed class MigrateToTests
 
 
     [Theory]
+    [InlineData("migrate")]
+    [InlineData("migrate", "--to", "First")]
+    [InlineData("migrate", "--to", "0", "--confirm-data-loss")]
+    public async Task RunAsync_when_the_history_has_a_gap_refuses_whatever_the_target(params string[] args)
+    {
+        await using var schema = await TestSchema.CreateRunnableAsync(TestMigrations.Second);
+
+        var run = await RunAsync(schema, args);
+
+        Assert.Equal(ExitCode.Refused, run.ExitCode);
+        Assert.Empty(run.Output);
+        Assert.Equal
+        (
+            $"The migration history has a gap: {TestMigrations.First} is not applied and a later migration is. Nothing was applied.{Environment.NewLine}",
+            run.Error
+        );
+        Assert.Equal([TestMigrations.Second], await schema.AppliedAsync());
+    }
+
+
+
+    [Theory]
     [InlineData("--to is not used with --status.", "migrate", "--status", "--to", "0")]
     [InlineData("--confirm-data-loss is only used when migrations are applied or rolled back.", "migrate", "--status", "--confirm-data-loss")]
     [InlineData("--script does not take --to yet: it always writes every migration.", "migrate", "--script", "--output", Unused, "--to", "0")]
