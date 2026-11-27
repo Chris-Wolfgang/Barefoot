@@ -19,6 +19,8 @@ public sealed class MigrateScriptRangeTests : IDisposable
 
     private readonly string _output;
 
+    private const string Preamble = "-- first line\n\n";
+
 
 
     public MigrateScriptRangeTests()
@@ -241,6 +243,53 @@ public sealed class MigrateScriptRangeTests : IDisposable
 
 
 
+    [Fact]
+    public async Task RunAsync_when_given_a_preamble_starts_an_upgrade_script_with_it()
+    {
+        var run = await RunWithPreambleAsync("--to", "First");
+
+        await using var context = TestSchema.Offline();
+        var upgrade = context
+            .GetService<IMigrator>()
+            .GenerateScript("0", TestMigrations.First);
+
+        Assert.Equal(ExitCode.Ok, run.ExitCode);
+        Assert.Equal($"{Preamble}{upgrade}", await File.ReadAllTextAsync(_output));
+    }
+
+
+
+    [Fact]
+    public async Task RunAsync_when_given_a_preamble_puts_it_between_the_downgrade_header_and_the_SQL()
+    {
+        var run = await RunWithPreambleAsync("--from", "Second", "--to", "First");
+
+        await using var context = TestSchema.Offline();
+        var rollback = context
+            .GetService<IMigrator>()
+            .GenerateScript(TestMigrations.Second, TestMigrations.First);
+
+        Assert.Equal(ExitCode.Ok, run.ExitCode);
+        Assert.Equal
+        (
+            $"-- Downgrade from {TestMigrations.Second} to {TestMigrations.First}.\n-- No step loses data.\n\n{Preamble}{rollback}",
+            await File.ReadAllTextAsync(_output)
+        );
+    }
+
+
+
+    [Fact]
+    public async Task RunAsync_when_given_a_preamble_and_the_start_is_the_end_still_writes_an_empty_script()
+    {
+        var run = await RunWithPreambleAsync("--from", "First", "--to", "First");
+
+        Assert.Equal(ExitCode.Ok, run.ExitCode);
+        Assert.Empty(await File.ReadAllTextAsync(_output));
+    }
+
+
+
     private async Task<HostRun> RunAsync(Func<BarefootDbContext> offlineContext, params string[] range)
     {
         var configuration = new ConfigurationBuilder().Build();
@@ -251,6 +300,22 @@ public sealed class MigrateScriptRangeTests : IDisposable
             configuration,
             SqlServerDatabase.Open,
             offlineContext: offlineContext
+        );
+    }
+
+
+
+    private async Task<HostRun> RunWithPreambleAsync(params string[] range)
+    {
+        var configuration = new ConfigurationBuilder().Build();
+
+        return await HostRun.StartAsync
+        (
+            ["migrate", "--script", "--output", _output, .. range],
+            configuration,
+            SqlServerDatabase.Open,
+            offlineContext: TestSchema.Offline,
+            scriptPreamble: Preamble
         );
     }
 }

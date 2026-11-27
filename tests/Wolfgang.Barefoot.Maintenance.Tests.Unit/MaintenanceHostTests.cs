@@ -117,6 +117,31 @@ public sealed class MaintenanceHostTests
 
 
     [Fact]
+    public async Task RunAsync_when_run_from_Program_for_a_script_starts_it_with_the_preamble_for_SQL_Server()
+    {
+        var folder = Path.Combine(Path.GetTempPath(), $"barefoot-{Guid.NewGuid():N}");
+        var script = Path.Combine(folder, "upgrade.sql");
+        try
+        {
+            var exitCode = await Program.RunAsync(["migrate", "--script", "--output", script], folder);
+
+            Assert.Equal((int)ExitCode.Ok, exitCode);
+            Assert.StartsWith
+            (
+                $"{SqlServerDatabase.ScriptPreamble}IF OBJECT_ID(N'[__EFMigrationsHistory]') IS NULL",
+                await File.ReadAllTextAsync(script),
+                StringComparison.Ordinal
+            );
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+
+
+    [Fact]
     public async Task RunAsync_when_a_run_succeeds_logs_the_command_line_and_the_exit_code()
     {
         var run = await HostRun.StartAsync(["--help"], Configuration, NeverOpened);

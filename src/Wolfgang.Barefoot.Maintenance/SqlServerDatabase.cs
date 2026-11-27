@@ -34,6 +34,13 @@ internal static class SqlServerDatabase
     public const string ApiUserName = "barefoot-api";
 
     /// <summary>
+    /// What a script for SQL Server starts with. The schema has filtered indexes, which SQL Server
+    /// only makes with <c>QUOTED_IDENTIFIER</c> on, and <c>sqlcmd</c> leaves it off unless told
+    /// otherwise: without this line the script fails there with error 1934.
+    /// </summary>
+    public const string ScriptPreamble = "SET QUOTED_IDENTIFIER ON;\nGO\n\n";
+
+    /// <summary>
     /// The SQL that makes <see cref="ApiUserName"/> from the identity of the same name and adds it to
     /// <c>db_datareader</c> and <c>db_datawriter</c> (ADR 0005). Only Azure SQL Database, engine
     /// edition 5, can make a user from Entra.
