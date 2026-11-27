@@ -17,6 +17,8 @@
     <!-- Production runs on SQL Server (ADR 0001). Only Migrations/ and the design-time factory use the provider:
          the model itself names none, so the tests run it on SQLite. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="10.0.15" />
+    <!-- ToSnakeCase names the tables and columns (docs/DATABASE-CONVENTIONS.md, Names). -->
+    <PackageReference Include="Wolfgang.Extensions.String" Version="0.2.0" />
     <!-- What `dotnet ef migrations` needs at design time. It is not distributed with the hosts. -->
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="10.0.15">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Wolfgang.Extensions.String;
 
 namespace Wolfgang.Barefoot.Data.Conventions;
 
@@ -62,7 +63,10 @@ internal static class SchemaNames
     /// <param name="entity">The entity.</param>
     public static string TableName(IReadOnlyEntityType entity)
     {
-        return SnakeCase.Of(entity.ClrType.Name);
+        return entity
+            .ClrType
+            .Name
+            .ToSnakeCase();
     }
 
 
@@ -71,7 +75,9 @@ internal static class SchemaNames
     /// <param name="property">The property.</param>
     public static string ColumnName(IReadOnlyProperty property)
     {
-        return SnakeCase.Of(property.Name);
+        return property
+            .Name
+            .ToSnakeCase();
     }
 
 

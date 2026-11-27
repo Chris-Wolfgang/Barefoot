@@ -1,7 +1,11 @@
-using Wolfgang.Barefoot.Data.Conventions;
+using Wolfgang.Extensions.String;
 
 namespace Wolfgang.Barefoot.Data.Tests.Unit.Conventions;
 
+/// <summary>
+/// The names <c>ToSnakeCase</c> of <c>Wolfgang.Extensions.String</c> gives, for the shapes of name the
+/// schema has or may get. A new version of the package that splits words differently fails here.
+/// </summary>
 public sealed class SnakeCaseTests
 {
     [Theory]
@@ -17,24 +21,8 @@ public sealed class SnakeCaseTests
     [InlineData("ZoneIANA", "zone_iana")]
     [InlineData("Sha256Hash", "sha256_hash")]
     [InlineData("oid", "oid")]
-    public void Of_when_given_a_pascal_case_name_returns_it_in_snake_case(string name, string expected)
+    public void ToSnakeCase_when_given_a_pascal_case_name_returns_the_name_the_schema_uses(string name, string expected)
     {
-        Assert.Equal(expected, SnakeCase.Of(name));
-    }
-
-
-
-    [Fact]
-    public void Of_when_the_name_is_empty_throws_ArgumentException()
-    {
-        Assert.Throws<ArgumentException>(() => SnakeCase.Of(string.Empty));
-    }
-
-
-
-    [Fact]
-    public void Of_when_the_name_is_null_throws_ArgumentNullException()
-    {
-        Assert.Throws<ArgumentNullException>(() => SnakeCase.Of(null!));
+        Assert.Equal(expected, name.ToSnakeCase());
     }
 }
