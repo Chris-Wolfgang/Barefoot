@@ -30,7 +30,9 @@ internal static class OwnerMove
             .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
-        // An address is compared without regard to case: SQL Server's default collation does the same.
+        // An address is stored lower-cased and the column compares by code unit, so two addresses
+        // that differ only in case are two rows to the database. They are one address to a person,
+        // so the check here ignores case.
         var recipients = await context
             .Recipients
             .Where(recipient => recipient.OwnerId == AppUser.UnassignedOid || recipient.OwnerId == target)

@@ -219,4 +219,4 @@ calls loses that member. This is what keeps a fake from growing a behaviour the 
 | Money shown to a person is formatted by one formatter that always writes `$`, whatever the host culture | unit tests of the digest renderer (phase 1) |
 | Parsing and formatting name their culture; anything a machine reads uses `CultureInfo.InvariantCulture` | `CA1305` (*error*, `src/.editorconfig`); review for the choice of culture |
 | String comparison names its `StringComparison` | `CA1307`, `CA1310` (*error*, `src/.editorconfig`) |
-| A uniqueness rule checked in memory compares a normalized form, so it agrees with the database's collation | `NameNormalizationTests` (phase 2) |
+| A uniqueness rule checked in memory compares a normalized form by ordinal comparison, and its column has a binary collation, so the two agree | `NameNormalizationTests` (phase 2); `InitialCreateTests` for the collation |
