@@ -56,6 +56,11 @@ public sealed class BarefootDbContext(DbContextOptions<BarefootDbContext> option
 
 
 
+    /// <summary>The catalog snapshots the API received, one row each.</summary>
+    public DbSet<CatalogRefresh> CatalogRefreshes => Set<CatalogRefresh>();
+
+
+
     /// <summary>The stored searches.</summary>
     public DbSet<SearchMatrix> SearchMatrices => Set<SearchMatrix>();
 

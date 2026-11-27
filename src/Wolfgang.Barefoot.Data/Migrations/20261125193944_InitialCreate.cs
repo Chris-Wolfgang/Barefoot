@@ -57,6 +57,24 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "catalog_refresh",
+                columns: table => new
+                {
+                    id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    kind = table.Column<int>(type: "int", nullable: false),
+                    received_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
+                    added_count = table.Column<int>(type: "int", nullable: false),
+                    updated_count = table.Column<int>(type: "int", nullable: false),
+                    deactivated_count = table.Column<int>(type: "int", nullable: false),
+                    warning_count = table.Column<int>(type: "int", nullable: false),
+                    refusal_reason = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_catalog_refresh", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "run",
                 columns: table => new
                 {
@@ -728,6 +746,11 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "ix_catalog_refresh_kind_received_utc",
+                table: "catalog_refresh",
+                columns: new[] { "kind", "received_utc" });
+
+            migrationBuilder.CreateIndex(
                 name: "ix_digest_delivery_matrix_run_id",
                 table: "digest_delivery",
                 column: "matrix_run_id");
@@ -960,6 +983,9 @@ namespace Wolfgang.Barefoot.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "catalog_refresh");
+
             migrationBuilder.DropTable(
                 name: "digest_delivery");
 

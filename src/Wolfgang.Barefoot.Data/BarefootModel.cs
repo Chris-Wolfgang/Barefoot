@@ -67,6 +67,7 @@ internal static class BarefootModel
         modelBuilder.ApplyConfiguration(new ResortSpanConfiguration());
         modelBuilder.ApplyConfiguration(new RoomCategoryConfiguration());
         modelBuilder.ApplyConfiguration(new VocabularyValueConfiguration());
+        modelBuilder.ApplyConfiguration(new CatalogRefreshConfiguration());
         modelBuilder.ApplyConfiguration(new SearchMatrixConfiguration());
         modelBuilder.ApplyConfiguration(new SearchResortConfiguration());
         modelBuilder.ApplyConfiguration(new SearchDepartureAirportConfiguration());
