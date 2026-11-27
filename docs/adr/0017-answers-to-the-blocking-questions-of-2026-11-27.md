@@ -13,9 +13,9 @@
 ## Context
 
 A read of every open issue against the design found 15 points where a wrong guess would mean
-reworking the schema, a public contract or an exit code. The owner answered 13 of them on
+reworking the schema, a public contract or an exit code. The owner answered 14 of them on
 2026-11-27. This record holds those answers so that the documents they change can cite one place.
-Two points stay open and are listed at the end.
+One point stays open and is named at the end.
 
 ## Decision
 
@@ -36,38 +36,46 @@ Two points stay open and are listed at the end.
    when, the counts of rows added, changed and deactivated, the warnings, and whether the snapshot
    was refused. "Reference data last refreshed" is read from it.
 
+### A refused catalog snapshot
+
+6. **A refused snapshot stops the scheduled job.** When the safety rule refuses a snapshot, the API
+   applies nothing, records the refusal in `catalog_refresh` and answers `422` with the code
+   `catalog.snapshot_refused`. The scraper exits `Refused` (10), and the job stops there: no run and
+   no digests until someone has looked. ADR 0007's list of exit codes that stop the job (5, 7, 8, 9)
+   gains 10.
+
 ### Audit
 
-6. **The audit tables of `Wolfgang.AuditTrail` go into `InitialCreate` now.** They are exempt, by
+7. **The audit tables of `Wolfgang.AuditTrail` go into `InitialCreate` now.** They are exempt, by
    table name, from the rules of `ModelConventions.Verify` that they cannot meet (a key that is not
    one `Guid`, a `DateTime` column). The library owns its tables.
-7. **`Core` may reference `Wolfgang.AuditTrail.Abstractions`, and nothing else of that family**, so
+8. **`Core` may reference `Wolfgang.AuditTrail.Abstractions`, and nothing else of that family**, so
    an entity can carry `[NotAudited]`. The dependency rule names this one exception.
 
 ### Contract
 
-8. **A lookup has a third outcome: "not available".** `RoomsResult`, `FlightsResult` and
+9. **A lookup has a third outcome: "not available".** `RoomsResult`, `FlightsResult` and
    `WorkStatus` each gain it. It means the site said the stay or the flights are not offered (a
    resort that is offline, flights beyond the booking horizon). It counts as done and not as failed.
-9. **`/version` and `/readiness` are outside `/api/v{n}` and anonymous**, and touch no data.
+10. **`/version` and `/readiness` are outside `/api/v{n}` and anonymous**, and touch no data.
    `/api/v0/system/schema` needs an Admin permission and answers while the database is not ready.
    The OpenAPI document is served at `/openapi/v0.json`, anonymous.
-10. **`POST /digests/send` sends every pending delivery, whatever its run.** `bf send-digests`
+11. **`POST /digests/send` sends every pending delivery, whatever its run.** `bf send-digests`
     without `--run` calls it. A second call gives `DigestSender` the counts of deliveries by status
     and nothing else. The per-run route stays for `--run`.
-11. **A failed delivery is not sent again on its own.** The next run brings a new digest; an old
+12. **A failed delivery is not sent again on its own.** The next run brings a new digest; an old
     one is resent by hand from My digests or Deliveries. Barefoot#110's criterion "an undelivered
     digest is retried with the next run" is reversed by this.
 
 ### Before Entra exists
 
-12. **Phases 4 and 5 run behind a Development-only switch.** A bootstrap key makes every caller the
+13. **Phases 4 and 5 run behind a Development-only switch.** A bootstrap key makes every caller the
     "Unassigned" user with every permission. The API refuses to start with the key set outside the
     Development environment. Contract tests use a test authentication handler.
 
 ### Scraper fixtures
 
-13. **The builder never calls the live site.** Parser fixtures start from redacted pages of the
+14. **The builder never calls the live site.** Parser fixtures start from redacted pages of the
     earlier tool's archive. The owner later captures current pages from the home machine to confirm
     them.
 
@@ -83,6 +91,9 @@ Two points stay open and are listed at the end.
 - *An empty list for "not available".* "No rooms" and "resort offline" would look the same, which
   Barefoot#82 forbids.
 - *Registering the application in Entra now.* The build would wait on the owner through two phases.
+- *Going on to the run with the old catalog after a refused snapshot.* The job would keep working,
+  but a refusal means the scrape of the catalog went wrong, and the owner wants that looked at
+  before more lookups are made.
 - *Retrying failed deliveries with the next run.* An old digest arriving beside the new one is
   noise, and the open issue already tells the owner.
 
@@ -100,6 +111,9 @@ Two points stay open and are listed at the end.
 - The archive pages may be out of date. A parser can pass its fixtures and still fail on the site
   until the owner's capture.
 - Barefoot#110 needs its criterion reworded.
-- **Still open:** how a refused catalog snapshot is reported (status, error code, exit code, whether
-  the job goes on), and what state a run is in after an abort or a crashed worker (whether the next
-  job resumes it, and for how long a run may be resumed). The owner asked to discuss both.
+- A refused snapshot means no prices and no digests that day, until someone acts. The failed job's
+  report is the only signal, so that report has to work (Barefoot#81).
+- `Refused` (10) now has a second use: `bf-maint` exits with it when it chooses not to act on a
+  database, and `bf-scraper` when the API refuses a snapshot.
+- **Still open:** what state a run is in after an abort or a crashed worker (whether the next job
+  resumes it, and for how long a run may be resumed). The owner asked to discuss it.
