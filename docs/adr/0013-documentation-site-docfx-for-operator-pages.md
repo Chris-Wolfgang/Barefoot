@@ -1,7 +1,7 @@
 # ADR 0013 — Documentation site: keep DocFX and Pages, for operator pages
 
-- **Status:** Proposed, 2026-11-20 (written with the phase 0 stack; Chris accepts or rejects it by
-  merging or closing the pull request that carries it)
+- **Status:** Accepted, 2026-11-26 (proposed 2026-11-20 with the phase 0 stack; #158 merged it on
+  2026-11-23)
 - **Scope:** `docfx_project/`, `docfx.yaml`, the documentation jobs of `release.yaml`, GitHub Pages
 
 ## Context
