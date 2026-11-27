@@ -194,7 +194,9 @@ phase 3); the API contract tests for the `409`s (phase 4).
 - Backup restore is the primary rollback. `Down` is for the pipeline and for development.
 - Renaming a setting is a migration that copies the row ([SETTINGS.md](SETTINGS.md)).
 
-**Enforced by:** the CI step that applies the migration up → down → up on SQL Server (arrives with phase 2);
+**Enforced by:** `scripts/check-migration.sh`, which applies the migration up → down → up on a SQL Server
+container and checks that the script from `--script` builds the same schema (run by the Migration Check
+workflow);
 the migrate-tool tests, run in-process with injected writers (phase 2); the model-convention test on SQLite,
 which keeps `InitialCreate` in step with the conventions (phase 2); `InitialCreateTests`, which fail when the
 model holds a change the migration does not, and which read the SQL the migration renders for SQL Server
