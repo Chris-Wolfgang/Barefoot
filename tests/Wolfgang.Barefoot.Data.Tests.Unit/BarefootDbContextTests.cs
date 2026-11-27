@@ -141,6 +141,7 @@ public sealed class BarefootDbContextTests
                 "fk_search_resort_search_matrix_id",
                 "fk_search_room_filter_search_matrix_id",
                 "fk_search_room_filter_vocabulary_value_id",
+                "fk_setting_updated_by_user_id",
             ],
             entities.SelectMany(entity => entity.GetForeignKeys()).Select(key => key.GetConstraintName()).Order(StringComparer.Ordinal)
         );
@@ -170,6 +171,7 @@ public sealed class BarefootDbContextTests
                 "ix_search_request_resort_id",
                 "ix_search_resort_resort_id",
                 "ix_search_room_filter_vocabulary_value_id",
+                "ix_setting_updated_by_user_id",
                 "ux_airport_code",
                 "ux_flight_direction_flight_option_id_is_return",
                 "ux_flight_leg_flight_direction_id_sequence",
@@ -401,7 +403,47 @@ public sealed class BarefootDbContextTests
         Assert.NotNull(read);
         Assert.Equal("5", read.Value);
         Assert.Equal(Instant, read.UpdatedUtc);
+        Assert.Equal(AppUser.UnassignedOid, read.UpdatedByUserId);
         Assert.Equal(1, read.Version);
+    }
+
+
+
+    [Fact]
+    public async Task SaveChangesAsync_when_a_setting_names_the_user_who_changed_it_reads_that_user_back()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+
+        await using (var context = database.NewContext())
+        {
+            context.AppUsers.Add(User(UserOid, "sam@example.com"));
+            context.Settings.Add
+            (
+                new Setting { Key = "run.min_lead_days", Value = "3", UpdatedUtc = Instant, UpdatedByUserId = UserOid }
+            );
+            await context.SaveChangesAsync();
+        }
+
+        await using var reader = database.NewContext();
+        var read = await reader.Settings.FindAsync("run.min_lead_days");
+
+        Assert.NotNull(read);
+        Assert.Equal(UserOid, read.UpdatedByUserId);
+    }
+
+
+
+    [Fact]
+    public async Task SaveChangesAsync_when_a_setting_names_a_user_that_does_not_exist_throws_DbUpdateException()
+    {
+        await using var database = await TestDatabase.CreateAsync();
+        await using var context = database.NewContext();
+        context.Settings.Add
+        (
+            new Setting { Key = "run.min_lead_days", Value = "3", UpdatedUtc = Instant, UpdatedByUserId = UserOid }
+        );
+
+        await Assert.ThrowsAsync<DbUpdateException>(() => context.SaveChangesAsync());
     }
 
 

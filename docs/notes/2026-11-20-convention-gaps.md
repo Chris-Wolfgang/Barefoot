@@ -222,7 +222,8 @@ wms documents for shape only.
   an empty sender name is therefore accepted as written.
 - **S-2. Codec text formats** are not given (wms lists them). Which phase the codecs arrive with (Core in 1
   or Business in 3) is not stated.
-- **S-3. "Updated-by" has no column.** `GET /settings` returns "updated-by/at" (ADR 0011 §2). The table is
+- **S-3. "Updated-by" has no column.** *(Answered 2026-11-27: `Setting` gets `UpdatedByUserId`, a foreign
+  key to `AppUser`.)* `GET /settings` returns "updated-by/at" (ADR 0011 §2). The table is
   `Key`, `Value`, `UpdatedUtc`, `Version` (§3, DESIGN §8). Either a column is missing or the value is read
   from the audit trail. The mockup README also shows "who last changed it".
 - **S-4. Bootstrap key names.** Only `Hosting:BehindProxy` and the `Database` option names are given. Not

@@ -25,5 +25,13 @@ internal sealed class SettingConfiguration : IEntityTypeConfiguration<Setting>
         builder
             .Property(setting => setting.Version)
             .IsConcurrencyToken();
+
+        // Serves: nothing but the foreign key. EF gives the column its index; the table has a row
+        // per changed setting, a dozen at most.
+        builder
+            .HasOne<AppUser>()
+            .WithMany()
+            .HasForeignKey(setting => setting.UpdatedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

@@ -81,12 +81,14 @@ public sealed class PeopleAndSettingsEntitiesTests
             Key = "vocab.stale_after_runs",
             Value = "6",
             UpdatedUtc = Instant,
+            UpdatedByUserId = Oid,
             Version = 2,
         };
 
         Assert.Equal("vocab.stale_after_runs", setting.Key);
         Assert.Equal("6", setting.Value);
         Assert.Equal(Instant, setting.UpdatedUtc);
+        Assert.Equal(Oid, setting.UpdatedByUserId);
         Assert.Equal(2, setting.Version);
     }
 

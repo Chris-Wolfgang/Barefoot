@@ -77,20 +77,6 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "setting",
-                columns: table => new
-                {
-                    key = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, collation: OrdinalCollation.Name),
-                    value = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
-                    updated_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
-                    version = table.Column<long>(type: "bigint", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("pk_setting", x => x.key);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "vocabulary_value",
                 columns: table => new
                 {
@@ -214,6 +200,27 @@ namespace Wolfgang.Barefoot.Data.Migrations
                     table.ForeignKey(
                         name: "fk_search_matrix_owner_id",
                         column: x => x.owner_id,
+                        principalTable: "app_user",
+                        principalColumn: "oid",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "setting",
+                columns: table => new
+                {
+                    key = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, collation: OrdinalCollation.Name),
+                    value = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
+                    updated_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
+                    updated_by_user_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    version = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_setting", x => x.key);
+                    table.ForeignKey(
+                        name: "fk_setting_updated_by_user_id",
+                        column: x => x.updated_by_user_id,
                         principalTable: "app_user",
                         principalColumn: "oid",
                         onDelete: ReferentialAction.Restrict);
@@ -936,6 +943,11 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 table: "search_room_filter",
                 columns: new[] { "search_matrix_id", "vocabulary_value_id" },
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "ix_setting_updated_by_user_id",
+                table: "setting",
+                column: "updated_by_user_id");
 
             migrationBuilder.CreateIndex(
                 name: "ux_vocabulary_value_kind_value",
