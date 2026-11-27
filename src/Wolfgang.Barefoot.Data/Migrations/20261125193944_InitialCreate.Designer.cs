@@ -137,6 +137,10 @@ namespace Wolfgang.Barefoot.Data.Migrations
                         .HasColumnType("datetime2(3)")
                         .HasColumnName("last_seen_utc");
 
+                    b.Property<int>("Role")
+                        .HasColumnType("int")
+                        .HasColumnName("role");
+
                     b.Property<DateTime?>("SessionsValidAfterUtc")
                         .HasPrecision(3)
                         .HasColumnType("datetime2(3)")
@@ -167,6 +171,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                             DisplayName = "Unassigned",
                             Email = "",
                             LastSeenUtc = new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Role = 0,
                             Version = 1L
                         });
                 });

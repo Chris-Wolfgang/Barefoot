@@ -1,4 +1,5 @@
 using Wolfgang.Barefoot.Contracts.Issues;
+using Wolfgang.Barefoot.Contracts.Users;
 using Wolfgang.Barefoot.Core.Entities;
 
 namespace Wolfgang.Barefoot.Core.Tests.Unit.Entities;
@@ -24,6 +25,7 @@ public sealed class PeopleAndSettingsEntitiesTests
             DisplayName = "Alex Example",
             Email = "alex@example.com",
             LastSeenUtc = Instant,
+            Role = UserRole.Editor,
             DisclaimerVersionAccepted = 3,
             DisclaimerAcceptedUtc = Instant.AddDays(-30),
             TimeZoneId = "America/New_York",
@@ -38,6 +40,7 @@ public sealed class PeopleAndSettingsEntitiesTests
         Assert.Equal("Alex Example", user.DisplayName);
         Assert.Equal("alex@example.com", user.Email);
         Assert.Equal(Instant, user.LastSeenUtc);
+        Assert.Equal(UserRole.Editor, user.Role);
         Assert.Equal(3, user.DisclaimerVersionAccepted);
         Assert.Equal(Instant.AddDays(-30), user.DisclaimerAcceptedUtc);
         Assert.Equal("America/New_York", user.TimeZoneId);

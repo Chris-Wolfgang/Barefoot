@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Wolfgang.Barefoot.Contracts.Issues;
+using Wolfgang.Barefoot.Contracts.Users;
 using Wolfgang.Barefoot.Core.Entities;
 using Wolfgang.Barefoot.Data.Conventions;
 
@@ -293,6 +294,7 @@ public sealed class BarefootDbContextTests
 
         Assert.Equal(Guid.Empty, read.Oid);
         Assert.Equal("Unassigned", read.DisplayName);
+        Assert.Equal(UserRole.Viewer, read.Role);
         Assert.Equal(string.Empty, read.Email);
         Assert.Equal(new DateTimeOffset(1900, 1, 1, 0, 0, 0, TimeSpan.Zero), read.LastSeenUtc);
         Assert.Null(read.DisclaimerVersionAccepted);
@@ -355,6 +357,7 @@ public sealed class BarefootDbContextTests
         await using (var context = database.NewContext())
         {
             var user = User(UserOid, "pat@example.com");
+            user.Role = UserRole.Admin;
             user.DisclaimerVersionAccepted = 2;
             user.DisclaimerAcceptedUtc = Instant.AddDays(-30);
             user.TimeZoneId = "America/New_York";
@@ -374,6 +377,7 @@ public sealed class BarefootDbContextTests
         Assert.Equal("pat@example.com", read.Email);
         Assert.Equal(Instant, read.LastSeenUtc);
         Assert.Equal(TimeSpan.Zero, read.LastSeenUtc.Offset);
+        Assert.Equal(UserRole.Admin, read.Role);
         Assert.Equal(2, read.DisclaimerVersionAccepted);
         Assert.Equal(Instant.AddDays(-30), read.DisclaimerAcceptedUtc);
         Assert.Equal("America/New_York", read.TimeZoneId);

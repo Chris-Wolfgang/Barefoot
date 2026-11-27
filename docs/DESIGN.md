@@ -212,7 +212,7 @@ scraper logs and reports with exit code 2 (partial). Every other entry is applie
 ## 8. Data model (ADR 0004)
 
 ```
-AppUser (Oid GUID PK, DisplayName, Email, LastSeenUtc, DisclaimerVersionAccepted/At, TimeZoneId,
+AppUser (Oid GUID PK, DisplayName, Email, LastSeenUtc, Role, DisclaimerVersionAccepted/At, TimeZoneId,
          DefaultAdults/Children/Infants, SessionsValidAfterUtc, Version)   seeded: 0000…0000 "Unassigned"
 SearchMatrix (+ OwnerId → AppUser, Name, NormalizedName, Brand, RunOrder, Version)   UNIQUE (OwnerId, NormalizedName); audited
 Run (filtered UNIQUE on Status WHERE Status = InProgress)        the run lock
