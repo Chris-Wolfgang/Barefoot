@@ -1,0 +1,60 @@
+name: Migration Check
+
+# Applies Barefoot's migrations up, down and up again on a real SQL Server, and checks that the
+# script from `bf-maint migrate --script` builds the same schema (ADR 0001 section 4,
+# docs/DATABASE-CONVENTIONS.md, docs/MIGRATE.md). The unit tests run on SQLite, so this is the
+# only place a pull request meets SQL Server.
+#
+# The steps live in scripts/check-migration.sh, next to the tool they exercise, so a developer
+# runs the same check locally. While a checkout has no such script (a branch cut before the
+# tool existed) the job says so and passes.
+#
+# No `paths:` filter, on purpose: a filtered workflow that does not start never reports, and a
+# required check that never reports blocks the pull request forever (docs/DELIVERY-PROCESS.md).
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: migration-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Migration Check (SQL Server)
+    # The runner image ships docker, which the script uses to start SQL Server.
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Look for the check
+        id: find
+        shell: bash
+        run: |
+          if [ -f scripts/check-migration.sh ]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::scripts/check-migration.sh is not in this checkout, so there is nothing to check."
+          fi
+
+      - name: Setup .NET
+        if: steps.find.outputs.present == 'true'
+        uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73  # v6.1.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Apply the migration up, down and up on SQL Server
+        if: steps.find.outputs.present == 'true'
+        shell: bash
+        run: bash scripts/check-migration.sh
