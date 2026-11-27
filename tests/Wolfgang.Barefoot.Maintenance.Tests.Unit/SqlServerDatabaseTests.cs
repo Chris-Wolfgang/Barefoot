@@ -52,6 +52,27 @@ public sealed class SqlServerDatabaseTests
 
 
     [Fact]
+    public void CatalogQuery_when_read_gives_one_Value_column_leaves_the_history_table_out_and_names_the_collation()
+    {
+        var query = SqlServerDatabase.CatalogQuery;
+
+        Assert.StartsWith("SELECT CAST(N'table ' + t.name + N'|' AS nvarchar(max)) AS [Value]", query, StringComparison.Ordinal);
+        Assert.Equal(3, Count(query, "t.name <> N'__EFMigrationsHistory'"));
+        Assert.Equal(3, Count(query, "UNION ALL"));
+        Assert.Equal(2, Count(query, " COLLATE DATABASE_DEFAULT"));
+        Assert.DoesNotContain("{", query, StringComparison.Ordinal);
+    }
+
+
+
+    private static int Count(string text, string part)
+    {
+        return text.Split(part).Length - 1;
+    }
+
+
+
+    [Fact]
     public void ScriptPreamble_when_read_turns_quoted_identifiers_on_in_a_batch_of_its_own()
     {
         Assert.Equal("SET QUOTED_IDENTIFIER ON;\nGO\n\n", SqlServerDatabase.ScriptPreamble);

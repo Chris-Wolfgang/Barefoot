@@ -21,6 +21,11 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error, s
 
 
 
+    /// <summary>A catalog query that finds nothing in the database.</summary>
+    public const string NoCatalog = "SELECT 'nothing' AS \"Value\" WHERE 1 = 0";
+
+
+
     /// <summary>
     /// Runs <see cref="MaintenanceHost"/> with <paramref name="args"/> and captures both streams. The
     /// log file goes in a folder of its own under the temporary directory, which is removed afterwards.
@@ -33,7 +38,8 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error, s
         CancellationToken cancellationToken = default,
         Func<BarefootDbContext>? offlineContext = null,
         RoleScript? roles = null,
-        string scriptPreamble = ""
+        string scriptPreamble = "",
+        string catalogQuery = NoCatalog
     )
     {
         using var output = new StringWriter(CultureInfo.InvariantCulture);
@@ -60,6 +66,7 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error, s
                     offlineContext ?? SqlServerDatabase.Offline,
                     roles ?? NoRoles,
                     scriptPreamble,
+                    catalogQuery,
                     cancellationToken
                 );
             }

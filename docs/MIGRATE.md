@@ -7,7 +7,7 @@ firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` en
 other three verbs, logging), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
-and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. `bf-maint assign-owner` is built. The file log is built. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
+and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. `bf-maint assign-owner` and `bf-maint verify-schema` are built. The file log is built. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 
@@ -104,7 +104,16 @@ The tool is **declarative**. You name a target, never a direction.
   reports what is missing, what differs and what is extra, one line each on stderr, and changes nothing.
 - No difference exits `Ok` (0); a difference exits `Failed` (1). A database behind or ahead of the build
   exits as `migrate --status` does and is not compared.
-- It is built after CI has a SQL Server step (ADR 0016).
+- stdout carries one line, `differences: <n>`. Each difference is one line on stderr:
+  `missing: <item>` for something the model has and the database lacks, `extra: <item>` for the
+  reverse, and `different: <item> is <found>, expected <wanted>`. An item is a `table`, a `column`
+  (type and nullability), a `key` (primary or unique, with its columns), an `index` (unique or not, its
+  columns, its filter) or a `foreign key` (its columns, the table and columns it points at, its delete rule).
+- Not compared: default values, check constraints, the order of columns, included columns and sort
+  direction of an index, collations, and anything outside tables (views, procedures, users). The
+  migrations history table is left out.
+- `scripts/check-migration.sh` runs it on SQL Server: after a migration it must find nothing, and after
+  changes made by hand it must name each one.
 
 ## Exit codes
 
