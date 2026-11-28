@@ -14,9 +14,6 @@ public sealed class MigrateToTests
 {
     private const string Later = "99990101000000_Later";
 
-    /// <summary>Stands for the path of an output file in a test's arguments.</summary>
-    private const string Unused = "<output>";
-
 
 
     [Theory]
@@ -229,30 +226,19 @@ public sealed class MigrateToTests
 
     [Theory]
     [InlineData("--to is not used with --status.", "migrate", "--status", "--to", "0")]
-    [InlineData("--confirm-data-loss is only used when migrations are applied or rolled back.", "migrate", "--status", "--confirm-data-loss")]
-    [InlineData("--script does not take --to yet: it always writes every migration.", "migrate", "--script", "--output", Unused, "--to", "0")]
-    [InlineData("--confirm-data-loss is only used when migrations are applied or rolled back.", "migrate", "--script", "--output", Unused, "--confirm-data-loss")]
-    public async Task RunAsync_when_a_move_option_is_given_to_a_verb_that_moves_nothing_exits_Usage(string expected, params string[] args)
+    [InlineData("--confirm-data-loss is not used with --status.", "migrate", "--status", "--confirm-data-loss")]
+    [InlineData("--from is only used with --script.", "migrate", "--from", "0")]
+    [InlineData("--from is only used with --script.", "migrate", "--status", "--from", "0")]
+    public async Task RunAsync_when_an_option_is_given_to_a_verb_that_does_not_use_it_exits_Usage(string expected, params string[] args)
     {
-        // A file of its own, outside the working directory: a run that wrongly writes the script must
-        // not leave a file behind that fails the next run.
-        var output = Path.Combine(Path.GetTempPath(), $"barefoot-{Guid.NewGuid():N}.sql");
         await using var schema = await TestSchema.CreateRunnableAsync();
 
-        try
-        {
-            var run = await RunAsync(schema, [.. args.Select(arg => string.Equals(arg, Unused, StringComparison.Ordinal) ? output : arg)]);
+        var run = await RunAsync(schema, args);
 
-            Assert.Equal(ExitCode.Usage, run.ExitCode);
-            Assert.Empty(run.Output);
-            Assert.Equal($"{expected}{Environment.NewLine}", run.Error);
-            Assert.Empty(schema.ConnectionStrings);
-            Assert.False(File.Exists(output));
-        }
-        finally
-        {
-            File.Delete(output);
-        }
+        Assert.Equal(ExitCode.Usage, run.ExitCode);
+        Assert.Empty(run.Output);
+        Assert.Equal($"{expected}{Environment.NewLine}", run.Error);
+        Assert.Empty(schema.ConnectionStrings);
     }
 
 

@@ -5,9 +5,8 @@ This document is the operator contract for `bf-maint` (`Wolfgang.Barefoot.Mainte
 firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0014 (exit code
 11), ADR 0015 (the connection, a missing database, `--script`), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
-Of the verbs, `bf-maint migrate` (with `--to` and `--confirm-data-loss`), `bf-maint migrate --status` and
-`bf-maint migrate --script --output <file>` (every migration, from an empty schema to the latest) are built.
-`migrate` does not run `grant-roles` yet, and `--script` does not take `--from` or `--to` yet. The
+Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
+and `--script` with `--from`, `--to` and `--output`. `migrate` does not run `grant-roles` yet. The
 rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
@@ -133,17 +132,27 @@ line on stderr.
 
 A `--to` that matches no migration, or more than one, exits `Usage` (4) and changes nothing; the tool lists
 the migrations it ships, or the ones the text matched. A whole id or name is preferred over a prefix. `--to`
-and `--confirm-data-loss` are refused with `Usage` (4) beside `--status`, and beside `--script` for now.
+and `--confirm-data-loss` are refused with `Usage` (4) beside `--status`.
 
 ### What `migrate --script` writes and exits with
 
-`--script` opens no connection and needs no connection string. It writes the SQL of the migrations this
-build ships to the `--output` file, replacing a file that is already there, and exits `Ok` (0). stdout
-carries two lines: `script:` with the full path of the file, and `migrations:` with the ids in it. When the
-file cannot be written the tool exits `Failed` (1).
+`--script` opens no connection and needs no connection string. It writes the SQL that moves a database
+from `--from` (default `0`, an empty schema) to `--to` (default the latest migration this build ships) to
+the `--output` file, replacing a file that is already there, and exits `Ok` (0). The range comes from the
+command line, never from a database.
 
-These exit `Usage` (4) and write nothing: `--script` without `--output`, `--output` without `--script`, and
-`--script` together with `--status`.
+stdout carries three lines: `script:` with the full path of the file, `direction:` (`up`, `down` or `none`),
+and `migrations:` with the ids the script applies, oldest first, or rolls back, newest first. When the file
+cannot be written the tool exits `Failed` (1).
+
+When `--to` is before `--from` the script is a downgrade. It starts with a `-- Downgrade from <from> to
+<to>.` comment, followed by each step that loses data, or by `-- No step loses data.` A downgrade that would
+lose data needs `--confirm-data-loss`; without it the tool names the steps, writes nothing and exits
+`DataLossNotConfirmed` (6).
+
+These exit `Usage` (4) and write nothing: `--script` without `--output`, `--output` or `--from` without
+`--script`, `--script` together with `--status`, and a `--from` or `--to` that matches no migration or more
+than one.
 
 `docs/EXIT-CODES.md` is generated from the enum.
 
@@ -185,8 +194,7 @@ A downgrade is screened for data loss. These count:
 Without `--confirm-data-loss` the tool exits `DataLossNotConfirmed` (6) and changes nothing. A downgrade
 script carries a `-- Downgrade` header naming each such step.
 
-**Enforced by:** the migrate-tool tests (`DataLossScreenTests`, `MigrateToTests`). The `-- Downgrade` header
-arrives when `--script` can write a downgrade.
+**Enforced by:** the migrate-tool tests (`DataLossScreenTests`, `MigrateToTests`, `MigrateScriptRangeTests`).
 
 ### Every migration has a working `Down`
 

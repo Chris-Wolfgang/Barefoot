@@ -54,6 +54,21 @@ internal sealed class TestSchema : IAsyncDisposable
 
 
 
+    /// <summary>
+    /// A context on SQLite that names no database and knows the two migrations of
+    /// <see cref="Migrations.TestMigrations"/>. It can render their SQL and cannot open a connection.
+    /// </summary>
+    public static BarefootDbContext Offline()
+    {
+        var options = new DbContextOptionsBuilder<BarefootDbContext>()
+            .UseSqlite(sqlite => sqlite.MigrationsAssembly(typeof(TestSchema).Assembly))
+            .Options;
+
+        return new BarefootDbContext(options);
+    }
+
+
+
     /// <summary>The connection strings <see cref="Open"/> was called with, in order.</summary>
     public IReadOnlyList<string> ConnectionStrings => _connectionStrings;
 
