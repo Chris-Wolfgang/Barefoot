@@ -1,0 +1,31 @@
+using System.Globalization;
+using Microsoft.Extensions.Configuration;
+using Wolfgang.Barefoot.Core.Hosting;
+using Wolfgang.Barefoot.Data;
+
+namespace Wolfgang.Barefoot.Maintenance.Tests.Unit;
+
+/// <summary>
+/// One run of <c>bf-maint</c> in this process: its exit code and what it wrote to each stream.
+/// </summary>
+internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
+{
+    /// <summary>
+    /// Runs <see cref="MaintenanceHost"/> with <paramref name="args"/> and captures both streams.
+    /// </summary>
+    public static async Task<HostRun> StartAsync
+    (
+        string[] args,
+        IConfiguration configuration,
+        Func<string, BarefootDbContext> openContext,
+        CancellationToken cancellationToken = default
+    )
+    {
+        using var output = new StringWriter(CultureInfo.InvariantCulture);
+        using var error = new StringWriter(CultureInfo.InvariantCulture);
+
+        var exitCode = await MaintenanceHost.RunAsync(args, output, error, configuration, openContext, cancellationToken);
+
+        return new HostRun((ExitCode)exitCode, output.ToString(), error.ToString());
+    }
+}

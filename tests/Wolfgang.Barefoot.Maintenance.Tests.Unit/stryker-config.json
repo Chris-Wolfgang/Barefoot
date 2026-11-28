@@ -1,0 +1,19 @@
+{
+  "stryker-config": {
+    "project": "Wolfgang.Barefoot.Maintenance.csproj",
+    "target-framework": "net10.0",
+    "ignore-methods": [
+      "ConfigureAwait"
+    ],
+    "reporters": [
+      "progress",
+      "html",
+      "json"
+    ],
+    "thresholds": {
+      "high": 95,
+      "low": 90,
+      "break": 90
+    }
+  }
+}

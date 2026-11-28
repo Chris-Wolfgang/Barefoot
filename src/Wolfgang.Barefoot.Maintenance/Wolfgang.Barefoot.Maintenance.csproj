@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- The binary is bf-maint (ADR 0009). -->
+    <AssemblyName>bf-maint</AssemblyName>
+    <RootNamespace>Wolfgang.Barefoot.Maintenance</RootNamespace>
+    <!-- Barefoot is an application: its assemblies ship inside the hosts, never as NuGet packages. -->
+    <IsPackable>false</IsPackable>
+    <!-- Where `dotnet user-secrets` keeps the secrets of this project on a developer machine (ADR 0015). -->
+    <UserSecretsId>wolfgang-barefoot-maintenance</UserSecretsId>
+    <Description>bf-maint, the one tool that changes Barefoot's schema and the one client that connects to the database directly.</Description>
+  </PropertyGroup>
+
+  <!-- Maintenance reaches the database through Data and never references ApiClient or Obe (DESIGN §2). -->
+  <ItemGroup>
+    <ProjectReference Include="..\Wolfgang.Barefoot.Data\Wolfgang.Barefoot.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- The connection string comes from the environment or from user secrets (ADR 0015). -->
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="10.0.15" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="10.0.15" />
+    <PackageReference Include="System.CommandLine" Version="3.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Wolfgang.Barefoot.Maintenance.Tests.Unit" />
+    <!-- The architecture tests name a type of every src/ assembly; this one has no public type. -->
+    <InternalsVisibleTo Include="Wolfgang.Barefoot.Tests.Architecture" />
+  </ItemGroup>
+
+</Project>
