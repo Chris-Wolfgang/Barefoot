@@ -406,10 +406,10 @@ jobs:
           echo "✅ No error-severity InspectCode findings."
 
   # ============================================================================
-  # INSPECTCODE UPLOAD: the only job with security-events: write. It never checks
-  # out PR code — the checkout below is the base branch, which upload-sarif needs
-  # only to resolve the workspace — and it uploads the SARIF the job above produced. Runs after a gate failure too (the
-  # warnings are the point) but not when the analysis never ran.
+  # INSPECTCODE UPLOAD: the only job with security-events: write. It checks out
+  # nothing, neither PR code nor the base branch, and uploads the SARIF the job
+  # above produced. Runs after a gate failure too (the warnings are the point)
+  # but not when the analysis never ran.
   # ============================================================================
   inspectcode-upload:
     name: "ReSharper InspectCode (upload SARIF)"
@@ -433,12 +433,6 @@ jobs:
       actions: read            # upload-sarif reads the workflow run to associate the analysis
 
     steps:
-      - name: Checkout base branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
-        with:
-          ref: ${{ github.event.pull_request.base.ref || github.ref }}
-          persist-credentials: false
-
       - name: Download the SARIF
         id: sarif
         # A build that died before `jb inspectcode` produced nothing to upload; the
@@ -451,8 +445,14 @@ jobs:
       - name: Upload SARIF to Code Scanning
         if: steps.sarif.outcome == 'success' && hashFiles('inspect.sarif') != ''
         uses: github/codeql-action/upload-sarif@33d7b85da1a04171e211befe2c739303b9a4c066  # v4.39.3
+        # No checkout in this job, on purpose: upload-sarif takes the commit from a git
+        # checkout when it finds one and reads `sha` only when it finds none. With the base
+        # branch checked out, a pull request's results were filed on the base branch's tip
+        # and the PR's own head never got the InspectCode result check.
         with:
           sarif_file: inspect.sarif
+          ref: ${{ github.event.pull_request.number && format('refs/pull/{0}/head', github.event.pull_request.number) || github.ref }}
+          sha: ${{ github.event.pull_request.head.sha || github.sha }}
 
   # ============================================================================
   # STAGE 1: Linux - .NET Core/5+ Tests with Coverage Gate
