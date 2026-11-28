@@ -51,7 +51,8 @@ internal static class Program
                 configuration,
                 SqlServerDatabase.Open,
                 SqlServerDatabase.Offline,
-                SqlServerDatabase.Roles
+                SqlServerDatabase.Roles,
+                SqlServerDatabase.ScriptPreamble
             )
             .ConfigureAwait(false);
 #pragma warning restore RS0030

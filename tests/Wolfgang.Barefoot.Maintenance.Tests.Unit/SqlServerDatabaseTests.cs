@@ -52,6 +52,14 @@ public sealed class SqlServerDatabaseTests
 
 
     [Fact]
+    public void ScriptPreamble_when_read_turns_quoted_identifiers_on_in_a_batch_of_its_own()
+    {
+        Assert.Equal("SET QUOTED_IDENTIFIER ON;\nGO\n\n", SqlServerDatabase.ScriptPreamble);
+    }
+
+
+
+    [Fact]
     public void Roles_when_read_asks_whether_the_server_is_Azure_SQL_Database()
     {
         Assert.Equal

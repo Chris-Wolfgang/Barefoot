@@ -183,6 +183,11 @@ When `--to` is before `--from` the script is a downgrade. It starts with a `-- D
 lose data needs `--confirm-data-loss`; without it the tool names the steps, writes nothing and exits
 `DataLossNotConfirmed` (6).
 
+A script that is not empty has `SET QUOTED_IDENTIFIER ON;` and `GO` before its first statement (after the
+downgrade comment, when there is one). The schema has filtered indexes, which SQL Server makes only with
+that option on, and `sqlcmd` leaves it off by default: without the line the script fails there with
+error 1934. The script uses `GO`, so it needs a client that understands batches (`sqlcmd`, SSMS).
+
 These exit `Usage` (4) and write nothing: `--script` without `--output`, `--output` or `--from` without
 `--script`, `--script` together with `--status`, and a `--from` or `--to` that matches no migration or more
 than one.

@@ -37,12 +37,14 @@ internal static class MigrateCommand
     /// <param name="openContext">Makes a context on the database a connection string names.</param>
     /// <param name="offlineContext">Makes a context that names no database, for <c>--script</c>.</param>
     /// <param name="roles">The SQL that makes the API's database user and adds it to its roles.</param>
+    /// <param name="scriptPreamble">What a script that is not empty starts with, before its first statement.</param>
     public static Command Create
     (
         IConfiguration configuration,
         Func<string, BarefootDbContext> openContext,
         Func<BarefootDbContext> offlineContext,
-        RoleScript roles
+        RoleScript roles,
+        string scriptPreamble
     )
     {
         var options = new Options();
@@ -80,7 +82,8 @@ internal static class MigrateCommand
                         parsed.GetRequiredValue(options.Output),
                         parsed.GetValue(options.From),
                         target,
-                        confirmed
+                        confirmed,
+                        scriptPreamble
                     );
 
                     return ScriptAsync(parsed.InvocationConfiguration, offlineContext, request, cancellationToken);
@@ -201,6 +204,11 @@ internal static class MigrateCommand
             sql = context
                 .GetService<IMigrator>()
                 .GenerateScript(from.Id, to.Id);
+
+            if (sql.Length > 0)
+            {
+                sql = request.Preamble + sql;
+            }
 
             if (plan.Revert.Count > 0)
             {
@@ -632,7 +640,8 @@ internal static class MigrateCommand
     /// <param name="From">The text of <c>--from</c>, or <see langword="null"/> for an empty schema.</param>
     /// <param name="To">The text of <c>--to</c>, or <see langword="null"/> for the latest migration.</param>
     /// <param name="Confirmed">Whether <c>--confirm-data-loss</c> was given.</param>
-    private sealed record ScriptRequest(string Output, string? From, string? To, bool Confirmed);
+    /// <param name="Preamble">What a script that is not empty starts with, before its first statement.</param>
+    private sealed record ScriptRequest(string Output, string? From, string? To, bool Confirmed, string Preamble);
 
 
 
