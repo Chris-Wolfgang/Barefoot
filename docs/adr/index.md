@@ -32,6 +32,7 @@ are.
 | [0016](0016-bf-maint-open-points-of-migrate-and-the-other-verbs.md) | `bf-maint`: the open points of `migrate`, and `grant-roles`, `assign-owner`, `verify-schema` and logging | Accepted |
 | [0017](0017-answers-to-the-blocking-questions-of-2026-11-27.md) | Answers to the blocking questions of 2026-11-27: collation, audit tables, new columns, a third lookup outcome, routes, sending, auth before Entra | Accepted |
 | [0018](0018-a-schema-that-does-not-match-stops-every-tool.md) | A schema that does not match the build stops every tool and the scheduled job | Accepted |
+| [0019](0019-a-run-is-resumed-only-when-asked.md) | A run is resumed only when asked: `run --resume` resumes the last run that did not succeed, `run` always starts a new one | Accepted |
 
 ## Status legend
 
