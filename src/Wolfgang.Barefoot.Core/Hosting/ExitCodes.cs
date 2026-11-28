@@ -37,6 +37,7 @@ public static class ExitCodes
         new(ExitCode.DatabaseUnavailable, "The database could not be reached within the retry budget.", Every, StopsTheJob: true),
         new(ExitCode.QuotaExhausted, "The monthly free database allowance is used up.", Every, StopsTheJob: true),
         new(ExitCode.Refused, "The tool will not act, for example on a schema newer than the build.", [Maintenance], StopsTheJob: false),
+        new(ExitCode.MissingMigration, "`migrate --status` found the database behind this build: a migration is not applied.", [Maintenance], StopsTheJob: false),
     ];
 
 
