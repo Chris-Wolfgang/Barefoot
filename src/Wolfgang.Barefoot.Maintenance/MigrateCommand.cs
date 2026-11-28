@@ -520,7 +520,7 @@ internal static class MigrateCommand
 
 
     /// <summary>Writes <paramref name="sentence"/> to the error stream and gives <paramref name="exitCode"/> as a number.</summary>
-    private static async Task<int> RefuseAsync(InvocationConfiguration streams, string sentence, ExitCode exitCode)
+    internal static async Task<int> RefuseAsync(InvocationConfiguration streams, string sentence, ExitCode exitCode)
     {
         await streams
             .Error
@@ -549,6 +549,19 @@ internal static class MigrateCommand
             .WriteLineAsync(report)
             .ConfigureAwait(false);
 
+        return await RefuseUnlessUpToDateAsync(status, streams).ConfigureAwait(false) ?? (int)ExitCode.Ok;
+    }
+
+
+
+    /// <summary>
+    /// Says on stderr why a schema that is not the one this build expects cannot be worked on, and
+    /// gives the exit code: <see cref="ExitCode.Refused"/> when it is newer,
+    /// <see cref="ExitCode.MissingMigration"/> when it is behind. Null, and nothing written, when it
+    /// is up to date.
+    /// </summary>
+    internal static async Task<int?> RefuseUnlessUpToDateAsync(SchemaStatus status, InvocationConfiguration streams)
+    {
         return status.State switch
         {
             SchemaState.NewerSchema => await RefuseAsync
@@ -565,7 +578,7 @@ internal static class MigrateCommand
                 ExitCode.MissingMigration
             ).ConfigureAwait(false),
 
-            _ => (int)ExitCode.Ok,
+            _ => null,
         };
     }
 

@@ -7,7 +7,8 @@ firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` en
 other three verbs, logging), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
-and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. The file log is not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
+and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. `bf-maint assign-owner` is built. The file log is
+not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 
@@ -92,7 +93,11 @@ The tool is **declarative**. You name a target, never a direction.
 - When `<oid>` already has a search of the same name, or a recipient of the same address, nothing moves:
   the tool names each collision and exits `Refused` (10).
 - It is run once. Afterwards the "Unassigned" row stays seeded and owns nothing. A second run moves
-  nothing and exits `Ok` (0). stdout carries one line per table with the number of rows moved.
+  nothing and exits `Ok` (0). stdout carries one line per table with the number of rows moved:
+  `searches:`, `recipients:`, `issues:` and `deliveries:`.
+- An `<oid>` that is the "Unassigned" user itself exits `Refused` (10).
+- On a database that is behind or ahead of this build it moves nothing and exits as `migrate --status`
+  does (11 or 10).
 
 ### `verify-schema`
 

@@ -40,6 +40,7 @@ internal static class MaintenanceHost
         {
             MigrateCommand.Create(configuration, openContext, offlineContext, roles),
             GrantRolesCommand.Create(configuration, openContext, roles),
+            AssignOwnerCommand.Create(configuration, openContext),
         };
 
         var parsed = root.Parse(args);

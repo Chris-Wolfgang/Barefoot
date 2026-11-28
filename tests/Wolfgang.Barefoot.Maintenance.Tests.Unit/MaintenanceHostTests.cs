@@ -22,6 +22,8 @@ public sealed class MaintenanceHostTests
         Assert.Contains("migrate", run.Output, StringComparison.Ordinal);
         Assert.Contains("Moves the schema to a migration: by default up to the latest this build ships.", run.Output, StringComparison.Ordinal);
         Assert.Contains("grant-roles", run.Output, StringComparison.Ordinal);
+        Assert.Contains("assign-owner", run.Output, StringComparison.Ordinal);
+        Assert.Contains("Moves everything the \"Unassigned\" user owns to the user named. Run it once.", run.Output, StringComparison.Ordinal);
         Assert.Contains("Makes the API's database user and adds it to its roles. Running it again changes nothing.", run.Output, StringComparison.Ordinal);
         Assert.Empty(run.Error);
     }
