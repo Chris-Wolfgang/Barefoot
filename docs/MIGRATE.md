@@ -239,7 +239,9 @@ script carries a `-- Downgrade` header naming each such step.
 CI applies up → down → up against SQL Server. **Backup restore is the primary rollback**; `Down` is for the
 pipeline and for development.
 
-**Enforced by:** the CI step that applies the migration up → down → up on SQL Server (phase 2).
+**Enforced by:** `scripts/check-migration.sh`, which applies the migration up → down → up on a SQL Server
+container and applies the `--script` output with `sqlcmd` (run by the Migration Check workflow). Run it
+locally with `bash scripts/check-migration.sh`; it needs docker and the .NET SDK.
 
 ### A schema behind the build is a state, not a crash
 
