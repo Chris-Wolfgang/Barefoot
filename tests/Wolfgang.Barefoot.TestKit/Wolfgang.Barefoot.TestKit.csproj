@@ -10,6 +10,11 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
+  <!-- The kit holds doubles of Core interfaces, so it references Core and nothing above it. -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Wolfgang.Barefoot.Core\Wolfgang.Barefoot.Core.csproj" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="10.11.1" />
   </ItemGroup>
