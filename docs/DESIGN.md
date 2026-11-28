@@ -230,7 +230,7 @@ SearchRecipient (SearchMatrix, Recipient)   UNIQUE (SearchMatrix, Recipient)    
 DigestDelivery (MatrixRun, RecipientUserId → AppUser NULL for an extra, RecipientAddress (a copy),
                 Subject, HtmlBody, TextBody, Status, Attempts, LastError, CreatedUtc, SentUtc)
 OpenIssue (UserId → AppUser, Kind, Subject, ResolvesWhen, AcknowledgedUtc, ResolvedUtc)
-Setting (Key PK, Value text, UpdatedUtc, Version)                 ADR 0011; audited
+Setting (Key PK, Value text, UpdatedUtc, UpdatedByUserId → AppUser, Version)   ADR 0011; audited
 Resort, ResortSpan, Airport, RoomCategory, vocabularies (+ Version)   audited
 ```
 

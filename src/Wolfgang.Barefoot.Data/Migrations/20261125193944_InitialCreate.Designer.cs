@@ -1303,6 +1303,10 @@ namespace Wolfgang.Barefoot.Data.Migrations
                         .HasColumnType("nvarchar(128)")
                         .HasColumnName("key");
 
+                    b.Property<Guid>("UpdatedByUserId")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("updated_by_user_id");
+
                     b.Property<DateTime>("UpdatedUtc")
                         .HasPrecision(3)
                         .HasColumnType("datetime2(3)")
@@ -1321,6 +1325,9 @@ namespace Wolfgang.Barefoot.Data.Migrations
 
                     b.HasKey("Key")
                         .HasName("pk_setting");
+
+                    b.HasIndex("UpdatedByUserId")
+                        .HasDatabaseName("ix_setting_updated_by_user_id");
 
                     b.ToTable("setting");
                 });
@@ -1676,6 +1683,16 @@ namespace Wolfgang.Barefoot.Data.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired()
                         .HasConstraintName("fk_search_room_filter_vocabulary_value_id");
+                });
+
+            modelBuilder.Entity("Wolfgang.Barefoot.Core.Entities.Setting", b =>
+                {
+                    b.HasOne("Wolfgang.Barefoot.Core.Entities.AppUser", null)
+                        .WithMany()
+                        .HasForeignKey("UpdatedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("fk_setting_updated_by_user_id");
                 });
 #pragma warning restore 612, 618
         }

@@ -72,7 +72,10 @@ the Business tests of each floor and range (phase 3).
 ## Storage
 
 - Values are stored as **invariant text** in one table, `Setting`: `Key` (primary key), `Value`,
-  `UpdatedUtc`, `Version`.
+  `UpdatedUtc`, `UpdatedByUserId`, `Version`.
+- `UpdatedByUserId` is the `AppUser` who last changed the value. `GET /settings` returns that person's
+  display name as "updated by". ADR 0011 §3 lists the table without it; the owner added the column on
+  2026-11-27 (gap S-3).
 - A `SettingCodec<T>` per type converts between the value and the text: bool, int, long, double, string,
   `TimeSpan`, `DateTimeOffset`, string lists.
 - **A missing row means the default.**

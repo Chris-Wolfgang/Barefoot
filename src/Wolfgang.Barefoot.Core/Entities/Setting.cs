@@ -21,6 +21,14 @@ public sealed class Setting
 
 
 
+    /// <summary>
+    /// The <see cref="AppUser"/> who last changed the value. The settings page shows their name
+    /// beside the value.
+    /// </summary>
+    public Guid UpdatedByUserId { get; set; }
+
+
+
     /// <summary>The concurrency token, which is also the row's ETag (ADR 0004 §10).</summary>
     public long Version { get; set; }
 }

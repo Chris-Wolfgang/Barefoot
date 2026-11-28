@@ -202,6 +202,7 @@ public sealed class BarefootModelTests
                 "search_resort.search_matrix_id -> search_matrix",
                 "search_room_filter.search_matrix_id -> search_matrix",
                 "search_room_filter.vocabulary_value_id -> vocabulary_value",
+                "setting.updated_by_user_id -> app_user",
             ],
             context
                 .Model
@@ -225,7 +226,7 @@ public sealed class BarefootModelTests
         await using var context = database.NewContext();
         var indexes = context.Model.GetEntityTypes().SelectMany(entity => entity.GetIndexes()).ToList();
 
-        Assert.Equal(42, indexes.Count);
+        Assert.Equal(43, indexes.Count);
         Assert.All
         (
             indexes,
@@ -270,7 +271,7 @@ public sealed class BarefootModelTests
             .Concat(entities.SelectMany(entity => entity.GetKeys()).Select(key => key.GetName()!))
             .ToList();
 
-        Assert.Equal(105, names.Count);
+        Assert.Equal(107, names.Count);
         Assert.All(names, name => Assert.InRange(name.Length, 1, 128));
     }
 }
