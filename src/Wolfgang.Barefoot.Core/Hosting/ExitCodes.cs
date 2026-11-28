@@ -5,7 +5,7 @@ namespace Wolfgang.Barefoot.Core.Hosting;
 
 /// <summary>
 /// The catalogue of exit codes: what each means, which binary uses it, and whether the scheduled job
-/// stops on it (ADR 0007). <c>docs/EXIT-CODES.md</c> is <see cref="ToMarkdown"/> written to a file.
+/// stops on it (ADR 0007, ADR 0018). <c>docs/EXIT-CODES.md</c> is <see cref="ToMarkdown"/> written to a file.
 /// </summary>
 public static class ExitCodes
 {
@@ -36,8 +36,8 @@ public static class ExitCodes
         new(ExitCode.ApiUnavailable, "The API could not be reached within the retry budget.", ApiClients, StopsTheJob: true),
         new(ExitCode.DatabaseUnavailable, "The database could not be reached within the retry budget.", Every, StopsTheJob: true),
         new(ExitCode.QuotaExhausted, "The monthly free database allowance is used up.", Every, StopsTheJob: true),
-        new(ExitCode.Refused, "The tool will not act, for example on a schema newer than the build.", [Maintenance], StopsTheJob: false),
-        new(ExitCode.MissingMigration, "`migrate --status` found the database behind this build: a migration is not applied.", [Maintenance], StopsTheJob: false),
+        new(ExitCode.Refused, "The tool will not act: the database is newer than this build, or the API refused a catalog snapshot.", Every, StopsTheJob: true),
+        new(ExitCode.MissingMigration, "The database is behind this build: a migration is not applied. Run `bf-maint migrate`.", Every, StopsTheJob: true),
     ];
 
 
