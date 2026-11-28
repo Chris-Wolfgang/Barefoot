@@ -168,6 +168,7 @@ A downgrade is screened for data loss. These count:
 - a dropped table;
 - a dropped column;
 - a narrowing column change;
+- deleted seeded rows;
 - raw SQL (the tool does not inspect it, so it treats it as data-losing).
 
 Without `--confirm-data-loss` the tool exits `DataLossNotConfirmed` (6) and changes nothing. A downgrade
