@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using Wolfgang.Barefoot.Core.Hosting;
 using Wolfgang.Barefoot.Data;
@@ -86,11 +87,100 @@ public sealed class MaintenanceHostTests
 
 
     [Fact]
-    public async Task Main_when_asked_for_help_exits_Ok()
+    public async Task RunAsync_when_run_from_Program_exits_Ok_and_writes_the_log_file_of_the_day()
     {
-        var exitCode = await Program.Main(["--help"]);
+        var folder = Path.Combine(Path.GetTempPath(), $"barefoot-{Guid.NewGuid():N}");
+        try
+        {
+            var exitCode = await Program.RunAsync(["--help"], folder);
 
-        Assert.Equal((int)ExitCode.Ok, exitCode);
+            Assert.Equal((int)ExitCode.Ok, exitCode);
+            var file = Assert.Single(Directory.EnumerateFiles(folder));
+            Assert.Matches
+            (
+                new Regex(@"\Abf-maint-\d{8}\.log\z", RegexOptions.None, TimeSpan.FromSeconds(1)),
+                Path.GetFileName(file)
+            );
+            Assert.EndsWith
+            (
+                $"Z [INF] bf-maint: exit code 0 (Ok){Environment.NewLine}",
+                await File.ReadAllTextAsync(file),
+                StringComparison.Ordinal
+            );
+        }
+        finally
+        {
+            Directory.Delete(folder, recursive: true);
+        }
+    }
+
+
+
+    [Fact]
+    public async Task RunAsync_when_a_run_succeeds_logs_the_command_line_and_the_exit_code()
+    {
+        var run = await HostRun.StartAsync(["--help"], Configuration, NeverOpened);
+
+        var lines = LogLines(run);
+        Assert.Equal(2, lines.Count);
+        Assert.EndsWith("Z [INF] bf-maint: bf-maint --help", lines[0], StringComparison.Ordinal);
+        Assert.EndsWith("Z [INF] bf-maint: exit code 0 (Ok)", lines[1], StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task RunAsync_when_the_arguments_do_not_parse_logs_what_stderr_was_told()
+    {
+        var run = await HostRun.StartAsync(["migrate", "--status", "extra"], Configuration, NeverOpened);
+
+        var told = run
+            .Error
+            .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
+        var lines = LogLines(run);
+
+        Assert.NotEmpty(told);
+        Assert.Equal(told.Length + 2, lines.Count);
+        Assert.EndsWith("Z [INF] bf-maint: bf-maint migrate --status extra", lines[0], StringComparison.Ordinal);
+        Assert.All
+        (
+            told.Zip(lines.Skip(1)),
+            pair => Assert.EndsWith($"Z [INF] bf-maint: stderr: {pair.First}", pair.Second, StringComparison.Ordinal)
+        );
+        Assert.EndsWith("Z [INF] bf-maint: exit code 4 (Usage)", lines[^1], StringComparison.Ordinal);
+    }
+
+
+
+    [Fact]
+    public async Task RunAsync_when_a_verb_throws_logs_the_stack_trace_to_the_file_only()
+    {
+        var run = await HostRun.StartAsync(["migrate", "--status"], Configuration, NeverOpened);
+
+        var lines = LogLines(run);
+        Assert.EndsWith
+        (
+            "Z [ERR] bf-maint: bf-maint failed: No test here opens a database, and one asked for Server=db.example.com.",
+            lines[1],
+            StringComparison.Ordinal
+        );
+        Assert.Equal
+        (
+            "System.InvalidOperationException: No test here opens a database, and one asked for Server=db.example.com.",
+            lines[2]
+        );
+        Assert.StartsWith("   at ", lines[3], StringComparison.Ordinal);
+        Assert.EndsWith("Z [INF] bf-maint: exit code 1 (Failed)", lines[^1], StringComparison.Ordinal);
+        Assert.DoesNotContain("   at ", run.Error, StringComparison.Ordinal);
+    }
+
+
+
+    private static IReadOnlyList<string> LogLines(HostRun run)
+    {
+        return run
+            .Log
+            .Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries);
     }
 
 

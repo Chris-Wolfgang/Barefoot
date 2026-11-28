@@ -17,6 +17,8 @@
   <!-- Maintenance reaches the database through Data and never references ApiClient or Obe (DESIGN §2). -->
   <ItemGroup>
     <ProjectReference Include="..\Wolfgang.Barefoot.Data\Wolfgang.Barefoot.Data.csproj" />
+    <!-- The log to stderr and to the daily file (ADR 0016). -->
+    <ProjectReference Include="..\Wolfgang.Barefoot.Hosting\Wolfgang.Barefoot.Hosting.csproj" />
   </ItemGroup>
 
   <ItemGroup>
