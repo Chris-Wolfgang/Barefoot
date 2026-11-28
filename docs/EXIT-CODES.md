@@ -17,8 +17,8 @@ The three command-line tools share one numbering (ADR 0007), so a code never mea
 | 7 | `ApiUnavailable` | The API could not be reached within the retry budget. | `bf-scraper`, `bf` | stops |
 | 8 | `DatabaseUnavailable` | The database could not be reached within the retry budget. | `bf-scraper`, `bf`, `bf-maint` | stops |
 | 9 | `QuotaExhausted` | The monthly free database allowance is used up. | `bf-scraper`, `bf`, `bf-maint` | stops |
-| 10 | `Refused` | The tool will not act, for example on a schema newer than the build. | `bf-maint` | continues |
-| 11 | `MissingMigration` | `migrate --status` found the database behind this build: a migration is not applied. | `bf-maint` | continues |
+| 10 | `Refused` | The tool will not act: the database is newer than this build, or the API refused a catalog snapshot. | `bf-scraper`, `bf`, `bf-maint` | stops |
+| 11 | `MissingMigration` | The database is behind this build: a migration is not applied. Run `bf-maint migrate`. | `bf-scraper`, `bf`, `bf-maint` | stops |
 
 The scheduled job runs its steps in order and reads each step's exit code. It stops on a code
 marked *stops*, because no later step can work, and goes on to the next step otherwise: after a

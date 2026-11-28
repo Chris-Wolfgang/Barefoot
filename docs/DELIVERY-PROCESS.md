@@ -274,7 +274,7 @@ a scheduled failure is only a red run.
 yet.
 
 **The semiweekly job** on the home machine (refresh the catalog, run, send digests) arrives with
-phase 6. Its steps are gated on the shared exit codes: stop on 5, 7, 8 and 9, continue past 2 and 3
+phase 6. Its steps are gated on the shared exit codes: stop on 5, 7, 8, 9, 10 and 11, continue past 2 and 3
 (ADR 0007). It reports through the same script with the exit code as the signature, for example
 `-Workflow semiweekly-job -Signature exit-7`, so each kind of failure has one issue.
 

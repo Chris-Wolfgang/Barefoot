@@ -55,14 +55,14 @@ public sealed class ExitCodesTests
 
 
     [Fact]
-    public void All_when_read_marks_exactly_the_four_codes_the_job_stops_on()
+    public void All_when_read_marks_exactly_the_six_codes_the_job_stops_on()
     {
         var stops = ExitCodes
             .All
             .Where(info => info.StopsTheJob)
             .Select(info => (int)info.Code);
 
-        Assert.Equal([5, 7, 8, 9], stops);
+        Assert.Equal([5, 7, 8, 9, 10, 11], stops);
     }
 
 
@@ -70,8 +70,6 @@ public sealed class ExitCodesTests
     [Theory]
     [InlineData(ExitCode.BreakerTripped, "bf-scraper")]
     [InlineData(ExitCode.DataLossNotConfirmed, "bf-maint")]
-    [InlineData(ExitCode.Refused, "bf-maint")]
-    [InlineData(ExitCode.MissingMigration, "bf-maint")]
     public void Describe_when_a_code_belongs_to_one_binary_names_only_that_binary(ExitCode code, string binary)
     {
         Assert.Equal([binary], ExitCodes.Describe(code).UsedBy);
@@ -96,6 +94,8 @@ public sealed class ExitCodesTests
     [InlineData(ExitCode.Usage)]
     [InlineData(ExitCode.DatabaseUnavailable)]
     [InlineData(ExitCode.QuotaExhausted)]
+    [InlineData(ExitCode.Refused)]
+    [InlineData(ExitCode.MissingMigration)]
     public void Describe_when_a_code_is_shared_names_all_three_binaries(ExitCode code)
     {
         Assert.Equal(["bf-scraper", "bf", "bf-maint"], ExitCodes.Describe(code).UsedBy);
@@ -133,7 +133,7 @@ public sealed class ExitCodesTests
         Assert.Contains("change the code and run `scripts/Update-GeneratedDocs.ps1`. A test fails when the two differ.\n\n", markdown, StringComparison.Ordinal);
         Assert.Contains("The three command-line tools share one numbering (ADR 0007), so a code never means two things.\n\n", markdown, StringComparison.Ordinal);
         Assert.Contains("| Code | Name | Meaning | Used by | The scheduled job |\n|---|---|---|---|---|\n| 0 |", markdown, StringComparison.Ordinal);
-        Assert.Contains("| continues |\n\nThe scheduled job runs its steps in order and reads each step's exit code. It stops on a code\n", markdown, StringComparison.Ordinal);
+        Assert.Contains("| stops |\n\nThe scheduled job runs its steps in order and reads each step's exit code. It stops on a code\n", markdown, StringComparison.Ordinal);
         Assert.Contains("marked *stops*, because no later step can work, and goes on to the next step otherwise: after a\n", markdown, StringComparison.Ordinal);
         Assert.EndsWith("partial run or a tripped breaker the digests for what did complete are still sent.\n", markdown, StringComparison.Ordinal);
         Assert.Equal("| 0 | `Ok` | Done. | `bf-scraper`, `bf`, `bf-maint` | continues |", rows[0]);
@@ -144,12 +144,12 @@ public sealed class ExitCodesTests
         );
         Assert.Equal
         (
-            "| 10 | `Refused` | The tool will not act, for example on a schema newer than the build. | `bf-maint` | continues |",
+            "| 10 | `Refused` | The tool will not act: the database is newer than this build, or the API refused a catalog snapshot. | `bf-scraper`, `bf`, `bf-maint` | stops |",
             rows[10]
         );
         Assert.Equal
         (
-            "| 11 | `MissingMigration` | `migrate --status` found the database behind this build: a migration is not applied. | `bf-maint` | continues |",
+            "| 11 | `MissingMigration` | The database is behind this build: a migration is not applied. Run `bf-maint migrate`. | `bf-scraper`, `bf`, `bf-maint` | stops |",
             rows[11]
         );
     }

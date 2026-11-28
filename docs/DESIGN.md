@@ -161,7 +161,7 @@ each write is safe to repeat because of its own state (ADR 0012 §4). A run know
 list at creation, so progress is countable and the UI can show a run in flight.
 
 **Semiweekly job** (a scheduled task on the home machine, gated on the shared `ExitCode` enum,
-ADR 0007 — stop on 5, 7, 8 or 9; continue past 2 and 3). `bf-scraper` runs as the `Scraper`
+ADR 0007 — stop on 5, 7, 8, 9, 10 or 11; continue past 2 and 3). `bf-scraper` runs as the `Scraper`
 service principal and `bf send-digests` as `DigestSender` (ADR 0005):
 ```
 bf-scraper refresh-airports

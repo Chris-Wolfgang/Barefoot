@@ -43,12 +43,15 @@ public enum ExitCode
     /// <summary>The monthly free allowance is used up.</summary>
     QuotaExhausted = 9,
 
-    /// <summary>The tool will not act, for example on a schema newer than the build.</summary>
+    /// <summary>
+    /// The tool will not act: the database is newer than this build, or the API refused a catalog
+    /// snapshot (ADR 0017, ADR 0018).
+    /// </summary>
     Refused = 10,
 
     /// <summary>
-    /// <c>migrate --status</c> found the database behind this build: a migration is not applied
-    /// (ADR 0014).
+    /// The database is behind this build: a migration is not applied. <c>migrate --status</c> reports
+    /// it (ADR 0014), and so does a tool that the API answered with that readiness state (ADR 0018).
     /// </summary>
     MissingMigration = 11,
 }
