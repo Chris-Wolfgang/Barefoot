@@ -77,7 +77,7 @@ public sealed class InitialCreateTests
         Assert.Contains("INSERT INTO [app_user]", script, StringComparison.Ordinal);
         Assert.Contains
         (
-            $"VALUES ('{AppUser.UnassignedOid}', 0, 0, 0, NULL, NULL, N'{AppUser.UnassignedDisplayName}', N'', '1900-01-01T00:00:00.000Z', NULL, NULL, CAST(1 AS bigint))",
+            $"VALUES ('{AppUser.UnassignedOid}', 0, 0, 0, NULL, NULL, N'{AppUser.UnassignedDisplayName}', N'', '1900-01-01T00:00:00.000Z', 0, NULL, NULL, CAST(1 AS bigint))",
             script,
             StringComparison.Ordinal
         );

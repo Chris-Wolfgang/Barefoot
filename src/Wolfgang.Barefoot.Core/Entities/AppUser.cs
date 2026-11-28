@@ -1,3 +1,5 @@
+using Wolfgang.Barefoot.Contracts.Users;
+
 namespace Wolfgang.Barefoot.Core.Entities;
 
 /// <summary>
@@ -5,7 +7,8 @@ namespace Wolfgang.Barefoot.Core.Entities;
 /// directory call, gives an owner something to point at, and holds the person's own settings.
 /// </summary>
 /// <remarks>
-/// A person's role is not stored here: it comes from the directory with each sign-in (ADR 0005).
+/// A person's role comes from the directory with each sign-in (ADR 0005). <see cref="Role"/> is a
+/// copy of the last one, kept so the Users page can show it. Nothing is ever allowed or refused by it.
 /// </remarks>
 public sealed class AppUser
 {
@@ -37,6 +40,14 @@ public sealed class AppUser
 
     /// <summary>When the person last signed in.</summary>
     public DateTimeOffset LastSeenUtc { get; set; }
+
+
+
+    /// <summary>
+    /// The role the person last signed in with. It is for display: what a caller may do is decided
+    /// from their token, never from this value.
+    /// </summary>
+    public UserRole Role { get; set; }
 
 
 

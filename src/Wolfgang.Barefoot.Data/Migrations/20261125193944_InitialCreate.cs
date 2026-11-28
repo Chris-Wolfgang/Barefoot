@@ -41,6 +41,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                     display_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     email = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
                     last_seen_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
+                    role = table.Column<int>(type: "int", nullable: false),
                     disclaimer_version_accepted = table.Column<int>(type: "int", nullable: true),
                     disclaimer_accepted_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: true),
                     time_zone_id = table.Column<string>(type: "nvarchar(64)", maxLength: 64, nullable: true),
@@ -717,8 +718,8 @@ namespace Wolfgang.Barefoot.Data.Migrations
 
             migrationBuilder.InsertData(
                 table: "app_user",
-                columns: new[] { "oid", "default_adult_count", "default_child_count", "default_infant_count", "disclaimer_accepted_utc", "disclaimer_version_accepted", "display_name", "email", "last_seen_utc", "sessions_valid_after_utc", "time_zone_id", "version" },
-                values: new object[] { new Guid("00000000-0000-0000-0000-000000000000"), 0, 0, 0, null, null, "Unassigned", "", new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), null, null, 1L });
+                columns: new[] { "oid", "default_adult_count", "default_child_count", "default_infant_count", "disclaimer_accepted_utc", "disclaimer_version_accepted", "display_name", "email", "last_seen_utc", "role", "sessions_valid_after_utc", "time_zone_id", "version" },
+                values: new object[] { new Guid("00000000-0000-0000-0000-000000000000"), 0, 0, 0, null, null, "Unassigned", "", new DateTime(1900, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc), 0, null, null, 1L });
 
             migrationBuilder.CreateIndex(
                 name: "ux_airport_code",
