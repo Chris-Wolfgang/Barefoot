@@ -173,6 +173,51 @@ namespace Wolfgang.Barefoot.Data.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Wolfgang.Barefoot.Core.Entities.CatalogRefresh", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier")
+                        .HasColumnName("id");
+
+                    b.Property<int>("AddedCount")
+                        .HasColumnType("int")
+                        .HasColumnName("added_count");
+
+                    b.Property<int>("DeactivatedCount")
+                        .HasColumnType("int")
+                        .HasColumnName("deactivated_count");
+
+                    b.Property<int>("Kind")
+                        .HasColumnType("int")
+                        .HasColumnName("kind");
+
+                    b.Property<DateTime>("ReceivedUtc")
+                        .HasPrecision(3)
+                        .HasColumnType("datetime2(3)")
+                        .HasColumnName("received_utc");
+
+                    b.Property<string>("RefusalReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)")
+                        .HasColumnName("refusal_reason");
+
+                    b.Property<int>("UpdatedCount")
+                        .HasColumnType("int")
+                        .HasColumnName("updated_count");
+
+                    b.Property<int>("WarningCount")
+                        .HasColumnType("int")
+                        .HasColumnName("warning_count");
+
+                    b.HasKey("Id")
+                        .HasName("pk_catalog_refresh");
+
+                    b.HasIndex("Kind", "ReceivedUtc")
+                        .HasDatabaseName("ix_catalog_refresh_kind_received_utc");
+
+                    b.ToTable("catalog_refresh");
+                });
+
             modelBuilder.Entity("Wolfgang.Barefoot.Core.Entities.DigestDelivery", b =>
                 {
                     b.Property<Guid>("Id")

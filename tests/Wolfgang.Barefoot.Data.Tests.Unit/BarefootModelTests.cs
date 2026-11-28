@@ -34,6 +34,7 @@ public sealed class BarefootModelTests
             [
                 "airport: id",
                 "app_user: oid",
+                "catalog_refresh: id",
                 "digest_delivery: id",
                 "flight_direction: id",
                 "flight_leg: id",
@@ -80,7 +81,7 @@ public sealed class BarefootModelTests
             .SelectMany(entity => entity.FindPrimaryKey()!.Properties)
             .ToList();
 
-        Assert.Equal(26, keys.Count);
+        Assert.Equal(27, keys.Count);
         Assert.All(keys, property => Assert.Equal(ValueGenerated.Never, property.ValueGenerated));
     }
 
@@ -104,6 +105,7 @@ public sealed class BarefootModelTests
                 "app_user.display_name: 200",
                 "app_user.email: 320",
                 "app_user.time_zone_id: 64",
+                "catalog_refresh.refusal_reason: 500",
                 "digest_delivery.html_body: ",
                 "digest_delivery.last_error: 2000",
                 "digest_delivery.recipient_address: 320",
@@ -226,7 +228,7 @@ public sealed class BarefootModelTests
         await using var context = database.NewContext();
         var indexes = context.Model.GetEntityTypes().SelectMany(entity => entity.GetIndexes()).ToList();
 
-        Assert.Equal(43, indexes.Count);
+        Assert.Equal(44, indexes.Count);
         Assert.All
         (
             indexes,
@@ -271,7 +273,7 @@ public sealed class BarefootModelTests
             .Concat(entities.SelectMany(entity => entity.GetKeys()).Select(key => key.GetName()!))
             .ToList();
 
-        Assert.Equal(107, names.Count);
+        Assert.Equal(109, names.Count);
         Assert.All(names, name => Assert.InRange(name.Length, 1, 128));
     }
 }
