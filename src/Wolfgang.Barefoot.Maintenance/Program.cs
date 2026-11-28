@@ -23,7 +23,8 @@ internal static class Program
             Console.Error,
             configuration,
             SqlServerDatabase.Open,
-            SqlServerDatabase.Offline
+            SqlServerDatabase.Offline,
+            SqlServerDatabase.Roles
         );
 #pragma warning restore RS0030
     }

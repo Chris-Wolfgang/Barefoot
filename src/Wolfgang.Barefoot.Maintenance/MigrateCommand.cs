@@ -266,7 +266,12 @@ internal static class MigrateCommand
     /// connection string it exits <see cref="ExitCode.Usage"/>; when the database cannot be reached it
     /// exits <see cref="ExitCode.DatabaseUnavailable"/>. In both cases <paramref name="work"/> does not run.
     /// </summary>
-    private static async Task<int> OnDatabaseAsync
+    /// <summary>
+    /// Opens the database the configuration names and runs <paramref name="work"/> on it. Without a
+    /// usable connection string it exits <see cref="ExitCode.Usage"/>; when the database cannot be
+    /// reached, <see cref="ExitCode.DatabaseUnavailable"/>. In both cases <paramref name="work"/> is not run.
+    /// </summary>
+    internal static async Task<int> OnDatabaseAsync
     (
         InvocationConfiguration streams,
         IConfiguration configuration,

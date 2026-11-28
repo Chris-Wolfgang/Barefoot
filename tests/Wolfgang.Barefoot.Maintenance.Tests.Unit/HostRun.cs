@@ -19,7 +19,8 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
         IConfiguration configuration,
         Func<string, BarefootDbContext> openContext,
         CancellationToken cancellationToken = default,
-        Func<BarefootDbContext>? offlineContext = null
+        Func<BarefootDbContext>? offlineContext = null,
+        RoleScript? roles = null
     )
     {
         using var output = new StringWriter(CultureInfo.InvariantCulture);
@@ -33,6 +34,7 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
             configuration,
             openContext,
             offlineContext ?? SqlServerDatabase.Offline,
+            roles ?? SqlServerDatabase.Roles,
             cancellationToken
         );
 

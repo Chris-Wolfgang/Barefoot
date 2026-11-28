@@ -7,7 +7,7 @@ firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` en
 other three verbs, logging), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
-and `--script` with `--from`, `--to` and `--output`. `migrate` does not run `grant-roles` yet, and the file
+and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built as a verb of its own; `migrate` does not run it yet, and the file
 log is not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
@@ -76,6 +76,10 @@ The tool is **declarative**. You name a target, never a direction.
   API after one command. Not with `--status`, `--script`, or a move to an older migration.
 - On a server that is not Azure SQL Database (a local SQL Server) the grant is skipped: the tool says so and
   exits `Ok` (0).
+- stdout carries one line: `roles: granted`, or `roles: skipped (not Azure SQL Database)`.
+- Without a connection string it exits `Usage` (4); when the database cannot be reached,
+  `DatabaseUnavailable` (8), as `migrate` does. When the server refuses a statement, for example because
+  no identity called `barefoot-api` exists, the tool exits `Failed` (1) with one line on stderr.
 
 ### `assign-owner <oid>`
 
