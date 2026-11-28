@@ -67,6 +67,11 @@ expect_line() {
   grep -qxF -- "$1" "$WORK/out.txt" || { cat "$WORK/out.txt" >&2; fail "stdout has no line '$1'"; }
 }
 
+# Fails unless the last bf-maint run wrote this line to stderr.
+expect_error_line() {
+  grep -qxF -- "$1" "$WORK/err.txt" || { cat "$WORK/err.txt" >&2; fail "stderr has no line '$1'"; }
+}
+
 # Fails unless the query gives the value.
 expect_value() {
   local got
@@ -119,6 +124,8 @@ tables="$(query barefoot "SELECT COUNT(*) FROM sys.tables WHERE name <> '__EFMig
 echo "ok: tables after up = $tables"
 expect 0 migrate
 expect_line "direction: none"
+expect 0 verify-schema
+expect_line "differences: 0"
 
 echo "== Down"
 expect 6 migrate --to 0
@@ -155,5 +162,18 @@ done
 ConnectionStrings__Barefoot="$(connection barefoot_scripted)"
 expect 0 migrate --status
 expect_line "state: UpToDate"
+expect 0 verify-schema
+expect_line "differences: 0"
 
-echo "Migration check passed: up, down, up, and the script, on SQL Server."
+echo "== verify-schema names what was changed by hand"
+dropped="$(query barefoot_scripted "SELECT TOP 1 t.name + '.' + i.name FROM sys.indexes i JOIN sys.tables t ON t.object_id = i.object_id WHERE i.is_primary_key = 0 AND i.is_unique_constraint = 0 AND i.name IS NOT NULL AND t.name <> '__EFMigrationsHistory' ORDER BY 1" | tr -d '')"
+query barefoot_scripted "DROP INDEX [${dropped#*.}] ON [${dropped%%.*}]; ALTER TABLE app_user ADD stray_column int NULL; ALTER TABLE app_user ALTER COLUMN version bigint NULL; CREATE TABLE stray_table (id int NOT NULL);" >/dev/null
+expect 1 verify-schema
+expect_line "differences: 5"
+expect_error_line "missing: index $dropped"
+expect_error_line "extra: column app_user.stray_column"
+expect_error_line "different: column app_user.version is bigint null, expected bigint not null"
+expect_error_line "extra: table stray_table"
+expect_error_line "extra: column stray_table.id"
+
+echo "Migration check passed: up, down, up, the script and verify-schema, on SQL Server."
