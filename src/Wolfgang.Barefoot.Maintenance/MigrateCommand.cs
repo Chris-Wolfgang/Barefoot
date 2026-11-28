@@ -1,4 +1,5 @@
 using System.CommandLine;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Wolfgang.Barefoot.Core.Hosting;
 using Wolfgang.Barefoot.Data;
@@ -7,8 +8,9 @@ using Wolfgang.Barefoot.Data.Schema;
 namespace Wolfgang.Barefoot.Maintenance;
 
 /// <summary>
-/// The verb <c>bf-maint migrate</c> (docs/MIGRATE.md). So far it reports: <c>--status</c> reads the
-/// schema version of the database against the one this build expects and changes nothing.
+/// The verb <c>bf-maint migrate</c> (docs/MIGRATE.md). Alone it applies every pending migration.
+/// With <c>--status</c> it reads the schema version of the database against the one this build
+/// expects and changes nothing.
 /// </summary>
 internal static class MigrateCommand
 {
@@ -34,16 +36,21 @@ internal static class MigrateCommand
             Description = "Report the schema version of the database against the one this build expects. Changes nothing.",
         };
 
-        var command = new Command("migrate", "Reports the schema's version. Applying and scripting migrations are not built yet.")
+        var command = new Command("migrate", "Applies every pending migration, up to the latest this build ships.")
         {
             status,
         };
 
         command.SetAction
         (
-            (parsed, cancellationToken) => parsed.GetValue(status)
-                ? StatusAsync(parsed.InvocationConfiguration, configuration, openContext, cancellationToken)
-                : NotBuiltAsync(parsed.InvocationConfiguration.Error)
+            (parsed, cancellationToken) => OnDatabaseAsync
+            (
+                parsed.InvocationConfiguration,
+                configuration,
+                openContext,
+                parsed.GetValue(status) ? StatusAsync : ApplyAsync,
+                cancellationToken
+            )
         );
 
         return command;
@@ -51,22 +58,17 @@ internal static class MigrateCommand
 
 
 
-    private static async Task<int> NotBuiltAsync(TextWriter error)
-    {
-        await error
-            .WriteLineAsync("bf-maint migrate does not apply migrations yet. Only `bf-maint migrate --status` is built.")
-            .ConfigureAwait(false);
-
-        return (int)ExitCode.Usage;
-    }
-
-
-
-    private static async Task<int> StatusAsync
+    /// <summary>
+    /// Opens the configured database and runs <paramref name="work"/> on it. Without a usable
+    /// connection string it exits <see cref="ExitCode.Usage"/>; when the database cannot be reached it
+    /// exits <see cref="ExitCode.DatabaseUnavailable"/>. In both cases <paramref name="work"/> does not run.
+    /// </summary>
+    private static async Task<int> OnDatabaseAsync
     (
         InvocationConfiguration streams,
         IConfiguration configuration,
         Func<string, BarefootDbContext> openContext,
+        Func<BarefootDbContext, InvocationConfiguration, CancellationToken, Task<int>> work,
         CancellationToken cancellationToken
     )
     {
@@ -114,12 +116,74 @@ internal static class MigrateCommand
                 return (int)ExitCode.DatabaseUnavailable;
             }
 
-            var status = await SchemaProbe
-                .ReadAsync(context, cancellationToken)
+            return await work(context, streams, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+
+
+    private static async Task<int> StatusAsync
+    (
+        BarefootDbContext context,
+        InvocationConfiguration streams,
+        CancellationToken cancellationToken
+    )
+    {
+        var status = await SchemaProbe
+            .ReadAsync(context, cancellationToken)
+            .ConfigureAwait(false);
+
+        return await ReportAsync(status, streams).ConfigureAwait(false);
+    }
+
+
+
+    private static async Task<int> ApplyAsync
+    (
+        BarefootDbContext context,
+        InvocationConfiguration streams,
+        CancellationToken cancellationToken
+    )
+    {
+        var before = await SchemaProbe
+            .ReadAsync(context, cancellationToken)
+            .ConfigureAwait(false);
+
+        if (before.State == SchemaState.NewerSchema)
+        {
+            await streams
+                .Error
+                .WriteLineAsync($"The database is newer than this build: it holds {Listed(before.Unknown)}. Nothing was applied. Deploy the matching build.")
                 .ConfigureAwait(false);
 
-            return await ReportAsync(status, streams).ConfigureAwait(false);
+            return (int)ExitCode.Refused;
         }
+
+        if (before.State == SchemaState.MissingMigration)
+        {
+            await context
+                .Database
+                .MigrateAsync(cancellationToken)
+                .ConfigureAwait(false);
+        }
+
+        var after = await SchemaProbe
+            .ReadAsync(context, cancellationToken)
+            .ConfigureAwait(false);
+
+        var report = string.Join
+        (
+            '\n',
+            $"applied: {Listed(before.Pending)}",
+            $"current: {after.Current ?? None}"
+        );
+
+        await streams
+            .Output
+            .WriteLineAsync(report)
+            .ConfigureAwait(false);
+
+        return (int)ExitCode.Ok;
     }
 
 

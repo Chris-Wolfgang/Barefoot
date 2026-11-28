@@ -7,8 +7,8 @@ using Wolfgang.Barefoot.Data;
 namespace Wolfgang.Barefoot.Maintenance.Tests.Unit;
 
 /// <summary>
-/// A database in memory, on SQLite, that holds a migration history and nothing else. It lives as long
-/// as its connection. <see cref="Open"/> stands in for SQL Server when a test runs <c>bf-maint</c>.
+/// A database in memory, on SQLite, that starts with a migration history and nothing else. It lives as
+/// long as its connection. <see cref="Open"/> stands in for SQL Server when a test runs <c>bf-maint</c>.
 /// </summary>
 internal sealed class TestSchema : IAsyncDisposable
 {
@@ -20,12 +20,18 @@ internal sealed class TestSchema : IAsyncDisposable
 
 
 
-    private TestSchema(SqliteConnection connection)
+    private TestSchema(SqliteConnection connection, bool runnable)
     {
         _connection = connection;
-        _options = new DbContextOptionsBuilder<BarefootDbContext>()
-            .UseSqlite(connection)
-            .Options;
+
+        var options = new DbContextOptionsBuilder<BarefootDbContext>();
+        _options = runnable
+            ? options
+                .UseSqlite(connection, sqlite => sqlite.MigrationsAssembly(typeof(TestSchema).Assembly))
+                .Options
+            : options
+                .UseSqlite(connection)
+                .Options;
     }
 
 
@@ -61,12 +67,30 @@ internal sealed class TestSchema : IAsyncDisposable
     /// The history is written directly, without running a migration: <c>InitialCreate</c> is written
     /// for SQL Server.
     /// </remarks>
-    public static async Task<TestSchema> CreateAsync(params string[] applied)
+    public static Task<TestSchema> CreateAsync(params string[] applied)
+    {
+        return CreateAsync(runnable: false, applied);
+    }
+
+
+
+    /// <summary>
+    /// As <see cref="CreateAsync(string[])"/>, but the migrations this database knows are the two of
+    /// <see cref="Migrations.TestMigrations"/>, which SQLite can run.
+    /// </summary>
+    public static Task<TestSchema> CreateRunnableAsync(params string[] applied)
+    {
+        return CreateAsync(runnable: true, applied);
+    }
+
+
+
+    private static async Task<TestSchema> CreateAsync(bool runnable, string[] applied)
     {
         var connection = new SqliteConnection("DataSource=:memory:");
         await connection.OpenAsync();
 
-        var schema = new TestSchema(connection);
+        var schema = new TestSchema(connection, runnable);
         if (applied.Length == 0)
         {
             return schema;
@@ -92,6 +116,37 @@ internal sealed class TestSchema : IAsyncDisposable
         _connectionStrings.Add(connectionString);
 
         return new BarefootDbContext(_options);
+    }
+
+
+
+    /// <summary>The migrations this database's history lists, oldest first.</summary>
+    public async Task<IReadOnlyList<string>> AppliedAsync()
+    {
+        await using var context = new BarefootDbContext(_options);
+
+        return [.. await context.Database.GetAppliedMigrationsAsync()];
+    }
+
+
+
+    /// <summary>Runs <paramref name="sql"/> on this database.</summary>
+    public async Task ExecuteAsync(string sql)
+    {
+        await using var context = new BarefootDbContext(_options);
+
+        await context.Database.ExecuteSqlRawAsync(sql);
+    }
+
+
+
+    /// <summary>How many rows <paramref name="table"/> holds.</summary>
+    public async Task<long> CountAsync(string table)
+    {
+        await using var command = _connection.CreateCommand();
+        command.CommandText = $"SELECT COUNT(*) FROM \"{table}\"";
+
+        return (long)(await command.ExecuteScalarAsync())!;
     }
 
 
