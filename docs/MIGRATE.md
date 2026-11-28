@@ -5,8 +5,9 @@ This document is the operator contract for `bf-maint` (`Wolfgang.Barefoot.Mainte
 firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` enum), ADR 0014 (exit code
 11), ADR 0015 (the connection, a missing database, `--script`), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
-Of the verbs, `bf-maint migrate` (to the latest migration only) and `bf-maint migrate --status` are built.
-`migrate` does not run `grant-roles` yet, and `--to`, `--script` and the data-loss screen are not built. The
+Of the verbs, `bf-maint migrate` (to the latest migration only), `bf-maint migrate --status` and
+`bf-maint migrate --script --output <file>` (every migration, from an empty schema to the latest) are built.
+`migrate` does not run `grant-roles` yet, and `--to`, `--from` and the data-loss screen are not built. The
 rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
@@ -122,6 +123,16 @@ that is behind applies the pending migrations and exits 0 (ADR 0014).
 
 On exit 0 stdout carries two lines: `applied:` with the ids it applied (or `none`), and `current:` with the
 id the database is at afterwards. When a migration fails the tool exits `Failed` (1) with one line on stderr.
+
+### What `migrate --script` writes and exits with
+
+`--script` opens no connection and needs no connection string. It writes the SQL of the migrations this
+build ships to the `--output` file, replacing a file that is already there, and exits `Ok` (0). stdout
+carries two lines: `script:` with the full path of the file, and `migrations:` with the ids in it. When the
+file cannot be written the tool exits `Failed` (1).
+
+These exit `Usage` (4) and write nothing: `--script` without `--output`, `--output` without `--script`, and
+`--script` together with `--status`.
 
 `docs/EXIT-CODES.md` is generated from the enum.
 
