@@ -8,7 +8,7 @@ Barefoot is distributed with the NuGet packages below: the full transitive closu
 every project under `src/`. Each package is distributed under its own license.
 Build-time-only packages (analyzers, SourceLink) are not distributed and are not listed.
 
-Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolfgang.Barefoot.Data`, `Wolfgang.Barefoot.Hosting`, `Wolfgang.Barefoot.Maintenance`.
+Projects covered: `Wolfgang.Barefoot.Business`, `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolfgang.Barefoot.Data`, `Wolfgang.Barefoot.Hosting`, `Wolfgang.Barefoot.Maintenance`.
 
 | Package | Version(s) | License | Copyright | Project URL | Used by |
 |---|---|---|---|---|---|
@@ -77,9 +77,9 @@ Projects covered: `Wolfgang.Barefoot.Contracts`, `Wolfgang.Barefoot.Core`, `Wolf
 | System.Configuration.ConfigurationManager | 9.0.11 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.Diagnostics.EventLog | 9.0.11 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.IdentityModel.Tokens.Jwt | 7.7.1 | MIT | © Microsoft Corporation. All rights reserved. | <https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
+| System.IO.Hashing | 10.0.12 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Business, Wolfgang.Barefoot.Contracts, Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Hosting, Wolfgang.Barefoot.Maintenance |
 | System.Memory.Data | 8.0.1 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.Security.Cryptography.Pkcs | 10.0.13 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | System.Security.Cryptography.ProtectedData | 9.0.11 | MIT | © Microsoft Corporation. All rights reserved. | <https://dot.net/> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
-| Wolfgang.Extensions.IComparable | 1.1.2 | MIT | Copyright (c) Chris Wolfgang | <https://github.com/Chris-Wolfgang/IComparable-Extensions> | Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
+| Wolfgang.Extensions.IComparable | 1.1.2 | MIT | Copyright (c) Chris Wolfgang | <https://github.com/Chris-Wolfgang/IComparable-Extensions> | Wolfgang.Barefoot.Business, Wolfgang.Barefoot.Core, Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
 | Wolfgang.Extensions.String | 0.2.0 | MIT | Copyright (c) 2025-2026 Chris Wolfgang | <https://github.com/Chris-Wolfgang/String-Extensions> | Wolfgang.Barefoot.Data, Wolfgang.Barefoot.Maintenance |
