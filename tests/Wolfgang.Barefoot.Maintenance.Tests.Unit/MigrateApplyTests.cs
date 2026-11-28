@@ -31,7 +31,7 @@ public sealed class MigrateApplyTests
         Assert.Equal(ExitCode.Ok, run.ExitCode);
         Assert.Equal
         (
-            $"applied: {TestMigrations.First}, {TestMigrations.Second}\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            $"direction: up\napplied: {TestMigrations.First}, {TestMigrations.Second}\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
             run.Output
         );
         Assert.Empty(run.Error);
@@ -47,8 +47,8 @@ public sealed class MigrateApplyTests
 
         await RunAsync(schema.Open);
 
-        Assert.Equal(1, await schema.CountAsync("first_thing"));
-        Assert.Equal(0, await schema.CountAsync("second_thing"));
+        Assert.True(await schema.HasAsync(TestMigrations.Table));
+        Assert.True(await schema.HasAsync(TestMigrations.Index));
     }
 
 
@@ -56,12 +56,16 @@ public sealed class MigrateApplyTests
     [Fact]
     public async Task RunAsync_when_one_migration_is_pending_applies_that_one_alone()
     {
-        await using var schema = await TestSchema.CreateRunnableAsync(TestMigrations.First);
+        await using var schema = await TestSchema.CreateMigratedAsync(TestMigrations.First);
 
         var run = await RunAsync(schema.Open);
 
         Assert.Equal(ExitCode.Ok, run.ExitCode);
-        Assert.Equal($"applied: {TestMigrations.Second}\ncurrent: {TestMigrations.Second}{Environment.NewLine}", run.Output);
+        Assert.Equal
+        (
+            $"direction: up\napplied: {TestMigrations.Second}\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            run.Output
+        );
         Assert.Empty(run.Error);
         Assert.Equal([TestMigrations.First, TestMigrations.Second], await schema.AppliedAsync());
     }
@@ -76,7 +80,11 @@ public sealed class MigrateApplyTests
         var run = await RunAsync(schema.Open);
 
         Assert.Equal(ExitCode.Ok, run.ExitCode);
-        Assert.Equal($"applied: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}", run.Output);
+        Assert.Equal
+        (
+            $"direction: none\napplied: none\nreverted: none\ncurrent: {TestMigrations.Second}{Environment.NewLine}",
+            run.Output
+        );
         Assert.Empty(run.Error);
         Assert.Equal([TestMigrations.First, TestMigrations.Second], await schema.AppliedAsync());
     }
@@ -105,8 +113,8 @@ public sealed class MigrateApplyTests
     [Fact]
     public async Task RunAsync_when_a_migration_fails_exits_Failed_and_does_not_record_it()
     {
+        // The history says First was applied, but its table is not there, so Second cannot make its index.
         await using var schema = await TestSchema.CreateRunnableAsync(TestMigrations.First);
-        await schema.ExecuteAsync("CREATE TABLE second_thing (id INTEGER)");
 
         var run = await RunAsync(schema.Open);
 
