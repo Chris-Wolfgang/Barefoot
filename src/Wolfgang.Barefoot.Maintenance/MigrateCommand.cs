@@ -12,7 +12,8 @@ namespace Wolfgang.Barefoot.Maintenance;
 
 /// <summary>
 /// The verb <c>bf-maint migrate</c> (docs/MIGRATE.md). Alone it applies every pending migration;
-/// with <c>--to</c> it moves up or down to the migration named.
+/// with <c>--to</c> it moves up or down to the migration named. A move that ends on the latest
+/// migration also gives the API its database user and roles (ADR 0016).
 /// With <c>--status</c> it reads the schema version of the database against the one this build
 /// expects and changes nothing. With <c>--script</c> it writes the SQL of a move to a file, by default
 /// from an empty schema to the latest migration, and opens no connection.
@@ -35,11 +36,13 @@ internal static class MigrateCommand
     /// <param name="configuration">Holds the connection string <see cref="ConnectionStringName"/>.</param>
     /// <param name="openContext">Makes a context on the database a connection string names.</param>
     /// <param name="offlineContext">Makes a context that names no database, for <c>--script</c>.</param>
+    /// <param name="roles">The SQL that makes the API's database user and adds it to its roles.</param>
     public static Command Create
     (
         IConfiguration configuration,
         Func<string, BarefootDbContext> openContext,
-        Func<BarefootDbContext> offlineContext
+        Func<BarefootDbContext> offlineContext,
+        RoleScript roles
     )
     {
         var options = new Options();
@@ -90,7 +93,7 @@ internal static class MigrateCommand
                     openContext,
                     parsed.GetValue(options.Status)
                         ? StatusAsync
-                        : (context, streams, cancellation) => MoveAsync(context, streams, target, confirmed, cancellation),
+                        : (context, streams, cancellation) => MoveAsync(context, streams, new MoveRequest(target, confirmed, roles), cancellation),
                     cancellationToken
                 );
             }
@@ -347,19 +350,19 @@ internal static class MigrateCommand
 
 
     /// <summary>
-    /// Moves the database to the migration <paramref name="to"/> names, up or down, or to the latest
-    /// when it is <see langword="null"/>. A move down that would lose data needs
-    /// <paramref name="confirmed"/>.
+    /// Moves the database to the migration <paramref name="request"/> names, up or down, or to the
+    /// latest when it names none. A move down that would lose data needs the request's confirmation.
     /// </summary>
     private static async Task<int> MoveAsync
     (
         BarefootDbContext context,
         InvocationConfiguration streams,
-        string? to,
-        bool confirmed,
+        MoveRequest request,
         CancellationToken cancellationToken
     )
     {
+        var to = request.To;
+
         var before = await SchemaProbe
             .ReadAsync(context, cancellationToken)
             .ConfigureAwait(false);
@@ -388,7 +391,7 @@ internal static class MigrateCommand
 
         var plan = MigrationPlan.Make(shipped, applied, target.Id);
 
-        var losses = confirmed ? [] : Losses(context, plan.Revert);
+        var losses = request.Confirmed ? [] : Losses(context, plan.Revert);
         if (losses.Count > 0)
         {
             return await RefuseAsync
@@ -399,7 +402,7 @@ internal static class MigrateCommand
             ).ConfigureAwait(false);
         }
 
-        return await CarryOutAsync(context, streams, plan, target.Id, cancellationToken).ConfigureAwait(false);
+        return await CarryOutAsync(context, streams, new Move(plan, target.Id, request.Roles), cancellationToken).ConfigureAwait(false);
     }
 
 
@@ -422,21 +425,25 @@ internal static class MigrateCommand
 
 
 
-    /// <summary>Runs <paramref name="plan"/> when it changes something, then reports what was done.</summary>
+    /// <summary>
+    /// Runs the plan of <paramref name="move"/> when it changes something, grants the roles when the
+    /// database ends on the latest migration, then reports what was done.
+    /// </summary>
     private static async Task<int> CarryOutAsync
     (
         BarefootDbContext context,
         InvocationConfiguration streams,
-        MigrationPlan plan,
-        string targetId,
+        Move move,
         CancellationToken cancellationToken
     )
     {
+        var plan = move.Plan;
+
         if (!string.Equals(plan.Direction, MigrationPlan.Nowhere, StringComparison.Ordinal))
         {
             await context
                 .GetService<IMigrator>()
-                .MigrateAsync(targetId, cancellationToken)
+                .MigrateAsync(move.TargetId, cancellationToken)
                 .ConfigureAwait(false);
         }
 
@@ -444,13 +451,18 @@ internal static class MigrateCommand
             .ReadAsync(context, cancellationToken)
             .ConfigureAwait(false);
 
+        var roles = after.State == SchemaState.UpToDate
+            ? await GrantRolesCommand.OutcomeAsync(context, move.Roles, cancellationToken).ConfigureAwait(false)
+            : "not run";
+
         var report = string.Join
         (
             '\n',
             $"direction: {plan.Direction}",
             $"applied: {Listed(plan.Apply)}",
             $"reverted: {Listed(plan.Revert)}",
-            $"current: {after.Current ?? None}"
+            $"current: {after.Current ?? None}",
+            $"roles: {roles}"
         );
 
         await streams
@@ -608,4 +620,20 @@ internal static class MigrateCommand
     /// <param name="To">The text of <c>--to</c>, or <see langword="null"/> for the latest migration.</param>
     /// <param name="Confirmed">Whether <c>--confirm-data-loss</c> was given.</param>
     private sealed record ScriptRequest(string Output, string? From, string? To, bool Confirmed);
+
+
+
+    /// <summary>What a move of the database was asked to do.</summary>
+    /// <param name="To">The text of <c>--to</c>, or <see langword="null"/> for the latest migration.</param>
+    /// <param name="Confirmed">Whether <c>--confirm-data-loss</c> was given.</param>
+    /// <param name="Roles">The SQL that makes the API's database user and adds it to its roles.</param>
+    private sealed record MoveRequest(string? To, bool Confirmed, RoleScript Roles);
+
+
+
+    /// <summary>A move that passed every check and is ready to run.</summary>
+    /// <param name="Plan">What to apply and what to roll back.</param>
+    /// <param name="TargetId">The id of the migration the database ends on, or <c>0</c>.</param>
+    /// <param name="Roles">The SQL that makes the API's database user and adds it to its roles.</param>
+    private sealed record Move(MigrationPlan Plan, string TargetId, RoleScript Roles);
 }

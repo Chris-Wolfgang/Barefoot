@@ -38,7 +38,7 @@ internal static class MaintenanceHost
     {
         var root = new RootCommand("Changes and reports the schema of Barefoot's database.")
         {
-            MigrateCommand.Create(configuration, openContext, offlineContext),
+            MigrateCommand.Create(configuration, openContext, offlineContext, roles),
             GrantRolesCommand.Create(configuration, openContext, roles),
         };
 

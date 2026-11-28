@@ -43,6 +43,21 @@ internal static class GrantRolesCommand
 
 
 
+    /// <summary>
+    /// Runs <paramref name="roles"/> on the database and says what happened: <c>granted</c>, or
+    /// <c>skipped</c> with the reason. <c>migrate</c> reports the same words.
+    /// </summary>
+    internal static async Task<string> OutcomeAsync(BarefootDbContext context, RoleScript roles, CancellationToken cancellationToken)
+    {
+        var granted = await RoleGrant
+            .RunAsync(context, roles, cancellationToken)
+            .ConfigureAwait(false);
+
+        return granted ? "granted" : $"skipped ({roles.WhyNot})";
+    }
+
+
+
     private static async Task<int> GrantAsync
     (
         BarefootDbContext context,
@@ -51,13 +66,11 @@ internal static class GrantRolesCommand
         CancellationToken cancellationToken
     )
     {
-        var granted = await RoleGrant
-            .RunAsync(context, roles, cancellationToken)
-            .ConfigureAwait(false);
+        var outcome = await OutcomeAsync(context, roles, cancellationToken).ConfigureAwait(false);
 
         await streams
             .Output
-            .WriteLineAsync(granted ? "roles: granted" : $"roles: skipped ({roles.WhyNot})")
+            .WriteLineAsync($"roles: {outcome}")
             .ConfigureAwait(false);
 
         return (int)ExitCode.Ok;

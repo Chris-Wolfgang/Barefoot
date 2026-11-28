@@ -7,8 +7,7 @@ firewall rule, session hygiene), ADR 0007 (the host and the shared `ExitCode` en
 other three verbs, logging), ADR 0004 §8 (`assign-owner`) and ADR 0005 (database identities). It adds no decision.
 
 Of the verbs, `bf-maint migrate` is built with all its options: `--to`, `--confirm-data-loss`, `--status`,
-and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built as a verb of its own; `migrate` does not run it yet, and the file
-log is not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
+and `--script` with `--from`, `--to` and `--output`. `bf-maint grant-roles` is built, and `migrate` runs it. The file log is not built yet. The rest of `bf-maint` arrives with build phase 2 (DESIGN §13); the Azure database,
 the firewall rule and the managed identity arrive with phase 6. Points the ADRs leave open are listed in
 [the gaps note](notes/2026-11-20-convention-gaps.md) and are marked here as *(open: gap M-n)*.
 
@@ -149,9 +148,15 @@ Without `--to` the target is the latest migration this build ships.
 | newer than this build | changes nothing and names the migrations it does not ship, whatever the target | `Refused` (10) |
 | holding a gap: a migration is not applied and a later one is | changes nothing and names the missing migrations, whatever the target | `Refused` (10) |
 
-On exit 0 stdout carries four lines: `direction:` (`up`, `down` or `none`), `applied:` with the ids it
-applied, `reverted:` with the ids it rolled back, newest first, and `current:` with the id the database is
-at afterwards. A list that is empty reads `none`. When a migration fails the tool exits `Failed` (1) with one
+On exit 0 stdout carries five lines: `direction:` (`up`, `down` or `none`), `applied:` with the ids it
+applied, `reverted:` with the ids it rolled back, newest first, `current:` with the id the database is
+at afterwards, and `roles:`. A list that is empty reads `none`.
+
+`roles:` reads `granted` when the tool ran `grant-roles`, which it does whenever the database ends on the
+latest migration, also when nothing was applied. It reads `skipped (not Azure SQL Database)` on a server
+that cannot make the user, and `not run` when the database ends on an older migration. When the grant
+fails the tool exits `Failed` (1) and the migrations stay applied; run `bf-maint grant-roles` once the
+cause is fixed. When a migration fails the tool exits `Failed` (1) with one
 line on stderr.
 
 A `--to` that matches no migration, or more than one, exits `Usage` (4) and changes nothing; the tool lists

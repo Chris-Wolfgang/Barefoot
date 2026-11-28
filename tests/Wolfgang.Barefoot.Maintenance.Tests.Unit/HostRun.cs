@@ -11,6 +11,14 @@ namespace Wolfgang.Barefoot.Maintenance.Tests.Unit;
 internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
 {
     /// <summary>
+    /// A role script for a server that cannot make the user: it asks, is told no, and runs nothing.
+    /// SQLite can run it, which it cannot do with the script for SQL Server.
+    /// </summary>
+    public static readonly RoleScript NoRoles = new("SELECT 0 AS \"Value\"", [], "not this kind of server");
+
+
+
+    /// <summary>
     /// Runs <see cref="MaintenanceHost"/> with <paramref name="args"/> and captures both streams.
     /// </summary>
     public static async Task<HostRun> StartAsync
@@ -34,7 +42,7 @@ internal sealed record HostRun(ExitCode ExitCode, string Output, string Error)
             configuration,
             openContext,
             offlineContext ?? SqlServerDatabase.Offline,
-            roles ?? SqlServerDatabase.Roles,
+            roles ?? NoRoles,
             cancellationToken
         );
 
