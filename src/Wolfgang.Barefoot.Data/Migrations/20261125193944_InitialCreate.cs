@@ -17,7 +17,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    code = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false),
+                    code = table.Column<string>(type: "nvarchar(3)", maxLength: 3, nullable: false, collation: OrdinalCollation.Name),
                     name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     city = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     state = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
@@ -80,7 +80,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 name: "setting",
                 columns: table => new
                 {
-                    key = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false),
+                    key = table.Column<string>(type: "nvarchar(128)", maxLength: 128, nullable: false, collation: OrdinalCollation.Name),
                     value = table.Column<string>(type: "nvarchar(4000)", maxLength: 4000, nullable: false),
                     updated_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
                     version = table.Column<long>(type: "bigint", nullable: false)
@@ -96,7 +96,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     kind = table.Column<int>(type: "int", nullable: false),
-                    value = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    value = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, collation: OrdinalCollation.Name),
                     first_seen_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
                     last_seen_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false)
                 },
@@ -110,7 +110,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 columns: table => new
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, collation: OrdinalCollation.Name),
                     name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     short_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: true),
                     brand = table.Column<int>(type: "int", nullable: false),
@@ -162,7 +162,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     owner_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    address = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false),
+                    address = table.Column<string>(type: "nvarchar(320)", maxLength: 320, nullable: false, collation: OrdinalCollation.Name),
                     display_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     version = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -184,7 +184,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     owner_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
-                    normalized_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
+                    normalized_name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false, collation: OrdinalCollation.Name),
                     brand = table.Column<int>(type: "int", nullable: false),
                     status = table.Column<int>(type: "int", nullable: false),
                     run_order = table.Column<int>(type: "int", nullable: false),
@@ -292,7 +292,7 @@ namespace Wolfgang.Barefoot.Data.Migrations
                 {
                     id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     resort_id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false),
+                    code = table.Column<string>(type: "nvarchar(32)", maxLength: 32, nullable: false, collation: OrdinalCollation.Name),
                     name = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
                     first_seen_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false),
                     last_seen_utc = table.Column<DateTime>(type: "datetime2(3)", precision: 3, nullable: false)

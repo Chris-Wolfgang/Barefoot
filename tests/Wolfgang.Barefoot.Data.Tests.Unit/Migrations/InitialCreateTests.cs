@@ -112,6 +112,53 @@ public sealed class InitialCreateTests
 
 
     [Fact]
+    public void GenerateScript_when_going_up_gives_every_ordinal_column_the_binary_collation()
+    {
+        using var context = NewContext();
+
+        var script = UpScript(context);
+
+        Assert.All
+        (
+            OrdinalCollation.Columns,
+            column => Assert.Matches
+            (
+                $@"CREATE TABLE \[{column.Table}\] \((?:(?!CREATE TABLE)[\s\S])*?\[{column.Column}\] nvarchar\(\d+\) COLLATE {OrdinalCollation.Name} NOT NULL",
+                script
+            )
+        );
+        Assert.Equal(OrdinalCollation.Columns.Count, Count(script, " COLLATE "));
+    }
+
+
+
+    [Fact]
+    public void Columns_when_read_names_every_text_column_of_a_unique_index_or_key()
+    {
+        using var context = NewContext();
+        var expected = context
+            .Model
+            .GetEntityTypes()
+            .SelectMany
+            (
+                entity => entity
+                    .GetIndexes()
+                    .Where(index => index.IsUnique)
+                    .SelectMany(index => index.Properties)
+                    .Concat(entity.GetKeys().SelectMany(key => key.Properties))
+            )
+            .Where(property => property.ClrType == typeof(string))
+            .Select(property => (Table: property.DeclaringType.GetTableName()!, Column: property.GetColumnName()))
+            .Distinct()
+            .Order()
+            .ToList();
+
+        Assert.Equal(expected, OrdinalCollation.Columns);
+    }
+
+
+
+    [Fact]
     public void GenerateScript_when_going_down_drops_every_table_of_the_model()
     {
         using var context = NewContext();

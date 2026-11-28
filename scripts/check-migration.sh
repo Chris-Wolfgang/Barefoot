@@ -141,6 +141,13 @@ expect 0 migrate --status
 expect_line "state: UpToDate"
 expect_value barefoot "SELECT COUNT(*) FROM sys.tables WHERE name <> '__EFMigrationsHistory'" "$tables" "tables after the second up"
 
+echo "== The unique text columns compare as .NET does"
+binary="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE COLLATION_NAME = 'Latin1_General_100_BIN2'"
+expect_value barefoot "$binary" 7 "columns with the binary collation"
+query barefoot "INSERT INTO recipient (id, owner_id, address, display_name, version) SELECT NEWID(), oid, N'a@example.com', N'', 1 FROM app_user UNION ALL SELECT NEWID(), oid, N'A@example.com', N'', 1 FROM app_user" >/dev/null
+expect_value barefoot "SELECT COUNT(*) FROM recipient WHERE address = N'a@example.com'" 1 "rows that match an address in one case"
+query barefoot "DELETE FROM recipient" >/dev/null
+
 echo "== The script builds the same schema"
 expect 0 migrate --script --output "$WORK/upgrade.sql"
 query master "CREATE DATABASE barefoot_scripted" >/dev/null
@@ -149,7 +156,7 @@ docker exec -e SQLCMDPASSWORD="$password" "$NAME" "$SQLCMD" -C -S localhost -U s
   -d barefoot_scripted -i /tmp/upgrade.sql >"$WORK/script.txt" 2>&1 \
   || { cat "$WORK/script.txt" >&2; fail "sqlcmd could not apply the script"; }
 
-columns="TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, DATETIME_PRECISION, COLUMN_DEFAULT"
+columns="TABLE_NAME, COLUMN_NAME, ORDINAL_POSITION, DATA_TYPE, IS_NULLABLE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, NUMERIC_SCALE, DATETIME_PRECISION, COLUMN_DEFAULT, COLLATION_NAME"
 indexes="OBJECT_NAME(object_id) AS table_name, name, type_desc, is_unique, is_primary_key, is_unique_constraint, filter_definition"
 keys="name, OBJECT_NAME(parent_object_id) AS table_name, OBJECT_NAME(referenced_object_id) AS referenced, delete_referential_action_desc"
 for pair in "barefoot barefoot_scripted" "barefoot_scripted barefoot"; do
