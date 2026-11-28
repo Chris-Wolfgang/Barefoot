@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Barefoot is an application: its assemblies ship inside the hosts, never as NuGet packages. -->
+    <IsPackable>false</IsPackable>
+    <Description>What Barefoot's command-line hosts share: the log that goes to stderr and to a daily file (ADR 0016).</Description>
+  </PropertyGroup>
+
+  <!-- Hosting references no project. Only the command-line hosts reference it, so Core and the API
+       and Web hosts do not get a file logger (ADR 0016, decision 21). -->
+  <ItemGroup>
+    <!-- Serilog writes the file, behind Microsoft.Extensions.Logging (ADR 0016, decision 20). -->
+    <!-- Named so the hosts get the same Microsoft.Extensions version here as through EF Core. -->
+    <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.15" />
+    <PackageReference Include="Serilog.Extensions.Logging" Version="10.0.0" />
+    <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Wolfgang.Barefoot.Hosting.Tests.Unit" />
+  </ItemGroup>
+
+</Project>

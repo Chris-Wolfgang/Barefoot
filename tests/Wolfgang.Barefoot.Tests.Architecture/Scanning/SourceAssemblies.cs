@@ -17,6 +17,7 @@ internal static class SourceAssemblies
         typeof(Contracts.ContractVersion).Assembly,
         typeof(Core.Keys.ErrorCode).Assembly,
         typeof(Data.BarefootDbContext).Assembly,
+        typeof(Hosting.HostLog).Assembly,
         typeof(Maintenance.MaintenanceHost).Assembly,
     ];
 

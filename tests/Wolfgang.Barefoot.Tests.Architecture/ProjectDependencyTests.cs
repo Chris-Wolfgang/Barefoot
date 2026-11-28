@@ -6,7 +6,8 @@ namespace Wolfgang.Barefoot.Tests.Architecture;
 /// <summary>
 /// DESIGN §2: <c>Scraper</c>, <c>Admin</c> and <c>Web</c> never reference <c>Data</c> or a data-access
 /// package; <c>Admin</c> never references <c>Obe</c>; <c>Maintenance</c> never references
-/// <c>ApiClient</c> or <c>Obe</c>; <c>Api</c> never references <c>Obe</c>; <c>Core</c>,
+/// <c>ApiClient</c> or <c>Obe</c>; <c>Api</c> never references <c>Obe</c>; <c>Api</c> and <c>Web</c> never
+/// reference <c>Hosting</c>; <c>Core</c>,
 /// <c>Contracts</c> and <c>Presentation</c> reference no framework; <c>Contracts</c> references no
 /// project and <c>Core</c> only <c>Contracts</c>.
 /// </summary>
@@ -77,6 +78,29 @@ public sealed class ProjectDependencyTests
             [
                 "Wolfgang.Barefoot.Admin: package Microsoft.EntityFrameworkCore.SqlServer",
                 "Wolfgang.Barefoot.Web: package dapper",
+            ],
+            ProjectDependencyRules.ViolationsIn(projects)
+        );
+    }
+
+
+
+    [Fact]
+    public void ViolationsIn_when_the_Api_or_Web_host_references_Hosting_reports_the_project()
+    {
+        var projects = new[]
+        {
+            Project("Wolfgang.Barefoot.Api", projects: ["Wolfgang.Barefoot.Hosting"]),
+            Project("Wolfgang.Barefoot.Web", projects: ["Wolfgang.Barefoot.Hosting"]),
+            Project("Wolfgang.Barefoot.Maintenance", projects: ["Wolfgang.Barefoot.Hosting"]),
+            Project("Wolfgang.Barefoot.Hosting"),
+        };
+
+        Assert.Equal
+        (
+            [
+                "Wolfgang.Barefoot.Api: project Wolfgang.Barefoot.Hosting",
+                "Wolfgang.Barefoot.Web: project Wolfgang.Barefoot.Hosting",
             ],
             ProjectDependencyRules.ViolationsIn(projects)
         );
